@@ -1,0 +1,48 @@
+<template>
+  <div class="app-container">
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+    <BottomNavigation v-if="showNavigation" />
+  </div>
+</template>
+
+<script>
+import BottomNavigation from './components/BottomNavigation.vue'
+
+export default {
+  name: 'App',
+  components: {
+    BottomNavigation
+  },
+  data() {
+    return {}
+  },
+  computed: {
+    showNavigation() {
+      const hiddenRoutes = ['food-detail']
+      return !hiddenRoutes.includes(this.$route.name)
+    }
+  },
+  methods: {}
+}
+</script>
+
+<style scoped>
+.app-container {
+  min-height: 100vh;
+  background-color: #F8F9FA;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
