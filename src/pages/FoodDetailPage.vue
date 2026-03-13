@@ -67,10 +67,14 @@
 
 <script>
 import { sellers } from '../stores/data'
-import { cartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/cartStore'
 
 export default {
   name: 'FoodDetailPage',
+  setup() {
+    const cartStore = useCartStore()
+    return { cartStore }
+  },
   props: {
     sellerId: {
       type: String,
@@ -130,7 +134,7 @@ export default {
       }
     },
     addToCart() {
-      cartStore.addItem({
+      this.cartStore.addItem({
         id: this.food.id,
         name: this.food.name,
         price: this.food.price,

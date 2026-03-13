@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { cartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/cartStore'
 
 export default {
   name: 'MenuItem',
@@ -37,15 +37,16 @@ export default {
     }
   },
   emits: ['added'],
-  data() {
-    return {}
+  setup() {
+    const cartStore = useCartStore()
+    return { cartStore }
   },
   methods: {
     goToDetail() {
       this.$router.push(`/food/${this.sellerId}/${this.item.id}`)
     },
     addToCart() {
-      cartStore.addItem({
+      this.cartStore.addItem({
         id: this.item.id,
         name: this.item.name,
         price: this.item.price,

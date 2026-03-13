@@ -68,12 +68,16 @@
 
 <script>
 import CartItem from '../components/CartItem.vue'
-import { cartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/cartStore'
 
 export default {
   name: 'CartPage',
   components: {
     CartItem
+  },
+  setup() {
+    const cartStore = useCartStore()
+    return { cartStore }
   },
   data() {
     return {
@@ -83,19 +87,19 @@ export default {
   },
   computed: {
     cartItems() {
-      return cartStore.state.items
+      return this.cartStore.items
     },
     totalItems() {
-      return cartStore.getItemCount()
+      return this.cartStore.itemCount
     },
     subtotal() {
-      return cartStore.getSubtotal()
+      return this.cartStore.subtotal
     },
     deliveryFee() {
-      return this.cartItems.length > 0 ? cartStore.state.deliveryFee : 0
+      return this.cartItems.length > 0 ? this.cartStore.deliveryFee : 0
     },
     total() {
-      return cartStore.getTotal()
+      return this.cartStore.total
     }
   },
   methods: {
@@ -119,7 +123,7 @@ export default {
       
       // Clear cart after checkout
       setTimeout(() => {
-        cartStore.clearCart()
+        this.cartStore.clearCart()
         this.showToast = false
         this.$router.push('/orders')
       }, 2000)

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { cartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/cartStore'
 
 export default {
   name: 'CartItem',
@@ -43,24 +43,25 @@ export default {
     }
   },
   emits: ['updated', 'removed'],
-  data() {
-    return {}
+  setup() {
+    const cartStore = useCartStore()
+    return { cartStore }
   },
   methods: {
     increaseQuantity() {
-      cartStore.updateQuantity(this.item.id, this.item.sellerId, this.item.quantity + 1)
+      this.cartStore.updateQuantity(this.item.id, this.item.sellerId, this.item.quantity + 1)
       this.$emit('updated')
     },
     decreaseQuantity() {
       if (this.item.quantity > 1) {
-        cartStore.updateQuantity(this.item.id, this.item.sellerId, this.item.quantity - 1)
+        this.cartStore.updateQuantity(this.item.id, this.item.sellerId, this.item.quantity - 1)
         this.$emit('updated')
       } else {
         this.removeItem()
       }
     },
     removeItem() {
-      cartStore.removeItem(this.item.id, this.item.sellerId)
+      this.cartStore.removeItem(this.item.id, this.item.sellerId)
       this.$emit('removed', this.item)
     }
   }

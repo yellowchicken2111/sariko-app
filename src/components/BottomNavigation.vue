@@ -15,10 +15,14 @@
 </template>
 
 <script>
-import { cartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/cartStore'
 
 export default {
   name: 'BottomNavigation',
+  setup() {
+    const cartStore = useCartStore()
+    return { cartStore }
+  },
   data() {
     return {
       navItems: [
@@ -48,7 +52,7 @@ export default {
   },
   computed: {
     cartCount() {
-      return cartStore.getItemCount()
+      return this.cartStore.itemCount
     }
   },
   methods: {
