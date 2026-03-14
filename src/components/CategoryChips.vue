@@ -7,7 +7,9 @@
       :class="{ active: selectedCategory === category.id }"
       @click="selectCategory(category.id)"
     >
-      <span class="chip-icon">{{ category.icon }}</span>
+      <div class="chip-icon-wrapper" :class="{ active: selectedCategory === category.id }">
+        <span class="chip-icon">{{ category.icon }}</span>
+      </div>
       <span class="chip-label">{{ category.name }}</span>
     </button>
   </div>
@@ -27,9 +29,6 @@ export default {
     }
   },
   emits: ['select'],
-  data() {
-    return {}
-  },
   methods: {
     selectCategory(categoryId) {
       if (this.selectedCategory === categoryId) {
@@ -45,7 +44,7 @@ export default {
 <style scoped>
 .category-chips {
   display: flex;
-  gap: 10px;
+  gap: 16px;
   overflow-x: auto;
   padding: 4px 0;
   scroll-snap-type: x mandatory;
@@ -53,37 +52,51 @@ export default {
 
 .chip {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: white;
-  border: 1.5px solid #D1D5DB;
-  border-radius: 24px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #111827;
-  white-space: nowrap;
+  gap: 8px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
   scroll-snap-align: start;
-  min-height: 44px;
+  min-width: 72px;
 }
 
-.chip:hover {
-  border-color: #16A34A;
+.chip:hover .chip-icon-wrapper {
+  background: #DCFCE7;
 }
 
-.chip.active {
-  background: #16A34A;
-  border-color: #16A34A;
-  color: white;
+.chip.active .chip-label {
+  color: #16A34A;
+  font-weight: 600;
+}
+
+.chip-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.chip-icon-wrapper.active {
+  background: #22C55E;
 }
 
 .chip-icon {
-  font-size: 16px;
+  font-size: 24px;
 }
 
 .chip-label {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
 }
 </style>

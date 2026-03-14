@@ -1,245 +1,265 @@
 // Mock data for the application
 export const categories = [
-  { id: 1, name: 'Filipino Meals', icon: '🍛' },
-  { id: 2, name: 'Desserts', icon: '🍰' },
-  { id: 3, name: 'Snacks', icon: '🥟' },
+  { id: 1, name: 'Meat', icon: '🍖' },
+  { id: 2, name: 'Fast Food', icon: '🍔' },
+  { id: 3, name: 'Sushi', icon: '🍣' },
   { id: 4, name: 'Drinks', icon: '🥤' },
-  { id: 5, name: 'Homemade Goods', icon: '🫙' }
+  { id: 5, name: 'Desserts', icon: '🍰' }
+]
+
+export const promotions = [
+  {
+    id: 1,
+    title: 'New Year Offer',
+    discount: '30% OFF',
+    period: '16 - 31 Dec',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop'
+  }
 ]
 
 export const sellers = [
   {
     id: 1,
-    name: "Nanay Luz's Kitchen",
+    name: "Pizza Italiano",
     image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop',
     banner: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=400&fit=crop',
     rating: 4.8,
-    reviewCount: 156,
+    reviewCount: 2300,
     distance: '1.2 km',
-    deliveryTime: '25-35 min',
-    description: 'Authentic Filipino home cooking made with love. Specializing in traditional recipes passed down through generations.',
-    category: 'Filipino Meals',
+    deliveryTime: '20 min',
+    description: 'Authentic Italian pizzas made with love. Fresh ingredients and traditional recipes.',
+    category: 'Fast Food',
     previewImages: [
-      'https://images.unsplash.com/photo-1569058242567-93de6f36f8eb?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=200&h=200&fit=crop'
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop'
     ],
     menu: [
       {
         id: 101,
-        name: 'Chicken Adobo',
-        description: 'Classic Filipino braised chicken in soy sauce and vinegar with garlic',
-        price: 150,
-        image: 'https://images.unsplash.com/photo-1569058242567-93de6f36f8eb?w=400&h=400&fit=crop'
+        name: 'Melting Cheese Pizza',
+        description: 'Classic pizza with melted mozzarella cheese, fresh tomato sauce and basil',
+        price: 599,
+        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=400&fit=crop',
+        calories: 44,
+        sizes: [
+          { name: 'S - Small', price: 449 },
+          { name: 'M - Medium', price: 599 },
+          { name: 'L - Large', price: 799 }
+        ],
+        addons: [
+          { id: 'chicken', name: 'Chicken', weight: '250 gm', price: 240 },
+          { id: 'mushroom', name: 'Mushroom', price: 80 }
+        ]
       },
       {
         id: 102,
-        name: 'Sinigang na Baboy',
-        description: 'Sour pork soup with vegetables and tamarind broth',
-        price: 180,
-        image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400&h=400&fit=crop'
+        name: 'Pepperoni Pizza',
+        description: 'Loaded with spicy pepperoni and extra cheese',
+        price: 649,
+        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop',
+        calories: 52,
+        sizes: [
+          { name: 'S - Small', price: 499 },
+          { name: 'M - Medium', price: 649 },
+          { name: 'L - Large', price: 849 }
+        ],
+        addons: [
+          { id: 'extra_cheese', name: 'Extra Cheese', price: 100 },
+          { id: 'jalapeno', name: 'Jalapeno', price: 50 }
+        ]
       },
       {
         id: 103,
-        name: 'Kare-Kare',
-        description: 'Oxtail stew in rich peanut sauce with vegetables',
-        price: 250,
-        image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=400&h=400&fit=crop'
-      },
-      {
-        id: 104,
-        name: 'Lechon Kawali',
-        description: 'Crispy deep-fried pork belly served with liver sauce',
-        price: 200,
-        image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=400&fit=crop'
+        name: 'Margherita Pizza',
+        description: 'Simple and classic with tomato, mozzarella, and fresh basil',
+        price: 499,
+        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop',
+        calories: 38,
+        sizes: [
+          { name: 'S - Small', price: 399 },
+          { name: 'M - Medium', price: 499 },
+          { name: 'L - Large', price: 699 }
+        ],
+        addons: [
+          { id: 'olives', name: 'Olives', price: 60 },
+          { id: 'basil', name: 'Extra Basil', price: 30 }
+        ]
       }
     ]
   },
   {
     id: 2,
-    name: "Ate Mila's Sweets",
+    name: "Matt House",
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-    banner: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&h=400&fit=crop',
-    rating: 4.9,
-    reviewCount: 89,
+    banner: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=400&fit=crop',
+    rating: 4.6,
+    reviewCount: 1850,
     distance: '0.8 km',
-    deliveryTime: '20-30 min',
-    description: 'Handcrafted Filipino desserts and kakanin. All made fresh daily with premium local ingredients.',
-    category: 'Desserts',
+    deliveryTime: '15 min',
+    description: 'Healthy salads and fresh bowls. Perfect for a nutritious meal.',
+    category: 'Fast Food',
     previewImages: [
-      'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=200&h=200&fit=crop'
+      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=200&h=200&fit=crop'
     ],
     menu: [
       {
         id: 201,
-        name: 'Leche Flan',
-        description: 'Creamy caramel custard made with fresh eggs and condensed milk',
-        price: 120,
-        image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop'
+        name: 'Chicken Salad',
+        description: 'Fresh greens with grilled chicken, cherry tomatoes, and house dressing',
+        price: 456,
+        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=400&fit=crop',
+        calories: 28,
+        sizes: [
+          { name: 'S - Small', price: 356 },
+          { name: 'M - Medium', price: 456 },
+          { name: 'L - Large', price: 556 }
+        ],
+        addons: [
+          { id: 'avocado', name: 'Avocado', price: 80 },
+          { id: 'egg', name: 'Boiled Egg', price: 40 }
+        ]
       },
       {
         id: 202,
-        name: 'Ube Halaya',
-        description: 'Sweet purple yam jam, perfect as dessert or spread',
-        price: 150,
-        image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=400&fit=crop'
-      },
-      {
-        id: 203,
-        name: 'Bibingka',
-        description: 'Soft rice cake topped with salted egg and cheese',
-        price: 80,
-        image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&h=400&fit=crop'
-      },
-      {
-        id: 204,
-        name: 'Halo-Halo',
-        description: 'Shaved ice with mixed fruits, beans, and leche flan',
-        price: 100,
-        image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=400&fit=crop'
+        name: 'Greek Salad',
+        description: 'Classic Mediterranean salad with feta cheese and olives',
+        price: 399,
+        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
+        calories: 22,
+        sizes: [
+          { name: 'S - Small', price: 299 },
+          { name: 'M - Medium', price: 399 },
+          { name: 'L - Large', price: 499 }
+        ],
+        addons: [
+          { id: 'feta', name: 'Extra Feta', price: 70 },
+          { id: 'olives', name: 'Extra Olives', price: 50 }
+        ]
       }
     ]
   },
   {
     id: 3,
-    name: "Kuya Boy's Meryenda",
+    name: "Burger Kork",
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-    banner: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=400&fit=crop',
+    banner: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=400&fit=crop',
     rating: 4.7,
-    reviewCount: 203,
+    reviewCount: 2100,
     distance: '2.1 km',
-    deliveryTime: '30-40 min',
-    description: 'Your go-to spot for Filipino street food and afternoon snacks. Authentic flavors from the streets!',
-    category: 'Snacks',
+    deliveryTime: '30 min',
+    description: 'Juicy burgers with premium beef patties and fresh toppings.',
+    category: 'Fast Food',
     previewImages: [
-      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=200&h=200&fit=crop'
+      'https://images.unsplash.com/photo-1550547660-d9450f859349?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=200&h=200&fit=crop'
     ],
     menu: [
       {
         id: 301,
-        name: 'Lumpiang Shanghai',
-        description: 'Crispy fried spring rolls with pork filling (12 pcs)',
-        price: 120,
-        image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=400&fit=crop'
+        name: 'Cheese Burger',
+        description: 'Classic beef burger with melted cheddar cheese and special sauce',
+        price: 499,
+        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop',
+        calories: 44,
+        sizes: [
+          { name: 'Regular', price: 499 },
+          { name: 'Double', price: 699 }
+        ],
+        addons: [
+          { id: 'bacon', name: 'Bacon', price: 80 },
+          { id: 'extra_patty', name: 'Extra Patty', price: 150 }
+        ]
       },
       {
         id: 302,
-        name: 'Turon',
-        description: 'Fried banana rolls with jackfruit and caramelized sugar (6 pcs)',
-        price: 60,
-        image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=400&fit=crop'
-      },
-      {
-        id: 303,
-        name: 'Fishball with Sauce',
-        description: 'Classic street-style fishballs with sweet and spicy sauce',
-        price: 40,
-        image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=400&fit=crop'
-      },
-      {
-        id: 304,
-        name: 'Kwek-Kwek',
-        description: 'Deep-fried orange battered quail eggs (10 pcs)',
-        price: 50,
-        image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&h=400&fit=crop'
+        name: 'BBQ Burger',
+        description: 'Smoky BBQ sauce, caramelized onions, and crispy bacon',
+        price: 549,
+        image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=400&fit=crop',
+        calories: 52,
+        sizes: [
+          { name: 'Regular', price: 549 },
+          { name: 'Double', price: 749 }
+        ],
+        addons: [
+          { id: 'jalapeno', name: 'Jalapeno', price: 40 },
+          { id: 'onion_rings', name: 'Onion Rings', price: 60 }
+        ]
       }
     ]
   },
   {
     id: 4,
-    name: "Tita Rose Refreshments",
+    name: "Sushi Master",
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
-    banner: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800&h=400&fit=crop',
-    rating: 4.6,
-    reviewCount: 78,
+    banner: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=400&fit=crop',
+    rating: 4.9,
+    reviewCount: 980,
     distance: '1.5 km',
-    deliveryTime: '15-25 min',
-    description: 'Fresh homemade Filipino beverages and refreshments. Beat the heat with our traditional drinks!',
-    category: 'Drinks',
+    deliveryTime: '25 min',
+    description: 'Authentic Japanese sushi prepared by expert chefs.',
+    category: 'Sushi',
     previewImages: [
-      'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?w=200&h=200&fit=crop'
+      'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1553621042-f6e147245754?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=200&h=200&fit=crop'
     ],
     menu: [
       {
         id: 401,
-        name: 'Sago\'t Gulaman',
-        description: 'Sweet tapioca pearls and gelatin in brown sugar syrup',
-        price: 45,
-        image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&h=400&fit=crop'
-      },
-      {
-        id: 402,
-        name: 'Buko Juice',
-        description: 'Fresh coconut water with tender coconut meat',
-        price: 50,
-        image: 'https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?w=400&h=400&fit=crop'
-      },
-      {
-        id: 403,
-        name: 'Calamansi Juice',
-        description: 'Refreshing Philippine lime juice with honey',
-        price: 40,
-        image: 'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?w=400&h=400&fit=crop'
-      },
-      {
-        id: 404,
-        name: 'Taho',
-        description: 'Soft silken tofu with arnibal and sago pearls',
-        price: 35,
-        image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop'
+        name: 'Salmon Roll',
+        description: 'Fresh salmon with avocado and cucumber',
+        price: 399,
+        image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&h=400&fit=crop',
+        calories: 32,
+        sizes: [
+          { name: '6 pcs', price: 399 },
+          { name: '12 pcs', price: 749 }
+        ],
+        addons: [
+          { id: 'wasabi', name: 'Extra Wasabi', price: 20 },
+          { id: 'ginger', name: 'Extra Ginger', price: 20 }
+        ]
       }
     ]
   },
   {
     id: 5,
-    name: "Lola Ising's Preserves",
+    name: "Grill House",
     image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop',
-    banner: 'https://images.unsplash.com/photo-1464454709131-ffd692591ee5?w=800&h=400&fit=crop',
-    rating: 4.9,
-    reviewCount: 45,
+    banner: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=400&fit=crop',
+    rating: 4.8,
+    reviewCount: 1650,
     distance: '3.0 km',
-    deliveryTime: '35-45 min',
-    description: 'Traditional Filipino preserves, pickles, and homemade goods. Made with recipes from three generations!',
-    category: 'Homemade Goods',
+    deliveryTime: '35 min',
+    description: 'Premium grilled meats and steaks cooked to perfection.',
+    category: 'Meat',
     previewImages: [
-      'https://images.unsplash.com/photo-1597227029238-775589e8c66c?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1589135233689-1c3ae43e3e14?w=200&h=200&fit=crop',
-      'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=200&h=200&fit=crop'
+      'https://images.unsplash.com/photo-1544025162-d76694265947?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=200&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1558030006-450675393462?w=200&h=200&fit=crop'
     ],
     menu: [
       {
         id: 501,
-        name: 'Bagoong (Shrimp Paste)',
-        description: 'Homemade fermented shrimp paste, perfect with green mangoes',
-        price: 180,
-        image: 'https://images.unsplash.com/photo-1597227029238-775589e8c66c?w=400&h=400&fit=crop'
-      },
-      {
-        id: 502,
-        name: 'Atchara',
-        description: 'Sweet pickled papaya relish in traditional recipe',
-        price: 120,
-        image: 'https://images.unsplash.com/photo-1589135233689-1c3ae43e3e14?w=400&h=400&fit=crop'
-      },
-      {
-        id: 503,
-        name: 'Homemade Longganisa',
-        description: 'Sweet Filipino sausage, vacuum packed (500g)',
-        price: 250,
-        image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=400&h=400&fit=crop'
-      },
-      {
-        id: 504,
-        name: 'Peanut Butter',
-        description: 'Fresh ground peanut butter, no preservatives',
-        price: 150,
-        image: 'https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=400&h=400&fit=crop'
+        name: 'Grilled Steak',
+        description: 'Premium beef steak grilled to your preference',
+        price: 899,
+        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=400&fit=crop',
+        calories: 68,
+        sizes: [
+          { name: '200g', price: 899 },
+          { name: '300g', price: 1199 },
+          { name: '400g', price: 1499 }
+        ],
+        addons: [
+          { id: 'mushroom_sauce', name: 'Mushroom Sauce', price: 80 },
+          { id: 'pepper_sauce', name: 'Pepper Sauce', price: 80 }
+        ]
       }
     ]
   }
@@ -249,35 +269,34 @@ export const orders = [
   {
     id: 1001,
     sellerId: 1,
-    sellerName: "Nanay Luz's Kitchen",
+    sellerName: "Pizza Italiano",
     items: [
-      { name: 'Chicken Adobo', quantity: 2, price: 150 },
-      { name: 'Sinigang na Baboy', quantity: 1, price: 180 }
+      { name: 'Melting Cheese Pizza', quantity: 1, price: 599 },
+      { name: 'Pepperoni Pizza', quantity: 1, price: 649 }
     ],
-    total: 529,
+    total: 1298,
     status: 'Delivered',
     time: '2 days ago'
   },
   {
     id: 1002,
     sellerId: 2,
-    sellerName: "Ate Mila's Sweets",
+    sellerName: "Matt House",
     items: [
-      { name: 'Leche Flan', quantity: 2, price: 120 },
-      { name: 'Ube Halaya', quantity: 1, price: 150 }
+      { name: 'Chicken Salad', quantity: 2, price: 456 }
     ],
-    total: 439,
+    total: 962,
     status: 'Delivered',
     time: '5 days ago'
   },
   {
     id: 1003,
     sellerId: 3,
-    sellerName: "Kuya Boy's Meryenda",
+    sellerName: "Burger Kork",
     items: [
-      { name: 'Lumpiang Shanghai', quantity: 3, price: 120 }
+      { name: 'Cheese Burger', quantity: 2, price: 499 }
     ],
-    total: 409,
+    total: 1048,
     status: 'Preparing',
     time: '10 mins ago'
   }
@@ -291,28 +310,28 @@ export const dashboardData = {
     {
       id: 2001,
       customerName: 'Juan Dela Cruz',
-      items: ['Chicken Adobo x2', 'Rice x2'],
+      items: ['Melting Cheese Pizza x2', 'Coke x2'],
       status: 'Pending',
       time: '5 mins ago'
     },
     {
       id: 2002,
       customerName: 'Maria Santos',
-      items: ['Sinigang na Baboy', 'Kare-Kare'],
+      items: ['Chicken Salad', 'Greek Salad'],
       status: 'Preparing',
       time: '15 mins ago'
     },
     {
       id: 2003,
       customerName: 'Pedro Reyes',
-      items: ['Lechon Kawali x3'],
+      items: ['Cheese Burger x3'],
       status: 'Ready',
       time: '25 mins ago'
     },
     {
       id: 2004,
       customerName: 'Ana Garcia',
-      items: ['Chicken Adobo', 'Sinigang na Baboy'],
+      items: ['Pepperoni Pizza', 'Margherita Pizza'],
       status: 'Delivered',
       time: '1 hour ago'
     }
