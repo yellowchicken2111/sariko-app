@@ -135,7 +135,7 @@ export default {
 <style scoped>
 .cart-page {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #F3F4F6;
   padding: 16px;
   padding-top: calc(16px + env(safe-area-inset-top, 0));
   padding-bottom: 120px;
@@ -151,12 +151,12 @@ export default {
 .page-title {
   font-size: 24px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
 }
 
 .item-count {
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   background: white;
   padding: 6px 12px;
   border-radius: 16px;
@@ -186,20 +186,20 @@ export default {
   align-items: center;
   padding: 8px 0;
   font-size: 15px;
-  color: #636E72;
+  color: #6B7280;
 }
 
 .summary-row.total {
-  border-top: 1px solid #F0F0F0;
+  border-top: 1px solid #D1D5DB;
   margin-top: 8px;
   padding-top: 16px;
   font-size: 18px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
 }
 
 .summary-row.total span:last-child {
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .empty-state {
@@ -212,25 +212,25 @@ export default {
 }
 
 .empty-icon {
-  color: #DDD;
+  color: #D1D5DB;
   margin-bottom: 20px;
 }
 
 .empty-title {
   font-size: 20px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 8px;
 }
 
 .empty-description {
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   margin-bottom: 24px;
 }
 
 .browse-btn {
-  background: #FF6B35;
+  background: #16A34A;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -239,10 +239,11 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 48px;
 }
 
 .browse-btn:hover {
-  background: #E55A2B;
+  background: #15803D;
 }
 
 .checkout-section {
@@ -261,7 +262,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #FF6B35;
+  background: #16A34A;
   color: white;
   border: none;
   padding: 18px 24px;
@@ -270,10 +271,11 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 56px;
 }
 
 .checkout-btn:hover {
-  background: #E55A2B;
+  background: #15803D;
 }
 
 .checkout-btn:active {
@@ -289,7 +291,7 @@ export default {
   bottom: 160px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2D3436;
+  background: #111827;
   color: white;
   padding: 12px 24px;
   border-radius: 24px;

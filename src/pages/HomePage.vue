@@ -135,13 +135,13 @@ export default {
 .logo {
   font-size: 28px;
   font-weight: 700;
-  color: #FF6B35;
+  color: #16A34A;
   letter-spacing: -0.5px;
 }
 
 .tagline {
   font-size: 13px;
-  color: #636E72;
+  color: #6B7280;
   margin-top: 2px;
 }
 
@@ -161,7 +161,7 @@ export default {
 }
 
 .search-bar svg {
-  color: #636E72;
+  color: #6B7280;
   flex-shrink: 0;
 }
 
@@ -170,12 +170,12 @@ export default {
   border: none;
   outline: none;
   font-size: 15px;
-  color: #2D3436;
+  color: #111827;
   background: transparent;
 }
 
 .search-input::placeholder {
-  color: #B2BEC3;
+  color: #6B7280;
 }
 
 .location-btn {
@@ -188,17 +188,18 @@ export default {
   border: none;
   font-size: 14px;
   font-weight: 500;
-  color: #2D3436;
+  color: #111827;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  min-height: 44px;
 }
 
 .location-btn svg {
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .location-btn svg:last-child {
-  color: #636E72;
+  color: #6B7280;
 }
 
 .categories-section {
@@ -212,7 +213,7 @@ export default {
 .section-title {
   font-size: 20px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 16px;
 }
 
@@ -225,6 +226,6 @@ export default {
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #636E72;
+  color: #6B7280;
 }
 </style>

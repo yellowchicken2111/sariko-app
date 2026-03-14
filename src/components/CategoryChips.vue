@@ -57,24 +57,25 @@ export default {
   gap: 6px;
   padding: 10px 16px;
   background: white;
-  border: 1.5px solid #E5E5E5;
+  border: 1.5px solid #D1D5DB;
   border-radius: 24px;
   font-size: 14px;
   font-weight: 500;
-  color: #2D3436;
+  color: #111827;
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s ease;
   scroll-snap-align: start;
+  min-height: 44px;
 }
 
 .chip:hover {
-  border-color: #FF6B35;
+  border-color: #16A34A;
 }
 
 .chip.active {
-  background: #FF6B35;
-  border-color: #FF6B35;
+  background: #16A34A;
+  border-color: #16A34A;
   color: white;
 }
 

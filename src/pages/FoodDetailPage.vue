@@ -157,7 +157,7 @@ export default {
 <style scoped>
 .food-detail-page {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #F3F4F6;
   padding-bottom: 120px;
 }
 
@@ -190,7 +190,7 @@ export default {
 }
 
 .back-btn svg {
-  color: #2D3436;
+  color: #111827;
 }
 
 .food-info {
@@ -204,14 +204,14 @@ export default {
 .food-name {
   font-size: 24px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 8px;
 }
 
 .food-price {
   font-size: 22px;
   font-weight: 700;
-  color: #FF6B35;
+  color: #16A34A;
   display: block;
   margin-bottom: 12px;
 }
@@ -221,22 +221,22 @@ export default {
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   margin-bottom: 16px;
   cursor: pointer;
 }
 
 .seller-name:hover {
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .seller-name svg {
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .food-description {
   font-size: 15px;
-  color: #636E72;
+  color: #6B7280;
   line-height: 1.6;
 }
 
@@ -252,7 +252,7 @@ export default {
 .section-label {
   font-size: 16px;
   font-weight: 600;
-  color: #2D3436;
+  color: #111827;
 }
 
 .quantity-controls {
@@ -262,21 +262,21 @@ export default {
 }
 
 .qty-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  background: #F5F5F5;
+  background: #F3F4F6;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #2D3436;
+  color: #111827;
   transition: background 0.2s ease;
 }
 
 .qty-btn:hover:not(:disabled) {
-  background: #E5E5E5;
+  background: #D1D5DB;
 }
 
 .qty-btn:disabled {
@@ -307,7 +307,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #FF6B35;
+  background: #16A34A;
   color: white;
   border: none;
   padding: 18px 24px;
@@ -316,10 +316,11 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 56px;
 }
 
 .add-to-cart-btn:hover {
-  background: #E55A2B;
+  background: #15803D;
 }
 
 .add-to-cart-btn:active {
@@ -335,7 +336,7 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  color: #636E72;
+  color: #6B7280;
 }
 
 .toast {
@@ -343,7 +344,7 @@ export default {
   bottom: 120px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2D3436;
+  background: #111827;
   color: white;
   padding: 12px 24px;
   border-radius: 24px;

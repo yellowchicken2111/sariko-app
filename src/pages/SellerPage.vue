@@ -106,7 +106,7 @@ export default {
 <style scoped>
 .seller-page {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #F3F4F6;
 }
 
 .banner-section {
@@ -138,7 +138,7 @@ export default {
 }
 
 .back-btn svg {
-  color: #2D3436;
+  color: #111827;
 }
 
 .seller-info {
@@ -167,7 +167,7 @@ export default {
 .seller-name {
   font-size: 22px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 8px;
 }
 
@@ -177,7 +177,7 @@ export default {
   justify-content: center;
   gap: 8px;
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   margin-bottom: 12px;
 }
 
@@ -186,16 +186,16 @@ export default {
   align-items: center;
   gap: 4px;
   font-weight: 500;
-  color: #2D3436;
+  color: #111827;
 }
 
 .divider {
-  color: #DDD;
+  color: #D1D5DB;
 }
 
 .seller-description {
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   line-height: 1.5;
   max-width: 400px;
   margin: 0 auto;
@@ -208,7 +208,7 @@ export default {
 .section-title {
   font-size: 20px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 16px;
 }
 
@@ -223,7 +223,7 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  color: #636E72;
+  color: #6B7280;
 }
 
 .toast {
@@ -231,7 +231,7 @@ export default {
   bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2D3436;
+  background: #111827;
   color: white;
   padding: 12px 24px;
   border-radius: 24px;

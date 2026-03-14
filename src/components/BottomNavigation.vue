@@ -96,16 +96,17 @@ export default {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: #636E72;
+  color: #6B7280;
   padding: 8px 16px;
   border-radius: 12px;
   transition: all 0.2s ease;
   position: relative;
   min-width: 64px;
+  min-height: 44px;
 }
 
 .nav-item.active {
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .nav-item.active .nav-icon {
@@ -128,7 +129,7 @@ export default {
   position: absolute;
   top: 2px;
   right: 12px;
-  background: #FF6B35;
+  background: #16A34A;
   color: white;
   font-size: 10px;
   font-weight: 600;

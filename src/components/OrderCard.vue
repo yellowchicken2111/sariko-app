@@ -63,7 +63,7 @@ export default {
 .seller-name {
   font-size: 16px;
   font-weight: 600;
-  color: #2D3436;
+  color: #111827;
 }
 
 .order-status {
@@ -74,41 +74,41 @@ export default {
 }
 
 .status-pending {
-  background: #FFF3E0;
-  color: #E65100;
+  background: #FEF3C7;
+  color: #D97706;
 }
 
 .status-preparing {
-  background: #E3F2FD;
-  color: #1565C0;
+  background: #DBEAFE;
+  color: #2563EB;
 }
 
 .status-ready {
-  background: #E8F5E9;
-  color: #2E7D32;
+  background: #D1FAE5;
+  color: #059669;
 }
 
 .status-delivered {
-  background: #F5F5F5;
-  color: #636E72;
+  background: #F3F4F6;
+  color: #6B7280;
 }
 
 .status-cancelled {
-  background: #FFEBEE;
-  color: #C62828;
+  background: #FEE2E2;
+  color: #DC2626;
 }
 
 .order-items {
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #F0F0F0;
+  border-bottom: 1px solid #D1D5DB;
 }
 
 .order-item {
   display: flex;
   gap: 8px;
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   margin-bottom: 4px;
 }
 
@@ -118,7 +118,7 @@ export default {
 
 .item-quantity {
   font-weight: 500;
-  color: #2D3436;
+  color: #111827;
   min-width: 24px;
 }
 
@@ -135,11 +135,11 @@ export default {
 .order-total {
   font-size: 15px;
   font-weight: 700;
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .order-time {
   font-size: 13px;
-  color: #636E72;
+  color: #6B7280;
 }
 </style>

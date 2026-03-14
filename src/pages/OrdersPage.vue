@@ -59,7 +59,7 @@ export default {
 <style scoped>
 .orders-page {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #F3F4F6;
   padding: 16px;
   padding-top: calc(16px + env(safe-area-inset-top, 0));
 }
@@ -71,7 +71,7 @@ export default {
 .page-title {
   font-size: 24px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
 }
 
 .orders-list {
@@ -90,25 +90,25 @@ export default {
 }
 
 .empty-icon {
-  color: #DDD;
+  color: #D1D5DB;
   margin-bottom: 20px;
 }
 
 .empty-title {
   font-size: 20px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 8px;
 }
 
 .empty-description {
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   margin-bottom: 24px;
 }
 
 .browse-btn {
-  background: #FF6B35;
+  background: #16A34A;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -117,9 +117,10 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 48px;
 }
 
 .browse-btn:hover {
-  background: #E55A2B;
+  background: #15803D;
 }
 </style>

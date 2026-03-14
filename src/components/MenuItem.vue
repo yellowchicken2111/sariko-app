@@ -98,13 +98,13 @@ export default {
 .item-name {
   font-size: 15px;
   font-weight: 600;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 4px;
 }
 
 .item-description {
   font-size: 13px;
-  color: #636E72;
+  color: #6B7280;
   line-height: 1.4;
   margin-bottom: 8px;
   display: -webkit-box;
@@ -123,14 +123,14 @@ export default {
 .item-price {
   font-size: 16px;
   font-weight: 700;
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .add-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #FF6B35;
+  background: #16A34A;
   color: white;
   border: none;
   display: flex;
@@ -141,7 +141,7 @@ export default {
 }
 
 .add-btn:hover {
-  background: #E55A2B;
+  background: #15803D;
 }
 
 .add-btn:active {

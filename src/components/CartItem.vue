@@ -94,13 +94,13 @@ export default {
 .item-name {
   font-size: 15px;
   font-weight: 600;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 4px;
 }
 
 .item-price {
   font-size: 13px;
-  color: #636E72;
+  color: #6B7280;
   display: block;
   margin-bottom: 10px;
 }
@@ -112,25 +112,25 @@ export default {
 }
 
 .qty-btn {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
-  background: #F5F5F5;
+  background: #F3F4F6;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #2D3436;
+  color: #111827;
   transition: background 0.2s ease;
 }
 
 .qty-btn:hover {
-  background: #E5E5E5;
+  background: #D1D5DB;
 }
 
 .qty-btn:active {
-  background: #D5D5D5;
+  background: #D1D5DB;
 }
 
 .quantity {
@@ -150,24 +150,24 @@ export default {
 .item-total {
   font-size: 16px;
   font-weight: 700;
-  color: #FF6B35;
+  color: #16A34A;
 }
 
 .remove-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
-  background: #FFF0F0;
+  background: #FEE2E2;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #E74C3C;
+  color: #EF4444;
   transition: background 0.2s ease;
 }
 
 .remove-btn:hover {
-  background: #FFE0E0;
+  background: #FECACA;
 }
 </style>

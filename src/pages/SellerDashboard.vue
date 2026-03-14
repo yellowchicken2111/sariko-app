@@ -136,7 +136,7 @@ export default {
 <style scoped>
 .dashboard-page {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #F3F4F6;
   padding: 16px;
   padding-top: calc(16px + env(safe-area-inset-top, 0));
 }
@@ -148,12 +148,12 @@ export default {
 .page-title {
   font-size: 24px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
 }
 
 .welcome-text {
   font-size: 14px;
-  color: #636E72;
+  color: #6B7280;
   margin-top: 4px;
 }
 
@@ -183,18 +183,18 @@ export default {
 }
 
 .stat-icon.orders {
-  background: #E3F2FD;
-  color: #1976D2;
+  background: #DBEAFE;
+  color: #2563EB;
 }
 
 .stat-icon.revenue {
-  background: #E8F5E9;
-  color: #388E3C;
+  background: #D1FAE5;
+  color: #16A34A;
 }
 
 .stat-icon.pending {
-  background: #FFF3E0;
-  color: #F57C00;
+  background: #FEF3C7;
+  color: #D97706;
 }
 
 .stat-content {
@@ -205,12 +205,12 @@ export default {
 .stat-value {
   font-size: 22px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #636E72;
+  color: #6B7280;
   margin-top: 2px;
 }
 
@@ -221,7 +221,7 @@ export default {
 .section-title {
   font-size: 18px;
   font-weight: 700;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 16px;
 }
 
@@ -249,13 +249,13 @@ export default {
 .customer-name {
   font-size: 15px;
   font-weight: 600;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 4px;
 }
 
 .order-items-text {
   font-size: 13px;
-  color: #636E72;
+  color: #6B7280;
   margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -265,7 +265,7 @@ export default {
 
 .order-time {
   font-size: 12px;
-  color: #B2BEC3;
+  color: #9CA3AF;
 }
 
 .order-actions {
@@ -283,41 +283,41 @@ export default {
 }
 
 .status-pending {
-  background: #FFF3E0;
-  color: #E65100;
+  background: #FEF3C7;
+  color: #D97706;
 }
 
 .status-preparing {
-  background: #E3F2FD;
-  color: #1565C0;
+  background: #DBEAFE;
+  color: #2563EB;
 }
 
 .status-ready {
-  background: #E8F5E9;
-  color: #2E7D32;
+  background: #D1FAE5;
+  color: #059669;
 }
 
 .status-delivered {
-  background: #F5F5F5;
-  color: #636E72;
+  background: #F3F4F6;
+  color: #6B7280;
 }
 
 .action-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
-  background: #F5F5F5;
+  background: #F3F4F6;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #2D3436;
+  color: #111827;
   transition: background 0.2s ease;
 }
 
 .action-btn:hover {
-  background: #E5E5E5;
+  background: #D1D5DB;
 }
 
 .toast {
@@ -325,7 +325,7 @@ export default {
   bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2D3436;
+  background: #111827;
   color: white;
   padding: 12px 24px;
   border-radius: 24px;

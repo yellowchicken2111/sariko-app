@@ -92,7 +92,7 @@ export default {
 .seller-name {
   font-size: 16px;
   font-weight: 600;
-  color: #2D3436;
+  color: #111827;
   margin-bottom: 4px;
 }
 
@@ -101,7 +101,7 @@ export default {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #636E72;
+  color: #6B7280;
 }
 
 .rating {
@@ -109,11 +109,11 @@ export default {
   align-items: center;
   gap: 4px;
   font-weight: 500;
-  color: #2D3436;
+  color: #111827;
 }
 
 .divider {
-  color: #DDD;
+  color: #D1D5DB;
 }
 
 .preview-images {
@@ -137,16 +137,16 @@ export default {
 }
 
 .category-tag {
-  background: #F0F0F0;
+  background: #F3F4F6;
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
-  color: #636E72;
+  color: #374151;
 }
 
 .delivery-time {
   font-size: 12px;
-  color: #636E72;
+  color: #6B7280;
 }
 </style>
