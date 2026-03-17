@@ -1,33 +1,33 @@
 <template>
   <div class="seller-card" @click="goToSeller">
-    <div class="card-header">
-      <img :src="seller.image" :alt="seller.name" class="seller-image" />
-      <div class="seller-info">
-        <h3 class="seller-name">{{ seller.name }}</h3>
-        <div class="seller-meta">
-          <span class="rating">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FFB800" stroke="#FFB800" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-            {{ seller.rating }}
-          </span>
-          <span class="divider">•</span>
-          <span class="distance">{{ seller.distance }}</span>
-        </div>
+    <div class="seller-cover-wrapper">
+      <img :src="seller.banner || seller.image" :alt="seller.name" class="seller-cover" />
+      <div class="seller-distance-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <span>{{ seller.distance }}</span>
       </div>
     </div>
-    <div class="preview-images">
-      <img 
-        v-for="(img, index) in seller.previewImages" 
-        :key="index" 
-        :src="img" 
-        :alt="`${seller.name} food ${index + 1}`"
-        class="preview-image"
-      />
-    </div>
-    <div class="card-footer">
-      <span class="category-tag">{{ seller.category }}</span>
-      <span class="delivery-time">{{ seller.deliveryTime }}</span>
+    
+    <div class="seller-info">
+      <div class="seller-header">
+        <h3 class="seller-name">{{ seller.name }}</h3>
+        <div class="seller-rating">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="var(--color-accent)" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>{{ seller.rating }}</span>
+          <span class="review-count">({{ seller.reviewCount }})</span>
+        </div>
+      </div>
+      
+      <p class="seller-description">{{ seller.description }}</p>
+      
+      <div class="seller-previews" v-if="seller.previewImages && seller.previewImages.length > 0">
+        <img v-for="(img, idx) in seller.previewImages.slice(0, 3)" :key="idx" :src="img" alt="Food preview" class="preview-img" />
+      </div>
     </div>
   </div>
 </template>
@@ -41,9 +41,6 @@ export default {
       required: true
     }
   },
-  data() {
-    return {}
-  },
   methods: {
     goToSeller() {
       this.$router.push(`/seller/${this.seller.id}`)
@@ -54,99 +51,107 @@ export default {
 
 <style scoped>
 .seller-card {
-  background: white;
+  background: var(--bg-surface);
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px;
 }
 
 .seller-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .seller-card:active {
   transform: scale(0.98);
 }
 
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+.seller-cover-wrapper {
+  position: relative;
+  height: 140px;
+  width: 100%;
 }
 
-.seller-image {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+.seller-cover {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.seller-info {
-  flex: 1;
-}
-
-.seller-name {
-  font-size: 16px;
+.seller-distance-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 4px;
-}
-
-.seller-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #6B7280;
-}
-
-.rating {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-weight: 500;
-  color: #111827;
 }
 
-.divider {
-  color: #D1D5DB;
+.seller-info {
+  padding: 16px;
 }
 
-.preview-images {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.preview-image {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.card-footer {
+.seller-header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.seller-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.seller-rating {
+  display: flex;
   align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.category-tag {
-  background: #F3F4F6;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+.review-count {
+  color: var(--text-secondary);
   font-weight: 500;
-  color: #374151;
+  font-size: 12px;
 }
 
-.delivery-time {
-  font-size: 12px;
-  color: #6B7280;
+.seller-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.seller-previews {
+  display: flex;
+  gap: 8px;
+}
+
+.preview-img {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  object-fit: cover;
+  background-color: var(--bg-main);
 }
 </style>

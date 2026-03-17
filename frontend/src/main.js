@@ -1,26 +1,32 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import VueAxios from 'vue-axios'
+import axios from 'axios'
 import App from './App.vue'
-import router from './router'
+import '@/assets/quasar/main.scss'
 import './assets/main.css'
 
 const app = createApp(App)
-const pinia = createPinia()
+app.use(VueAxios, axios);
 
-app.use(pinia)
-app.use(router)
+window.$http = window.axios = axios;
+
+const plugins = import.meta.glob('./plugins/*.js', { eager: true });
+for (const path in plugins) {
+    const plugin = plugins[path];
+    plugin.default(app);
+}
 
 app.mount('#app')
 
 // Register service worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      .then((registration) => {
-        console.log('SW registered:', registration)
-      })
-      .catch((error) => {
-        console.log('SW registration failed:', error)
-      })
-  })
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then((registration) => {
+                console.log('SW registered:', registration)
+            })
+            .catch((error) => {
+                console.log('SW registration failed:', error)
+            })
+    })
 }

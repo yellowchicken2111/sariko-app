@@ -73,9 +73,16 @@ export default {
   display: flex;
   gap: 12px;
   padding: 16px;
-  background: white;
-  border-radius: 16px;
+  background: var(--bg-surface);
+  border-radius: var(--border-radius-lg);
   align-items: flex-start;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.cart-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .item-image {
@@ -94,13 +101,13 @@ export default {
 .item-name {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .item-price {
   font-size: 13px;
-  color: #6B7280;
+  color: var(--text-secondary);
   display: block;
   margin-bottom: 10px;
 }
@@ -115,22 +122,23 @@ export default {
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  background: #F3F4F6;
+  background: var(--bg-card-hover);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #111827;
-  transition: background 0.2s ease;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
 }
 
 .qty-btn:hover {
-  background: #D1D5DB;
+  background: var(--color-accent);
+  color: var(--bg-main);
 }
 
 .qty-btn:active {
-  background: #D1D5DB;
+  background: var(--border-color);
 }
 
 .quantity {
@@ -150,24 +158,24 @@ export default {
 .item-total {
   font-size: 16px;
   font-weight: 700;
-  color: #16A34A;
+  color: var(--color-accent);
 }
 
 .remove-btn {
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  background: #FEE2E2;
+  background: rgba(239, 68, 68, 0.1);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #EF4444;
+  color: var(--color-error);
   transition: background 0.2s ease;
 }
 
 .remove-btn:hover {
-  background: #FECACA;
+  background: rgba(239, 68, 68, 0.2);
 }
 </style>

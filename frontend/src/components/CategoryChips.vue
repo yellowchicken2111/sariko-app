@@ -66,11 +66,11 @@ export default {
 }
 
 .chip:hover .chip-icon-wrapper {
-  background: #DCFCE7;
+  background: var(--color-primary-transparent);
 }
 
 .chip.active .chip-label {
-  color: #16A34A;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -78,7 +78,7 @@ export default {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: #F3F4F6;
+  background: var(--bg-card-hover);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,7 +86,7 @@ export default {
 }
 
 .chip-icon-wrapper.active {
-  background: #22C55E;
+  background: var(--color-primary);
 }
 
 .chip-icon {
@@ -96,7 +96,7 @@ export default {
 .chip-label {
   font-size: 12px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-primary);
   white-space: nowrap;
 }
 </style>
