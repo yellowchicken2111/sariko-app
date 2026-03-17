@@ -47,10 +47,10 @@ export default {
 
 <style scoped>
 .order-card {
-  background: white;
+  background: var(--bg-surface);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card);
 }
 
 .order-header {
@@ -63,7 +63,7 @@ export default {
 .seller-name {
   font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .order-status {
@@ -74,41 +74,41 @@ export default {
 }
 
 .status-pending {
-  background: #FEF3C7;
-  color: #D97706;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
 }
 
 .status-preparing {
-  background: #DBEAFE;
-  color: #2563EB;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-info);
 }
 
 .status-ready {
-  background: #D1FAE5;
-  color: #059669;
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--color-success);
 }
 
 .status-delivered {
-  background: #F3F4F6;
-  color: #6B7280;
+  background: var(--bg-card-hover);
+  color: var(--text-secondary);
 }
 
 .status-cancelled {
-  background: #FEE2E2;
-  color: #DC2626;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
 }
 
 .order-items {
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #D1D5DB;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .order-item {
   display: flex;
   gap: 8px;
   font-size: 14px;
-  color: #6B7280;
+  color: var(--text-secondary);
   margin-bottom: 4px;
 }
 
@@ -118,7 +118,7 @@ export default {
 
 .item-quantity {
   font-weight: 500;
-  color: #111827;
+  color: var(--text-primary);
   min-width: 24px;
 }
 
@@ -135,11 +135,11 @@ export default {
 .order-total {
   font-size: 15px;
   font-weight: 700;
-  color: #16A34A;
+  color: var(--color-primary);
 }
 
 .order-time {
   font-size: 13px;
-  color: #6B7280;
+  color: var(--text-secondary);
 }
 </style>

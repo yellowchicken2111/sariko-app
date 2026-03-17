@@ -54,17 +54,17 @@ export default {
 
 <style scoped>
 .seller-card {
-  background: white;
+  background: var(--bg-surface);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .seller-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .seller-card:active {
@@ -92,7 +92,7 @@ export default {
 .seller-name {
   font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
@@ -101,7 +101,7 @@ export default {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #6B7280;
+  color: var(--text-secondary);
 }
 
 .rating {
@@ -109,11 +109,11 @@ export default {
   align-items: center;
   gap: 4px;
   font-weight: 500;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .divider {
-  color: #D1D5DB;
+  color: var(--border-color);
 }
 
 .preview-images {
@@ -137,16 +137,16 @@ export default {
 }
 
 .category-tag {
-  background: #F3F4F6;
+  background: var(--bg-card-hover);
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .delivery-time {
   font-size: 12px;
-  color: #6B7280;
+  color: var(--text-secondary);
 }
 </style>

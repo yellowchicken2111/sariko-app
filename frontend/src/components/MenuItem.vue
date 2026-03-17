@@ -66,7 +66,7 @@ export default {
   display: flex;
   gap: 14px;
   padding: 16px;
-  background: white;
+  background: var(--bg-surface);
   border-radius: 16px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -81,8 +81,8 @@ export default {
 }
 
 .item-image {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   border-radius: 12px;
   flex-shrink: 0;
@@ -98,13 +98,13 @@ export default {
 .item-name {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .item-description {
   font-size: 13px;
-  color: #6B7280;
+  color: var(--text-secondary);
   line-height: 1.4;
   margin-bottom: 8px;
   display: -webkit-box;
@@ -123,15 +123,15 @@ export default {
 .item-price {
   font-size: 16px;
   font-weight: 700;
-  color: #16A34A;
+  color: var(--color-primary);
 }
 
 .add-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #16A34A;
-  color: white;
+  background: var(--color-primary);
+  color: #ffffff;
   border: none;
   display: flex;
   align-items: center;
@@ -141,7 +141,7 @@ export default {
 }
 
 .add-btn:hover {
-  background: #15803D;
+  background: var(--color-primary-dark);
 }
 
 .add-btn:active {

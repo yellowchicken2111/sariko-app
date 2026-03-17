@@ -80,7 +80,7 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: var(--bg-surface);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -96,7 +96,7 @@ export default {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: #6B7280;
+  color: var(--text-secondary);
   padding: 8px 16px;
   border-radius: 12px;
   transition: all 0.2s ease;
@@ -106,7 +106,7 @@ export default {
 }
 
 .nav-item.active {
-  color: #16A34A;
+  color: var(--color-primary);
 }
 
 .nav-item.active .nav-icon {
@@ -129,8 +129,8 @@ export default {
   position: absolute;
   top: 2px;
   right: 12px;
-  background: #16A34A;
-  color: white;
+  background: var(--color-primary);
+  color: #ffffff;
   font-size: 10px;
   font-weight: 600;
   min-width: 18px;

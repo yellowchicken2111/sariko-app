@@ -1,25 +1,37 @@
 {
-  "name": "sariko",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "pinia": "^2.1.7",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
-    "vite": "^5.2.8",
-    "vite-plugin-pwa": "^0.19.8",
-    "workbox-window": "^7.0.0"
-  }
+    "name": "sariko",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "engines": {
+        "node": "22.17.0",
+        "npm": "10.9.2"
+    },
+    "scripts": {
+        "dev": "vite --mode development",
+        "build": "vite build --mode production",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@quasar/extras": "^1.17.0",
+        "@supabase/supabase-js": "^2.89.0",
+        "axios": "^1.9.0",
+        "highcharts": "^12.4.0",
+        "highcharts-vue": "^2.0.1",
+        "lucide-vue-next": "^0.516.0",
+        "pinia": "^2.1.7",
+        "pinia-plugin-persist": "^1.0.0",
+        "quasar": "^2.18.1",
+        "sass-embedded": "^1.98.0",
+        "vue": "^3.4.21",
+        "vue-axios": "^3.5.2",
+        "vue-router": "^4.3.0"
+    },
+    "devDependencies": {
+        "@quasar/vite-plugin": "^1.9.0",
+        "@vitejs/plugin-vue": "^5.0.4",
+        "vite": "^5.2.8",
+        "vite-plugin-pwa": "^0.19.8",
+        "workbox-window": "^7.0.0"
+    }
 }

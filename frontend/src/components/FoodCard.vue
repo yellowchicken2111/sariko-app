@@ -50,12 +50,12 @@ export default {
 
 <style scoped>
 .food-card {
-  background: white;
+  background: var(--bg-surface);
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #F3F4F6;
+  border: 1px solid var(--border-color);
 }
 
 .food-card:hover {
@@ -86,7 +86,7 @@ export default {
 .food-name {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -96,7 +96,7 @@ export default {
 .food-price {
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   display: block;
   margin-bottom: 8px;
 }
@@ -112,7 +112,7 @@ export default {
   align-items: center;
   gap: 6px;
   font-size: 11px;
-  color: #6B7280;
+  color: var(--text-secondary);
 }
 
 .meta-item svg {

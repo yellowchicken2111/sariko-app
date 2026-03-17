@@ -33,7 +33,6 @@ export default {
 <style scoped>
 .app-container {
   min-height: 100vh;
-  background-color: #F8F9FA;
 }
 
 .fade-enter-active,
