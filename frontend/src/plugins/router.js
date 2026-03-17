@@ -1,44 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import HomePage from '../pages/HomePage.vue'
-import SellerPage from '../pages/SellerPage.vue'
-import FoodDetailPage from '../pages/FoodDetailPage.vue'
-import CartPage from '../pages/CartPage.vue'
-import OrdersPage from '../pages/OrdersPage.vue'
-import SellerDashboard from '../pages/SellerDashboard.vue'
-
 const routes = [
     {
         path: '/',
         name: 'home',
-        component: HomePage
+        component: () => import('@/pages/HomePage.vue')
     },
     {
         path: '/seller/:id',
         name: 'seller',
-        component: SellerPage,
+        component: () => import('@/pages/SellerPage.vue'),
         props: true
     },
     {
         path: '/food/:sellerId/:foodId',
         name: 'food-detail',
-        component: FoodDetailPage,
+        component: () => import('@/pages/FoodDetailPage.vue'),
         props: true
     },
     {
         path: '/cart',
         name: 'cart',
-        component: CartPage
+        component: () => import('@/pages/CartPage.vue')
     },
     {
         path: '/orders',
         name: 'orders',
-        component: OrdersPage
+        component: () => import('@/pages/OrdersPage.vue')
     },
     {
         path: '/dashboard',
         name: 'dashboard',
-        component: SellerDashboard
+        component: () => import('@/pages/SellerDashboard.vue')
     }
 ]
 

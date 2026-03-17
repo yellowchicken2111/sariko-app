@@ -1,15 +1,11 @@
 <script>
 import CategoryChips from '../components/CategoryChips.vue'
 import SellerCard from '../components/SellerCard.vue'
-import LayoutBaseHomePage from '@/layouts/home-page/LayoutBaseHomePage.vue'
-import Header from '@/components/home-page/Header.vue'
 import { categories, sellers } from '../stores/data'
 
 export default {
     name: 'HomePage',
     components: {
-        LayoutBaseHomePage,
-        Header,
         CategoryChips,
         SellerCard
     },
@@ -70,17 +66,6 @@ export default {
 
 
 <template>
-
-    <LayoutBaseHomePage>
-
-        <template #Header>
-            <Header />
-        </template>
-
-    </LayoutBaseHomePage>
-
-
-
     <div class="home-page">
         <!-- Header / Location Selector -->
         <header class="header">
@@ -166,7 +151,6 @@ export default {
         <div v-else class="empty-state">
             <p>No sellers or food items match your search.</p>
         </div>
-
     </div>
 </template>
 
