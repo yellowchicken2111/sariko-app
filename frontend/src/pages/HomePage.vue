@@ -1,22 +1,19 @@
 <template>
     <div class="home-page">
-        <!-- Header -->
+        <!-- Header / Location Selector -->
         <header class="header">
             <div class="header-left">
-                <span class="location-label">Hello</span>
-                <h1 class="agency-name">Delisas Agency</h1>
+                <span class="location-label">Current Location</span>
+                <div class="location-selector">
+                    <h1 class="agency-name">Manila, Philippines</h1>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
             </div>
             <div class="header-right">
                 <button class="icon-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </button>
-                <button class="icon-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
@@ -24,55 +21,76 @@
             </div>
         </header>
 
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" v-model="searchQuery" placeholder="Search for food or sellers..." class="search-input" />
+            </div>
+        </div>
+
         <!-- Category Chips -->
         <section class="categories-section">
-            <CategoryChips :categories="categories" :selectedCategory="selectedCategory"
-                @select="handleCategorySelect" />
+            <CategoryChips :categories="categories" :selectedCategory="selectedCategory" @select="handleCategorySelect" />
         </section>
 
-        <!-- Promotional Banner -->
-        <section class="promo-section">
-            <div class="promo-banner">
-                <div class="promo-content">
-                    <span class="promo-badge">New Year Offer</span>
-                    <h2 class="promo-discount">30% OFF</h2>
-                    <p class="promo-period">16 - 31 Dec</p>
-                    <button class="promo-btn">Get Now</button>
+        <!-- Discovery Feed: Sellers -->
+        <div class="discovery-feed" v-if="filteredSellers.length > 0">
+            
+            <!-- Nearby Sellers -->
+            <section class="sellers-section">
+                <div class="section-header">
+                    <h2 class="section-title">Nearby Sellers</h2>
+                    <button class="see-all-btn">See All</button>
                 </div>
-                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop" alt="Pizza"
-                    class="promo-image" />
-            </div>
-        </section>
+                <div class="seller-list">
+                    <SellerCard v-for="seller in nearbySellers" :key="`nearby-${seller.id}`" :seller="seller" />
+                </div>
+            </section>
 
-        <!-- Best Sellers -->
-        <section class="sellers-section">
-            <div class="section-header">
-                <h2 class="section-title">Best Sellers</h2>
-                <button class="see-all-btn">See All</button>
-            </div>
+            <!-- Popular Sellers -->
+            <section class="sellers-section" v-if="popularSellers.length > 0">
+                <div class="section-header">
+                    <h2 class="section-title">Popular Sellers</h2>
+                    <button class="see-all-btn">See All</button>
+                </div>
+                <div class="seller-list">
+                    <SellerCard v-for="seller in popularSellers" :key="`popular-${seller.id}`" :seller="seller" />
+                </div>
+            </section>
 
-            <div class="food-grid">
-                <FoodCard v-for="food in bestSellerFoods" :key="`${food.sellerId}-${food.id}`" :food="food"
-                    :sellerId="food.sellerId" @click="goToFood(food.sellerId, food.id)" />
-            </div>
-
-            <div v-if="bestSellerFoods.length === 0" class="empty-state">
-                <p>No items found.</p>
-            </div>
-        </section>
+            <!-- New Sellers -->
+            <section class="sellers-section" v-if="newSellers.length > 0">
+                <div class="section-header">
+                    <h2 class="section-title">New Sellers</h2>
+                    <button class="see-all-btn">See All</button>
+                </div>
+                <div class="seller-list">
+                    <SellerCard v-for="seller in newSellers" :key="`new-${seller.id}`" :seller="seller" />
+                </div>
+            </section>
+            
+        </div>
+        
+        <div v-else class="empty-state">
+            <p>No sellers or food items match your search.</p>
+        </div>
     </div>
 </template>
 
 <script>
 import CategoryChips from '../components/CategoryChips.vue'
-import FoodCard from '../components/FoodCard.vue'
+import SellerCard from '../components/SellerCard.vue'
 import { categories, sellers } from '../stores/data'
 
 export default {
     name: 'HomePage',
     components: {
         CategoryChips,
-        FoodCard
+        SellerCard
     },
     data() {
         return {
@@ -88,48 +106,42 @@ export default {
             const category = this.categories.find(c => c.id === this.selectedCategory)
             return category ? category.name : null
         },
-        bestSellerFoods() {
-            let foods = []
+        filteredSellers() {
+            let filtered = this.sellers;
 
-            // Get all foods from all sellers
-            this.sellers.forEach(seller => {
-                seller.menu.forEach(food => {
-                    foods.push({
-                        ...food,
-                        sellerId: seller.id,
-                        sellerName: seller.name,
-                        deliveryTime: seller.deliveryTime
-                    })
-                })
-            })
-
-            // Filter by category if selected
+            // Filter by category
             if (this.selectedCategory) {
                 const categoryName = this.selectedCategoryName
-                const filteredSellers = this.sellers.filter(s => s.category === categoryName)
-                foods = []
-                filteredSellers.forEach(seller => {
-                    seller.menu.forEach(food => {
-                        foods.push({
-                            ...food,
-                            sellerId: seller.id,
-                            sellerName: seller.name,
-                            deliveryTime: seller.deliveryTime
-                        })
-                    })
-                })
+                filtered = filtered.filter(s => s.category === categoryName)
             }
 
-            // Return first 6 items
-            return foods.slice(0, 6)
+            // Filter by search query (match seller name, description, or contained menu items)
+            if (this.searchQuery) {
+                const query = this.searchQuery.toLowerCase();
+                filtered = filtered.filter(seller => 
+                    seller.name.toLowerCase().includes(query) || 
+                    seller.description.toLowerCase().includes(query) ||
+                    seller.menu.some(food => food.name.toLowerCase().includes(query))
+                );
+            }
+            return filtered;
+        },
+        nearbySellers() {
+            // Mock logic: Sort by parsed distance pseudo-computation
+            return [...this.filteredSellers].sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance)).slice(0, 3)
+        },
+        popularSellers() {
+            // Mock logic: Sort by rating (top down)
+            return [...this.filteredSellers].sort((a, b) => b.rating - a.rating).slice(0, 3)
+        },
+        newSellers() {
+            // Mock logic: Simple reversal to simulate "new additions"
+            return [...this.filteredSellers].reverse().slice(0, 3)
         }
     },
     methods: {
         handleCategorySelect(categoryId) {
             this.selectedCategory = categoryId
-        },
-        goToFood(sellerId, foodId) {
-            this.$router.push(`/food/${sellerId}/${foodId}`)
         }
     }
 }
@@ -148,7 +160,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .header-left {
@@ -157,119 +169,90 @@ export default {
 }
 
 .location-label {
-    font-size: 12px;
-    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
     margin-bottom: 2px;
+}
+
+.location-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
 }
 
 .agency-name {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
-}
-
-.header-right {
-    display: flex;
-    gap: 12px;
+    margin: 0;
 }
 
 .icon-btn {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: var(--bg-card-hover);
+    background: var(--bg-surface);
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--text-primary);
+    color: var(--color-accent);
     transition: background 0.2s ease;
+    box-shadow: var(--shadow-card);
 }
 
 .icon-btn:hover {
-    background: var(--border-color);
+    background: var(--bg-card-hover);
 }
 
-.categories-section {
+.search-container {
     margin-bottom: 24px;
 }
 
-.promo-section {
-    margin-bottom: 28px;
-}
-
-.promo-banner {
-    background: linear-gradient(135deg, #166534 0%, #15803D 50%, #22C55E 100%);
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.search-box {
     position: relative;
-    overflow: hidden;
-    min-height: 140px;
+    width: 100%;
 }
 
-.promo-content {
-    flex: 1;
-    z-index: 1;
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
 }
 
-.promo-badge {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-}
-
-.promo-discount {
-    font-size: 32px;
-    font-weight: 800;
-    color: white;
-    margin-bottom: 4px;
-    line-height: 1.1;
-}
-
-.promo-period {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 12px;
-}
-
-.promo-btn {
-    background: white;
-    color: var(--color-primary);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+.search-input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border-radius: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 15px;
+    box-shadow: var(--shadow-card);
+    outline: none;
     transition: all 0.2s ease;
 }
 
-.promo-btn:hover {
-    background: var(--color-primary-transparent);
+.search-input::placeholder {
+    color: var(--text-secondary);
 }
 
-.promo-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    position: absolute;
-    right: 16px;
-    bottom: -10px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
+.search-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(201, 166, 70, 0.2);
+}
+
+.categories-section {
+    margin-bottom: 28px;
 }
 
 .sellers-section {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .section-header {
@@ -283,36 +266,32 @@ export default {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+    margin: 0;
 }
 
 .see-all-btn {
     font-size: 14px;
     font-weight: 600;
-    color: var(--color-success);
+    color: var(--color-accent);
     background: none;
     border: none;
     cursor: pointer;
+    transition: opacity 0.2s ease;
 }
 
 .see-all-btn:hover {
-    color: var(--color-primary);
+    opacity: 0.8;
 }
 
-.food-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+.seller-list {
+    display: flex;
+    flex-direction: column;
 }
 
 .empty-state {
     text-align: center;
-    padding: 40px 20px;
+    padding: 60px 20px;
     color: var(--text-secondary);
-}
-
-@media (max-width: 360px) {
-    .food-grid {
-        grid-template-columns: 1fr;
-    }
+    font-size: 15px;
 }
 </style>

@@ -80,13 +80,13 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--bg-surface);
+  background: var(--bg-main); /* primary_background */
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 8px 0;
   padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
 
@@ -96,7 +96,7 @@ export default {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: var(--text-secondary);
+  color: var(--text-secondary); /* primary_text opacity 0.6 is close to text-secondary */
   padding: 8px 16px;
   border-radius: 12px;
   transition: all 0.2s ease;
@@ -106,7 +106,7 @@ export default {
 }
 
 .nav-item.active {
-  color: var(--color-primary);
+  color: var(--color-accent);
 }
 
 .nav-item.active .nav-icon {
@@ -129,8 +129,8 @@ export default {
   position: absolute;
   top: 2px;
   right: 12px;
-  background: var(--color-primary);
-  color: #ffffff;
+  background: var(--color-accent);
+  color: var(--bg-main);
   font-size: 10px;
   font-weight: 600;
   min-width: 18px;

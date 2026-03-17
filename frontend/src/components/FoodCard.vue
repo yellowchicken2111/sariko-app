@@ -60,7 +60,7 @@ export default {
 
 .food-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .food-card:active {
@@ -96,7 +96,7 @@ export default {
 .food-price {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-accent);
   display: block;
   margin-bottom: 8px;
 }

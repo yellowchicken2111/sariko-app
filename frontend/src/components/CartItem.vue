@@ -74,8 +74,15 @@ export default {
   gap: 12px;
   padding: 16px;
   background: var(--bg-surface);
-  border-radius: 16px;
+  border-radius: var(--border-radius-lg);
   align-items: flex-start;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.cart-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .item-image {
@@ -122,11 +129,12 @@ export default {
   justify-content: center;
   cursor: pointer;
   color: var(--text-primary);
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .qty-btn:hover {
-  background: var(--border-color);
+  background: var(--color-accent);
+  color: var(--bg-main);
 }
 
 .qty-btn:active {
@@ -150,7 +158,7 @@ export default {
 .item-total {
   font-size: 16px;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-accent);
 }
 
 .remove-btn {

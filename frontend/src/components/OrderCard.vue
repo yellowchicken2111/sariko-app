@@ -48,9 +48,15 @@ export default {
 <style scoped>
 .order-card {
   background: var(--bg-surface);
-  border-radius: 16px;
+  border-radius: var(--border-radius-lg);
   padding: 16px;
   box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .order-header {
@@ -135,7 +141,7 @@ export default {
 .order-total {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-accent);
 }
 
 .order-time {

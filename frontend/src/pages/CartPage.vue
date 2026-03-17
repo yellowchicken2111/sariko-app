@@ -250,7 +250,7 @@ export default {
     padding: 16px;
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
     background: var(--bg-surface);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .checkout-btn {
@@ -266,12 +266,15 @@ export default {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
     min-height: 56px;
+    box-shadow: var(--shadow-button);
 }
 
 .checkout-btn:hover {
     background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px -2px rgba(14, 165, 233, 0.4);
 }
 
 .checkout-btn:active {

@@ -27,6 +27,10 @@ export const sellers = [
         reviewCount: 2300,
         distance: '1.2 km',
         deliveryTime: '20 min',
+        deliveryFee: 49,
+        minOrder: 150,
+        isOpen: true,
+        closingTime: '10:00 PM',
         description: 'Authentic Italian pizzas made with love. Fresh ingredients and traditional recipes.',
         category: 'Fast Food',
         previewImages: [
@@ -37,9 +41,12 @@ export const sellers = [
         menu: [
             {
                 id: 101,
+                categoryName: 'Pizzas',
                 name: 'Melting Cheese Pizza',
                 description: 'Classic pizza with melted mozzarella cheese, fresh tomato sauce and basil',
                 price: 599,
+                unit: 'per box',
+                available: true,
                 image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=400&fit=crop',
                 calories: 44,
                 sizes: [
@@ -54,9 +61,12 @@ export const sellers = [
             },
             {
                 id: 102,
+                categoryName: 'Pizzas',
                 name: 'Pepperoni Pizza',
                 description: 'Loaded with spicy pepperoni and extra cheese',
                 price: 649,
+                unit: 'per box',
+                available: true,
                 image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop',
                 calories: 52,
                 sizes: [
@@ -71,9 +81,13 @@ export const sellers = [
             },
             {
                 id: 103,
+                categoryName: 'Specials',
                 name: 'Margherita Pizza',
                 description: 'Simple and classic with tomato, mozzarella, and fresh basil',
                 price: 499,
+                unit: 'per box',
+                preorder: 'Pre-order 1 day',
+                available: true,
                 image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop',
                 calories: 38,
                 sizes: [
@@ -97,6 +111,10 @@ export const sellers = [
         reviewCount: 1850,
         distance: '0.8 km',
         deliveryTime: '15 min',
+        deliveryFee: 30,
+        minOrder: 200,
+        isOpen: false,
+        closingTime: '8:00 PM',
         description: 'Healthy salads and fresh bowls. Perfect for a nutritious meal.',
         category: 'Fast Food',
         previewImages: [
@@ -107,9 +125,12 @@ export const sellers = [
         menu: [
             {
                 id: 201,
+                categoryName: 'Bowls',
                 name: 'Chicken Salad',
                 description: 'Fresh greens with grilled chicken, cherry tomatoes, and house dressing',
                 price: 456,
+                unit: 'per bowl',
+                available: true,
                 image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=400&fit=crop',
                 calories: 28,
                 sizes: [
@@ -124,9 +145,12 @@ export const sellers = [
             },
             {
                 id: 202,
+                categoryName: 'Bowls',
                 name: 'Greek Salad',
                 description: 'Classic Mediterranean salad with feta cheese and olives',
                 price: 399,
+                unit: 'per bowl',
+                available: false,
                 image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop',
                 calories: 22,
                 sizes: [
@@ -150,6 +174,10 @@ export const sellers = [
         reviewCount: 2100,
         distance: '2.1 km',
         deliveryTime: '30 min',
+        deliveryFee: 60,
+        minOrder: 100,
+        isOpen: true,
+        closingTime: '11:00 PM',
         description: 'Juicy burgers with premium beef patties and fresh toppings.',
         category: 'Fast Food',
         previewImages: [
@@ -160,9 +188,11 @@ export const sellers = [
         menu: [
             {
                 id: 301,
+                categoryName: 'Burgers',
                 name: 'Cheese Burger',
                 description: 'Classic beef burger with melted cheddar cheese and special sauce',
                 price: 499,
+                available: true,
                 image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop',
                 calories: 44,
                 sizes: [
@@ -176,9 +206,11 @@ export const sellers = [
             },
             {
                 id: 302,
+                categoryName: 'Burgers',
                 name: 'BBQ Burger',
                 description: 'Smoky BBQ sauce, caramelized onions, and crispy bacon',
                 price: 549,
+                available: true,
                 image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=400&fit=crop',
                 calories: 52,
                 sizes: [
@@ -201,6 +233,10 @@ export const sellers = [
         reviewCount: 980,
         distance: '1.5 km',
         deliveryTime: '25 min',
+        deliveryFee: 50,
+        minOrder: 300,
+        isOpen: true,
+        closingTime: '9:00 PM',
         description: 'Authentic Japanese sushi prepared by expert chefs.',
         category: 'Sushi',
         previewImages: [
@@ -211,9 +247,12 @@ export const sellers = [
         menu: [
             {
                 id: 401,
+                categoryName: 'Maki Rolls',
                 name: 'Salmon Roll',
                 description: 'Fresh salmon with avocado and cucumber',
                 price: 399,
+                unit: 'per piece',
+                available: true,
                 image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&h=400&fit=crop',
                 calories: 32,
                 sizes: [
@@ -236,6 +275,10 @@ export const sellers = [
         reviewCount: 1650,
         distance: '3.0 km',
         deliveryTime: '35 min',
+        deliveryFee: 100,
+        minOrder: 500,
+        isOpen: true,
+        closingTime: '12:00 AM',
         description: 'Premium grilled meats and steaks cooked to perfection.',
         category: 'Meat',
         previewImages: [
@@ -246,9 +289,13 @@ export const sellers = [
         menu: [
             {
                 id: 501,
+                categoryName: 'Mains',
                 name: 'Grilled Steak',
                 description: 'Premium beef steak grilled to your preference',
                 price: 899,
+                unit: 'per kg',
+                preorder: 'Pre-order 2 days',
+                available: true,
                 image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=400&fit=crop',
                 calories: 68,
                 sizes: [

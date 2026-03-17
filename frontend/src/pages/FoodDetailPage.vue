@@ -189,8 +189,18 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-card);
     z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+}
+
+.back-btn:active {
+    transform: scale(0.95);
 }
 
 .back-btn svg {
@@ -303,7 +313,7 @@ export default {
     padding: 16px;
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
     background: var(--bg-surface);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .add-to-cart-btn {
@@ -319,12 +329,15 @@ export default {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
     min-height: 56px;
+    box-shadow: var(--shadow-button);
 }
 
 .add-to-cart-btn:hover {
     background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px -2px rgba(14, 165, 233, 0.4);
 }
 
 .add-to-cart-btn:active {
