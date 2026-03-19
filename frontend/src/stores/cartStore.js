@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia'
 
-export const useCartStore = defineStore('cart', {
-    state: () => ({
-        items: [],
-        deliveryFee: 49
-    }),
+export const useCartStore = defineStore('cartStore', {
+    
+    state: () => {
+        return {
+            items: [],
+            deliveryFee: 49
+        }
+    },
 
     getters: {
         itemCount: (state) => {

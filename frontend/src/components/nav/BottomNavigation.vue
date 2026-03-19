@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { useCartStore } from '../stores/cartStore'
+import { useCartStore } from '../../stores/cartStore'
 
 export default {
   name: 'BottomNavigation',

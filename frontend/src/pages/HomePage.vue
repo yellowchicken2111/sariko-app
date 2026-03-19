@@ -1,17 +1,23 @@
 <script>
-import CategoryChips from '../components/CategoryChips.vue'
 import SellerCard from '../components/SellerCard.vue'
 import LayoutBaseHomePage from '@/layouts/home-page/LayoutBaseHomePage.vue'
 import Header from '@/components/home-page/Header.vue'
+import SearchBar from '@/components/home-page/SearchBar.vue'
+import CategoryChips from '@/components/home-page/CategoryChips.vue'
+import Categories from '@/components/home-page/Categories.vue'
+import DiscoveryFeed from '@/components/home-page/DiscoveryFeed.vue'
 import { categories, sellers } from '../stores/data'
 
 export default {
     name: 'HomePage',
     components: {
+        CategoryChips,
         LayoutBaseHomePage,
         Header,
-        CategoryChips,
-        SellerCard
+        Categories,
+        SellerCard,
+        SearchBar,
+        DiscoveryFeed
     },
     data() {
         return {
@@ -77,97 +83,20 @@ export default {
             <Header />
         </template>
 
+        <template #SearchBar>
+            <SearchBar />
+        </template>
+
+        <template #CategoryChips>
+            <Categories />
+        </template>
+
+        <template #DiscoveryFeed>
+            <DiscoveryFeed />
+        </template>
+
     </LayoutBaseHomePage>
 
-
-
-    <div class="home-page">
-        <!-- Header / Location Selector -->
-        <header class="header">
-            <div class="header-left">
-                <span class="location-label">Current Location</span>
-                <div class="location-selector">
-                    <h1 class="agency-name">Manila, Philippines</h1>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </div>
-            </div>
-            <div class="header-right">
-                <button class="icon-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </button>
-            </div>
-        </header>
-
-        <!-- Search Bar -->
-        <div class="search-container">
-            <div class="search-box">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="search-icon">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" v-model="searchQuery" placeholder="Search for food or sellers..."
-                    class="search-input" />
-            </div>
-        </div>
-
-        <!-- Category Chips -->
-        <section class="categories-section">
-            <CategoryChips :categories="categories" :selectedCategory="selectedCategory"
-                @select="handleCategorySelect" />
-        </section>
-
-        <!-- Discovery Feed: Sellers -->
-        <div class="discovery-feed" v-if="filteredSellers.length > 0">
-
-            <!-- Nearby Sellers -->
-            <section class="sellers-section">
-                <div class="section-header">
-                    <h2 class="section-title">Nearby Sellers</h2>
-                    <button class="see-all-btn">See All</button>
-                </div>
-                <div class="seller-list">
-                    <SellerCard v-for="seller in nearbySellers" :key="`nearby-${seller.id}`" :seller="seller" />
-                </div>
-            </section>
-
-            <!-- Popular Sellers -->
-            <section class="sellers-section" v-if="popularSellers.length > 0">
-                <div class="section-header">
-                    <h2 class="section-title">Popular Sellers</h2>
-                    <button class="see-all-btn">See All</button>
-                </div>
-                <div class="seller-list">
-                    <SellerCard v-for="seller in popularSellers" :key="`popular-${seller.id}`" :seller="seller" />
-                </div>
-            </section>
-
-            <!-- New Sellers -->
-            <section class="sellers-section" v-if="newSellers.length > 0">
-                <div class="section-header">
-                    <h2 class="section-title">New Sellers</h2>
-                    <button class="see-all-btn">See All</button>
-                </div>
-                <div class="seller-list">
-                    <SellerCard v-for="seller in newSellers" :key="`new-${seller.id}`" :seller="seller" />
-                </div>
-            </section>
-
-        </div>
-
-        <div v-else class="empty-state">
-            <p>No sellers or food items match your search.</p>
-        </div>
-
-    </div>
 </template>
 
 <style scoped>

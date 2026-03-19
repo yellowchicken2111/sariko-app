@@ -26,13 +26,6 @@
 </template>
 
 <style scoped>
-.header {
-    min-height: 100vh;
-    background: var(--bg-main);
-    padding: 16px;
-    padding-top: calc(16px + env(safe-area-inset-top, 0));
-    padding-bottom: 100px;
-}
 
 .header {
     display: flex;

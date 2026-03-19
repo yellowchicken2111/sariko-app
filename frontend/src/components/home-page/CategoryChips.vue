@@ -1,15 +1,3 @@
-<template>
-    <div class="category-chips hide-scrollbar">
-        <button v-for="category in categories" :key="category.id" class="chip"
-            :class="{ active: selectedCategory === category.id }" @click="selectCategory(category.id)">
-            <div class="chip-icon-wrapper" :class="{ active: selectedCategory === category.id }">
-                <span class="chip-icon">{{ category.icon }}</span>
-            </div>
-            <span class="chip-label">{{ category.name }}</span>
-        </button>
-    </div>
-</template>
-
 <script>
 export default {
     name: 'CategoryChips',
@@ -35,6 +23,18 @@ export default {
     }
 }
 </script>
+
+<template>
+    <div class="category-chips hide-scrollbar">
+        <button v-for="category in categories" :key="category.id" class="chip"
+            :class="{ active: selectedCategory === category.id }" @click="selectCategory(category.id)">
+            <div class="chip-icon-wrapper" :class="{ active: selectedCategory === category.id }">
+                <span class="chip-icon">{{ category.icon }}</span>
+            </div>
+            <span class="chip-label">{{ category.name }}</span>
+        </button>
+    </div>
+</template>
 
 <style scoped>
 .category-chips {

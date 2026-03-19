@@ -10,8 +10,8 @@
             <div class="search-bar-section">
                 <slot name="SearchBar" />
             </div>
-            <div class="categories-section">
-                <slot name="Categories" />
+            <div class="categories-chips-section">
+                <slot name="CategoryChips" />
             </div>
             <div class="discovery-feed-section">
                 <slot name="DiscoveryFeed" />
@@ -34,4 +34,17 @@
     padding-top: calc(16px + env(safe-area-inset-top, 0));
     padding-bottom: 100px;
 }
+
+.search-bar-section {
+    margin-bottom: 24px;
+}
+
+.catergories-chips-section {
+    margin-bottom: 32px;
+}
+
+.discovery-feed-section {
+    
+}
+
 </style>
