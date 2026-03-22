@@ -1,11 +1,25 @@
 import { defineStore } from 'pinia'
-import { sellers } from '@/stores/data.js'
+import { sellers, menus } from '@/stores/data.js'
 export const useSellerStore = defineStore('sellerStore', {
     
     state: () => {
         return {
             sellers: sellers,
-            seller: null
+            seller: null,
+
+            // categories
+            categoriesMenu: [
+                {id: 1, label: 'Lutong Bahay', icon: '🍲'},
+                {id: 2, label: 'Silogs', icon: '🍳'},
+                {id: 3, label: 'Noodles', icon: '🍜'},
+                {id: 4, label: 'Desserts', icon: '🍮'},
+                {id: 5, label: 'Frozen', icon: '❄️'},
+                {id: 6, label: 'Others', icon: ''},
+            ],
+            selectedCategoryMenu: 'Lutong Bahay',
+
+            // menu
+            menus: menus
         }
     },
 

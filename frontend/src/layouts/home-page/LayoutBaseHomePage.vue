@@ -20,9 +20,9 @@
     </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .background {
-    background-color: #f5f5f5;
+    max-width: 1200px;
     height: 100vh;
     width: 100vw;
 }

@@ -384,3 +384,98 @@ export const dashboardData = {
         }
     ]
 }
+
+export const menus = {
+    'Lutong Bahay': [
+        {
+            id: 1,
+            name: 'Dinuguan',
+            description: 'Classic Filipino pork blood stew with tender pork pieces, simmered in vinegar and spices. Savory and rich.',
+            price: '95.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Dinuguan_and_Puto.jpg/330px-Dinuguan_and_Puto.jpg'
+        },
+        {
+            id: 2,
+            name: 'Beef Caldereta',
+            description: 'Tender beef stewed in rich tomato sauce with olives, bell peppers, potatoes. Hearty and filling.',
+            price: '130.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Home_cooked_Kaldereta.jpg/330px-Home_cooked_Kaldereta.jpg"
+        },
+        {
+            id: 3,
+            name: 'Kare-Kare Pata',
+            description: 'Slow-braised pork knuckle in thick peanut sauce with banana blossom, eggplant. Served with bagoong.',
+            price: '185.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Mac_MG_5939.jpg/330px-Mac_MG_5939.jpg"
+        },
+        {
+            id: 4,
+            name: 'Lechon Belly',
+            description: 'Herb-stuffed roasted pork belly with crackling skin. The centerpiece of Filipino feasts.',
+            price: '250.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Cochinillos-Mercado_de_la_Cebada.jpg/330px-Cochinillos-Mercado_de_la_Cebada.jpg"
+        },
+        {
+            id: 5,
+            name: "Tokwa't Baboy",
+            description: 'Fried tofu and boiled pork in soy-vinegar sauce with onions. A beloved Filipino street food classic.',
+            price: '85.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Tokwa_at_Baboy.jpg/330px-Tokwa_at_Baboy.jpg"
+        },
+        {
+            id: 6,
+            name: 'Pork Bulalo',
+            description: 'Long-simmered pork leg soup with bone marrow, corn, and vegetables. Warm, rich, and comforting.',
+            price: '140.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/BULALO.jpg/330px-BULALO.jpg"
+        },
+        {
+            id: 7,
+            name: 'Laing',
+            description: 'Taro leaves slow-cooked in rich coconut cream with pork and dried fish. Bicol region specialty.',
+            price: '80.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Laing%2C_Bicolano_dish.jpg/330px-Laing%2C_Bicolano_dish.jpg"
+        },
+        {
+            id: 8,
+            name: 'Ginataang Langka',
+            description: 'Young jackfruit cooked in coconut milk with shrimp and chili. Vegetable-forward Bicolano dish.',
+            price: ' 80.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Ginataang_Langka.jpg/330px-Ginataang_Langka.jpg",
+        },
+        {
+            id: 9,
+            name: 'Chicken Inasal',
+            description: 'Bacolod-style grilled chicken marinated in calamansi, lemongrass, and annatto. Juicy and aromatic.',
+            price: '115.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Olympus_EP3_-_Mang_Inasal_Roasted_Chicken_%2814456257212%29.jpg/330px-Olympus_EP3_-_Mang_Inasal_Roasted_Chicken_%2814456257212%29.jpg"
+        },
+        {
+            id: 10,
+            name: 'Fresh Lumpia',
+            description: 'Fresh spring rolls with heart of palm, carrots, and shrimp wrapped in soft crepe. Served with peanut sauce.',
+            price: '65.000',
+            isAvaliable: true,
+            isPreOrder: false,
+            imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Loenpia_Semarang.JPG/330px-Loenpia_Semarang.JPG"
+        },
+    ]
+}

@@ -40,7 +40,7 @@
 }
 
 .location-label {
-    font-size: 13px;
+    font-size: clamp(14px, 1.2vw, 18px);
     font-weight: 500;
     color: var(--text-secondary);
     margin-bottom: 2px;

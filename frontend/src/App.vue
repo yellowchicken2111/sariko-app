@@ -34,6 +34,10 @@ export default {
 <style scoped>
 .app-container {
     min-height: 100vh;
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    margin: auto;
 }
 
 .fade-enter-active,
