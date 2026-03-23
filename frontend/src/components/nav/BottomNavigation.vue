@@ -108,7 +108,7 @@ export default {
 
 <style scoped>
 .bottom-nav {
-    max-width: 1200px;
+    max-width: 800px;
     position: fixed;
     bottom: 0;
     left: 0;

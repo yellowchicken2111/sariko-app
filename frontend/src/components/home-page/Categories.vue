@@ -1,48 +1,65 @@
 <script>
-import { mapState, mapWritableState } from 'pinia';
-import { useHomeStore } from '@/stores/homeStore';
-import { categories } from '@/stores/data'; 
-import CategoryChips from '@/components/home-page/CategoryChips.vue';
+import { mapActions, mapWritableState, mapState } from 'pinia';
+import { useSellerStore } from '@/stores/seller/seller-store';
+
 export default {
-
-    components: {
-        CategoryChips
-    },
-
     computed: {
-
-        ...mapState(useHomeStore, [
-            "categories"
+        ...mapState(useSellerStore, [
+            "categoriesMenu"
         ]),
 
-        ...mapWritableState(useHomeStore, [
-            "selectedCategory"
-        ]),
-
-        selectedCategoryName() {
-            if (!this.selectedCategory) return null
-            const category = this.categories.find(c => c.id === this.selectedCategory)
-            return category ? category.name : null
-        },
-    },
-
-    methods: {
-        handleCategorySelect(categoryId) {
-            this.selectedCategory = categoryId
-        }
+        ...mapWritableState(useSellerStore, [
+            "selectedCategoryMenu"
+        ])
     }
 }
 </script>
 
 <template>
 
-    <CategoryChips 
-        :categories="categories" 
-        :selectedCategory="selectedCategory"
-        @select="handleCategorySelect" 
-    />
+    <q-tabs
+    no-caps=""
+    dense 
+    class="categories"
+    content-class="categories-content"
+    active-class="category-active"
+    indicator-color="transparent"
+    outside-arrows
+    align="justify"
+    v-model="selectedCategoryMenu"
+    >
+        <q-tab class="category" v-for="category in categoriesMenu" :name="category.label">
+            <div>
+                {{category.icon}} {{ category.label }}
+            </div>
+        </q-tab>
+    </q-tabs>
 
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+
+.categories {
+    font-family: $sariko-font-family-secondary;
+}
+
+.category {
+    border: 1.5px solid rgb(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    margin-right: 10px;
+    background-color: rgb(255, 255, 255, 0.15);
+    padding: 0px 12px;
+}
+.category-active {
+    color: $primary;
+    font-weight: 700;
+    background-color: $accent;
+    border: 2px solid rgb(255, 255, 255, 0.3);
+    border-radius: 2rem;
+}
+
+:deep(.q-tab__content) {
+    font-size: 11px;
+    font-weight: 600;
+}
 </style>

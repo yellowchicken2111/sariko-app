@@ -1,15 +1,17 @@
 <script>
 import { mapState } from 'pinia';
 import { useSellerStore } from '@/stores/seller/seller-store';
-import SellersNearby from '@/components/seller/seller-list/SellersNearby.vue'
-import SellersPopular from '@/components/seller/seller-list/SellersPopular.vue';
-import SellersNew from '@/components/seller/seller-list/SellersNew.vue'
+// import SellersNearby from '@/components/seller/seller-list/SellersNearby.vue'
+// import SellersPopular from '@/components/seller/seller-list/SellersPopular.vue';
+// import SellersNew from '@/components/seller/seller-list/SellersNew.vue'
+import FoundingSellers from '@/components/seller/seller-list/FoundingSellers.vue';
 
 export default {
     components: {
-        SellersNearby,
-        SellersPopular,
-        SellersNew
+        // SellersNearby,
+        // SellersPopular,
+        // SellersNew,
+        FoundingSellers
     },
 
     computed: {
@@ -25,7 +27,7 @@ export default {
 
     <div class="discovery-feed" v-if="filteredSellers.length > 0">
 
-        <div class="section-nearby-sellers">
+        <!-- <div class="section-nearby-sellers">
             <SellersNearby />
         </div>
 
@@ -35,6 +37,14 @@ export default {
 
         <div class="section-new-sellers">
             <SellersNew />
+        </div> -->
+        
+        <div class="section-founding-sellers">
+            <FoundingSellers />
+        </div>
+
+        <div class="section-featured-dishes">
+            ABC
         </div>
 
     </div>

@@ -3,7 +3,6 @@ import SellerCard from '../components/SellerCard.vue'
 import LayoutBaseHomePage from '@/layouts/home-page/LayoutBaseHomePage.vue'
 import Header from '@/components/home-page/Header.vue'
 import SearchBar from '@/components/home-page/SearchBar.vue'
-import CategoryChips from '@/components/home-page/CategoryChips.vue'
 import Categories from '@/components/home-page/Categories.vue'
 import DiscoveryFeed from '@/components/home-page/DiscoveryFeed.vue'
 import { categories, sellers } from '../stores/data'
@@ -11,7 +10,6 @@ import { categories, sellers } from '../stores/data'
 export default {
     name: 'HomePage',
     components: {
-        CategoryChips,
         LayoutBaseHomePage,
         Header,
         Categories,
