@@ -1,22 +1,33 @@
 <script>
+
+export default {
+    methods: {
+        onClickedSignin() {
+            this.$router.push("/signin")
+        }
+    }
+}
+
 </script>
 
 <template>
     <header class="header">
 
         <div class="greeting-section">
-            <div class="greeting-text-1">
-                Magandang umaga, Ate! ☀️
+            <div class="greeting-text-line-1">
+                {{ $t("home_page.section_header.greeting_text_line_1") }}
             </div>
-            <div class="greeting-text-2">
-                Discover <span style="color: rgb(245, 166, 35)">Filipino</span>
+            <div class="greeting-text-line-2">
+                {{ $t("home_page.section_header.greeting_text_line_2") }} <span style="color: rgb(245, 166, 35)">{{ $t("home_page.section_header.greeting_location") }}</span>
                 <br>
-                sellers near you
+                {{ $t("home_page.section_header.greeting_text_line_3") }}
             </div>
         </div>
 
-        <div class="user-profile">
-            
+        <div v-on:click="onClickedSignin" class="user-profile">
+            <q-avatar size="64px">
+                <img src="https://i.pravatar.cc/150?img=25">
+            </q-avatar>
         </div>
         
     </header>
@@ -27,27 +38,21 @@
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     margin-bottom: 20px;
 }
 
-.greeting-text-1 {
+.greeting-text-line-1 {
     font-family: $sariko-font-family-secondary;
     font-size: 10px;
     color: rgb(122, 140, 174);
-    // margin-bottom: 5px;
 }
 
-.greeting-text-2 {
+.greeting-text-line-2 {
     font-family: $sariko-font-family-primary;
     font-size: 21px;
     font-weight: 700;
     line-height: 1.3;
 }
 
-.greeting-text-3 {
-    font-family: $sariko-font-family-primary;
-    font-size: 21px;
-    font-weight: 700;
-}
 </style>

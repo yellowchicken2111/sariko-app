@@ -15,6 +15,10 @@
                 <slot name="BannerHeader" />
             </div>
 
+            <div class="banner-featured">
+                <slot name="BannerFeatured" />
+            </div>
+
             <q-separator class="seperator"/>
 
             <div class="categories-section">
@@ -52,6 +56,10 @@
 .banner-header-section {
     margin-bottom: 20px;
     padding: 0px 10px;
+}
+
+.banner-featured {
+    margin-bottom: 10px;
 }
 
 .categories-section {

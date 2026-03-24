@@ -20,17 +20,18 @@ export default {
 
     <div class="background">
 
-        <div class="main">
-            <div class="row q-gutter-md" style="justify-content: center;">
-                <div v-for="menu in menus[selectedCategoryMenu]" class="col-6" style="width: 45%;">
-                    <FoodCard
-                    :name="menu.name"
-                    :price="menu.price"
-                    :imgSrc="menu.imgSrc"
-                    />
+        <div class="container">
+            <q-scroll-area style="height: 550px; white-space: nowrap;">
+                <div class="row q-gutter-md" style="justify-content: center;">
+                    <div v-for="menu in menus[selectedCategoryMenu]" class="col-6" style="width: 45%;">
+                        <FoodCard
+                        :name="menu.name"
+                        :price="menu.price"
+                        :imgSrc="menu.imgSrc"
+                        />
+                    </div>
                 </div>
-
-            </div>
+            </q-scroll-area>
         </div>
 
     </div>

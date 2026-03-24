@@ -15,9 +15,9 @@ export default {
     <LayoutSellerInfo>
 
         <template #SellerAvatar>
-                <q-avatar size="64px">
-                    <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-                </q-avatar>
+            <q-avatar size="64px">
+                <img src="/seller-avatar/seller_dummy_avatar_teresa.jpg">
+            </q-avatar>
         </template>
 
         <template #SellerName>
@@ -70,8 +70,10 @@ export default {
 
 .seller-address {
     font-family: $sariko-font-family-secondary;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 400;
+    color: rgb(122, 140, 174)
+
 }
 
 .tag-1 {

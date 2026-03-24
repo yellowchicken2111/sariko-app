@@ -19,7 +19,7 @@ export default {
                 4.9
             </div>
             <div style="font-size: 8px; font-weight: 600; color: rgb(122, 140, 174)">
-                Rating
+                {{ $t('seller_page.section_banner.banner_card_rating_subtitle') }}
             </div>
         </div>
 
@@ -28,16 +28,16 @@ export default {
                 127
             </div>
             <div style="font-size: 8px; font-weight: 600; color: rgb(122, 140, 174)">
-                Rating
+                {{ $t('seller_page.section_banner.banner_card_orders_subtitle') }}
             </div>
         </div>
 
         <div class="col card-info">
             <div style="color: #48d77d; font-weight: 800;">
-                Open
+                {{ $t('seller_page.section_banner.banner_card_status_text_open') }}
             </div>
             <div style="font-size: 8px; font-weight: 600; color: rgb(122, 140, 174)">
-                Rating
+                {{ $t('seller_page.section_banner.banner_card_status_subtitle') }}
             </div>
         </div>
     

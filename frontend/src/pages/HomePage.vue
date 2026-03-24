@@ -5,6 +5,7 @@ import Header from '@/components/home-page/Header.vue'
 import SearchBar from '@/components/home-page/SearchBar.vue'
 import Categories from '@/components/home-page/Categories.vue'
 import DiscoveryFeed from '@/components/home-page/DiscoveryFeed.vue'
+import Banner from '@/components/home-page/Banner.vue'
 import { categories, sellers } from '../stores/data'
 
 export default {
@@ -15,7 +16,8 @@ export default {
         Categories,
         SellerCard,
         SearchBar,
-        DiscoveryFeed
+        DiscoveryFeed,
+        Banner
     },
     data() {
         return {
@@ -91,6 +93,10 @@ export default {
 
         <template #DiscoveryFeed>
             <DiscoveryFeed />
+        </template>
+
+        <template #Banner>
+            <Banner />
         </template>
 
     </LayoutBaseHomePage>

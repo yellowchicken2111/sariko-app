@@ -74,13 +74,13 @@ export default {
     <nav class="bottom-nav">
         <router-link to="/" class="nav-item" :class="{ active: isActive('/') }">
             <House size="18px" />
-            <div class="nav-label">Home</div>
+            <div class="nav-label">{{$t('bottom_nav.button_label_home')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
         <router-link to="/seller/1" class="nav-item" :class="{ active: isActive('/seller') }">
             <Search size="18px" />
-            <div class="nav-label">Hanapin</div>
+            <div class="nav-label">{{$t('bottom_nav.button_label_search')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
@@ -88,19 +88,19 @@ export default {
             <div class="icon-cart">
                 <ShoppingCart size="18px" style="color: #2d271f"/>
             </div>
-            <div class="nav-label">Cart</div>
+            <div class="nav-label">{{$t('bottom_nav.button_label_cart')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
         <router-link to="/orders" class="nav-item" :class="{ active: isActive('/orders') }">
             <Clipboard size="18px" />
-            <div class="nav-label">Orders</div>
+            <div class="nav-label">{{$t('bottom_nav.button_label_orders')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
         <router-link to="/dashboard" class="nav-item" :class="{ active: isActive('/dashboard') }">
             <PanelsRightBottom size="18px" /> 
-            <div class="nav-label">Dashboard</div>
+            <div class="nav-label">{{$t('bottom_nav.button_label_dashboard')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
     </nav>
@@ -171,7 +171,7 @@ export default {
 
 .nav-label {
     margin-top: 5px;
-    font-size: 7px;
+    font-size: 10px;
     font-weight: 500;
 }
 

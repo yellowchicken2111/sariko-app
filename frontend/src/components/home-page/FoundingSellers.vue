@@ -1,9 +1,15 @@
 <script>
+import { useI18n } from 'vue-i18n';
 import { mapState } from 'pinia';
 import { useSellerStore } from '@/stores/seller/seller-store';
 import SellerCard from '@/components/seller/seller-list/SellerCard.vue';
 
 export default {
+
+    setup() {
+        const {t, locale} = useI18n()
+    },
+
 
     components: {
         SellerCard
@@ -24,13 +30,13 @@ export default {
         <div class="group-title">
 
             <div class="title">
-                ⭐ Founding Sellers
+                ⭐ {{ $t("home_page.section_founding_sellers.title") }}
             </div>
             <div class="button-see-all">
                 <q-btn
                 no-caps
                 style="color: #bb8221; font-size: 12px; font-weight: 700;"
-                label="See all" 
+                :label="$t('home_page.section_founding_sellers.button_label_see_all')"
                 />
             </div>
 
@@ -39,9 +45,9 @@ export default {
             <q-scroll-area style="height: 100px; white-space: nowrap;">
                 <div class="row no-wrap">
                     
-                    <div v-for="(seller, index) in sellers" class="seller-card">
+                    <div v-for="(seller, index) in sellers" :key="seller.id" class="seller-card">
                         <SellerCard 
-                        :index="index+1"
+                        :seller-index="index+1"
                         :seller-name="seller.name"
                         :seller-avatar-image-u-r-l="seller.avatarImg"
                         :seller-featured-category="seller.name"
@@ -65,6 +71,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 5px;
 }
 
 .title {

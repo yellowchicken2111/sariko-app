@@ -3,7 +3,7 @@
 
 <template>
     <div class="background">
-        <div class="main">
+        <div class="container">
             <div class="header-section">
                 <slot name="Header" />
             </div>
@@ -16,6 +16,9 @@
             <div class="discovery-feed-section">
                 <slot name="DiscoveryFeed" />
             </div>
+            <div class="banner">
+                <slot name="Banner" />
+            </div>
         </div>
     </div>
 </template>
@@ -27,25 +30,24 @@
     width: 100vw;
 }
 
-.main {
+.container {
     min-height: 100vh;
     background: var(--bg-main);
-    padding: 16px;
+    padding: 20px;
     padding-top: calc(16px + env(safe-area-inset-top, 0));
     padding-bottom: 100px;
 }
-
 .search-bar-section {
     width: 100%;
     margin-bottom: 24px;
 }
 
-.catergories-chips-section {
+.categories-chips-section {
     margin-bottom: 32px;
 }
 
 .discovery-feed-section {
-    
+    margin-bottom: 32px;
 }
 
 </style>

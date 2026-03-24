@@ -3,8 +3,22 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
     {
         path: '/',
+        redirect: '/home'
+    },
+    {
+        path: '/home',
         name: 'home',
         component: () => import('@/pages/HomePage.vue')
+    },
+    {
+        path: '/signin',
+        name: 'signin',
+        component: () => import('@/pages/auth/AuthPage.vue')
+    },
+    {
+        path: '/signup',
+        name: 'signup',
+        component: () => import('@/pages/auth/AuthPage.vue')
     },
     {
         path: '/seller/:id',

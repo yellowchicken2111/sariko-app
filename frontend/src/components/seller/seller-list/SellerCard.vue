@@ -1,7 +1,7 @@
 <script>
 export default {
     props: {
-        index: {
+        sellerIndex: {
             type: Number
         },
         sellerName: {
@@ -19,9 +19,9 @@ export default {
     },
 
     methods: {
-        onClicked(index) {
-            if (index == 1) {
-                this.$router.push(`/seller/${index}`)
+        onClicked() {
+            if (this.sellerIndex == 1) {
+                this.$router.push(`/seller/${this.sellerIndex}`)
             }
         }
     }
@@ -30,11 +30,11 @@ export default {
 
 <template>
 
-    <div v-on:click="onClicked" :class="index == 1 ? 'container-1st' : 'container'">
+    <div v-on:click="onClicked" :class="sellerIndex == 1 ? 'container-1st' : 'container'">
 
         <div class="seller-avatar">
             <q-avatar size="48px">
-                <img :src="index == 1 ? '/seller-avatar/seller_dummy_avatar_teresa.jpg' : sellerAvatarImageURL">
+                <img :src="sellerIndex == 1 ? '/seller-avatar/seller_dummy_avatar_teresa.jpg' : sellerAvatarImageURL">
             </q-avatar>
         </div>
 
@@ -51,7 +51,7 @@ export default {
                 <q-badge 
                 rounded
                 class="badge"
-                :label="'# ' + index"/>
+                :label="'# ' + sellerIndex"/>
             </div>
         </div>
 
