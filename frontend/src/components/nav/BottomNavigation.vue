@@ -72,7 +72,7 @@ export default {
 
 <template>
     <nav class="bottom-nav">
-        <router-link to="/" class="nav-item" :class="{ active: isActive('/') }">
+        <router-link to="/home" class="nav-item" :class="{ active: isActive('/home') }">
             <House size="18px" />
             <div class="nav-label">{{$t('bottom_nav.button_label_home')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
@@ -84,7 +84,7 @@ export default {
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
-        <router-link to="/cart" class="nav-item">
+        <router-link to="" class="nav-item">
             <div class="icon-cart">
                 <ShoppingCart size="18px" style="color: #2d271f"/>
             </div>
@@ -92,13 +92,13 @@ export default {
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
-        <router-link to="/orders" class="nav-item" :class="{ active: isActive('/orders') }">
+        <router-link to="" class="nav-item" :class="{ active: isActive('/orders') }">
             <Clipboard size="18px" />
             <div class="nav-label">{{$t('bottom_nav.button_label_orders')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
-        <router-link to="/dashboard" class="nav-item" :class="{ active: isActive('/dashboard') }">
+        <router-link to="" class="nav-item" :class="{ active: isActive('/dashboard') }">
             <PanelsRightBottom size="18px" /> 
             <div class="nav-label">{{$t('bottom_nav.button_label_dashboard')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
