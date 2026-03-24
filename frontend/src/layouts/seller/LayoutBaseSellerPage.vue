@@ -31,9 +31,7 @@
                 <slot name="Menu" />
             </div>
 
-            <div class="">
-
-            </div>
+            <div class="safe-area" style="height: 85px;" />
 
         </div>
 

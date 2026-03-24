@@ -11,6 +11,28 @@
         "auth_button_group": {
             "label_signin": "Sign in",
             "label_signout": "Sign up"
+        },
+        "auth_input_fields": {
+            "common": {
+                "input_label_email": "EMAIL",
+                "input_label_password": "PASSWORD",
+                "input_label_full_name": "FULLNAME",
+                "input_label_role_selection": "I WANT TO"
+            },
+            "signin": {
+                "greeting_text_signin": "Welcome back, Ate!",
+                "greeting_subtext_signin": "Log in with your registerd email",
+                "button_label_text_signin": "Sign In"
+            },
+            "signup": {    
+                "greeting_text_signup": "Join Sariko! 🇵🇭",
+                "greeting_subtext_signup": "Buy or sell Filipino goods in HCMC",
+                "title_text_role_buyer": "Buy",
+                "title_subtext_role_buyer": "Find Filipino goods",
+                "title_text_role_seller": "Sell",
+                "title_subtext_role_seller": "Become a seller",
+                "button_label_text_signup": "Create Account"
+            }
         }
     },
     "home_page": {

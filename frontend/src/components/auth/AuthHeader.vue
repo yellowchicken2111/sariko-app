@@ -1,13 +1,21 @@
 <script>
+
+export default {
+    methods: {
+        onClickedToHome() {
+            this.$router.push('/home')
+        }
+    }
+}
 </script>
 
 <template>
 
-    <div class="container">
+    <div v-on:click="onClickedToHome" class="container">
         <div class="logo">
             <q-img
             ratio="1"
-            src="/logo/sariko/sariko_logo_dark_bg.jpg" 
+            src="/logo/sariko/sariko_logo_dark_bg-removebg.png" 
             />
         </div>
 
@@ -27,13 +35,11 @@
 }
 
 .logo {
-    width: 60%;
-    height: fit-content;
-    z-index: 0;
+    width: 40%;
 }
 
 .logo-subtitle {
-    margin-top: -35px;
+    margin-top: 20px;
     font-family: $sariko-font-family-secondary;
     font-weight: 700;
     font-size: 12px;
