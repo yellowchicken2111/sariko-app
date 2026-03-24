@@ -1,9 +1,153 @@
 <script>
+import { mapState, mapWritableState } from 'pinia';
+import { useAuthStore } from '@/stores/auth/authStore';
+import { Mail, LockKeyhole } from 'lucide-vue-next';
+import ButtonSignin from '@/components/auth/form-signin/ButtonSignin.vue'
+
+export default {
+
+    components: {
+        Mail,
+        LockKeyhole,
+        ButtonSignin
+    },
+
+    data() {
+        return {
+
+        }
+    },
+
+    computed: {
+        ...mapState(useAuthStore, [
+            "inputSignInEmail",
+            "inputSignInPassword"
+        ])
+    }
+}
 </script>
 
 <template>
 
+    <div class="container">
+
+        <div class="greeting">
+            <div class="text-greeting">
+                {{ $t('auth_page.auth_input_fields.signin.greeting_text_signin') }} 👋
+            </div>
+            <div class="subtext-greeting">
+                {{ $t('auth_page.auth_input_fields.signin.greeting_subtext_signin') }}
+            </div>
+        </div>
+
+        <div class="input-label">
+            {{ $t('auth_page.auth_input_fields.common.input_label_email') }}
+        </div>
+
+        <div class="input-container">
+            <Mail class="icon"/>
+            <q-input
+            type="text"
+            class="input"
+            dense
+            placeholder="johnydoe@gmail.com"
+            v-model="inputSignInEmail"
+            />
+        </div>
+
+        <div class="input-label">
+            {{ $t('auth_page.auth_input_fields.common.input_label_password') }}
+        </div>
+
+        <div class="input-container">
+            <LockKeyhole class="icon"/>
+            <q-input
+            type="password"
+            class="input"
+            dense
+            placeholder="Please enter your password"
+            v-model="inputSignInPassword"
+            />
+        </div>
+
+        <div class="button-signin">
+            <ButtonSignin />
+        </div>
+    </div>
+
 </template>
 
 <style lang="scss" scoped>
+
+.container {
+    font-family: $sariko-font-family-secondary;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 80%;
+    margin: auto;
+}
+
+.greeting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.text-greeting {
+    font-family: $sariko-font-family-primary;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.subtext-greeting {
+    font-family: $sariko-font-family-secondary;
+    font-weight: 700;
+    font-size: 10px;
+    color: rgb(122, 140, 174);
+}
+
+.input-label {
+    font-weight: 700;
+    font-size: 10px;
+    margin-bottom: 5px;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 5px 10px;
+    background-color: var(--bg-main);
+    // background-color: #121b2e;
+    border-radius: .75rem;
+    margin-bottom: 10px;
+}
+
+.icon {
+    margin-right: 10px;
+}
+
+.input {
+    width: 100%;
+}
+
+.button-signin {
+    margin-top: 5px;
+    width: 100%;
+}
+
+
+:deep(.q-field__native::placeholder) {
+    font-family: $sariko-font-family-secondary; 
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+:deep(.q-field__native) {
+    color: #ffffff; 
+}
 </style>

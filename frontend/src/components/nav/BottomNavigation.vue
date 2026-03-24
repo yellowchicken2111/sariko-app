@@ -1,6 +1,7 @@
 <script>
 import { useCartStore } from '@/stores/cartStore'
 import { House, Search, ShoppingCart, Clipboard, PanelsRightBottom } from 'lucide-vue-next';
+import { routerKey } from 'vue-router';
 
 export default {
     name: 'BottomNavigation',
@@ -49,6 +50,10 @@ export default {
     computed: {
         cartCount() {
             return this.cartStore.itemCount
+        },
+
+        isShow() {
+            return this.$route.path != '/signin' && this.$route.path != '/signup'
         }
     },
     methods: {
@@ -71,7 +76,7 @@ export default {
 </script>
 
 <template>
-    <nav class="bottom-nav">
+    <nav v-show="isShow" class="bottom-nav">
         <router-link to="/home" class="nav-item" :class="{ active: isActive('/home') }">
             <House size="18px" />
             <div class="nav-label">{{$t('bottom_nav.button_label_home')}}</div>

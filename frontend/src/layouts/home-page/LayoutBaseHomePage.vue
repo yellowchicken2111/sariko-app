@@ -13,6 +13,9 @@
             <div class="categories-chips-section">
                 <slot name="CategoryChips" />
             </div>
+
+            <q-separator class="seperator"/>
+
             <div class="discovery-feed-section">
                 <slot name="DiscoveryFeed" />
             </div>
@@ -43,7 +46,12 @@
 }
 
 .categories-chips-section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+}
+
+.seperator {
+    background-color: #373c45;
+    margin-bottom: 10px;
 }
 
 .discovery-feed-section {
