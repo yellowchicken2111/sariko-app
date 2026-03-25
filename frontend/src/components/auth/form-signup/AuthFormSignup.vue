@@ -19,13 +19,10 @@ export default {
     },
 
     computed: {
-        ...mapState(useAuthStore, [
+        ...mapWritableState(useAuthStore, [
             "inputSignUpFullName",
             "inputSignUpEmail",
-            "inputSignUpPassword"
-        ]),
-
-        ...mapWritableState(useAuthStore, [
+            "inputSignUpPassword",
             "isSelectedSignUpRoleSeller"
         ])
     }

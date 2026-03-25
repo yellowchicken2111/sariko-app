@@ -1,15 +1,23 @@
 <script>
 import { LogIn } from 'lucide-vue-next';
+import { mapActions } from 'pinia';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     components: {
         LogIn
+    },
+
+    methods: {
+        ...mapActions(useAuthStore, [
+            "onClickedSignin"
+        ])
     }
 }
 </script>
 
 <template>
-    <q-btn flat no-caps class="button-signin">
+    <q-btn flat no-caps class="button-signin" @click="onClickedSignin">
         <LogIn class="icon"/> {{ $t('auth_page.auth_input_fields.signin.button_label_text_signin') }}
     </q-btn>
 </template>

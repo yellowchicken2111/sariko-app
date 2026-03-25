@@ -1,15 +1,22 @@
 <script>
 import { UserRoundPlus } from 'lucide-vue-next';
+import { mapActions } from 'pinia';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     components: {
         UserRoundPlus
+    },
+    methods: {
+        ...mapActions(useAuthStore, [
+            "onClickedSignup"
+        ])
     }
 }
 </script>
 
 <template>
-    <q-btn flat no-caps class="button-signup">
+    <q-btn flat no-caps class="button-signup" @click="onClickedSignup">
         <UserRoundPlus class="icon" /> {{ $t('auth_page.auth_input_fields.signup.button_label_text_signup') }}
     </q-btn>
 </template>

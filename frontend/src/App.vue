@@ -1,11 +1,17 @@
 <script>
 import BottomNavigation from '@/components/nav/BottomNavigation.vue'
+import { setUpAxiosPolicy } from "@/lib/axiosPolicy.js";
 
 export default {
     name: 'App',
     components: {
         BottomNavigation
     },
+
+    setup() {        
+        setUpAxiosPolicy();
+    },
+
     data() {
         return {}
     },

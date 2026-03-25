@@ -1,5 +1,5 @@
 <script>
-import { mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
 import { Mail, LockKeyhole } from 'lucide-vue-next';
 import ButtonSignin from '@/components/auth/form-signin/ButtonSignin.vue'
@@ -19,9 +19,16 @@ export default {
     },
 
     computed: {
-        ...mapState(useAuthStore, [
+        ...mapWritableState(useAuthStore, [
             "inputSignInEmail",
-            "inputSignInPassword"
+            "inputSignInPassword",
+            "errors"
+        ])
+    },
+
+    methods: {
+        ...mapActions(useAuthStore, [
+            "validateField"
         ])
     }
 }
@@ -45,14 +52,21 @@ export default {
         </div>
 
         <div class="input-container">
-            <Mail class="icon"/>
             <q-input
+            dense
+            outlined
             type="text"
             class="input"
-            dense
+            bg-color="bgInputField"
             placeholder="johnydoe@gmail.com"
+            :error="!!errors.inputSignInEmail"
+            :error-message="errors.inputSignInEmail"
             v-model="inputSignInEmail"
-            />
+            >
+                <template v-slot:prepend>
+                    <Mail color="white" class="icon"/>
+                </template>
+            </q-input>
         </div>
 
         <div class="input-label">
@@ -60,14 +74,18 @@ export default {
         </div>
 
         <div class="input-container">
-            <LockKeyhole class="icon"/>
             <q-input
+            dense
+            outlined
             type="password"
             class="input"
-            dense
             placeholder="Please enter your password"
             v-model="inputSignInPassword"
-            />
+            >
+                <template v-slot:prepend>
+                    <LockKeyhole color="white" class="icon"/>
+                </template>
+            </q-input>
         </div>
 
         <div class="button-signin">
@@ -121,7 +139,7 @@ export default {
     align-items: center;
     width: 100%;
     padding: 5px 10px;
-    background-color: var(--bg-main);
+    // background-color: var(--bg-main);
     // background-color: #121b2e;
     border-radius: .75rem;
     margin-bottom: 10px;
@@ -133,13 +151,13 @@ export default {
 
 .input {
     width: 100%;
+    // background: var(--bg-main);
 }
 
 .button-signin {
     margin-top: 5px;
     width: 100%;
 }
-
 
 :deep(.q-field__native::placeholder) {
     font-family: $sariko-font-family-secondary; 

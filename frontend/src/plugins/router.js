@@ -49,7 +49,7 @@ const routes = [
     }
 ]
 
-const router = createRouter({
+export const router = createRouter({
     history: createWebHistory(),
     routes,
     scrollBehavior(to, from, savedPosition) {
@@ -65,3 +65,4 @@ export default function useRouterPlugin(app) {
     console.log("Loaded Vue Router plugin")
     app.use(router);
 }
+

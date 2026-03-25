@@ -1,72 +1,72 @@
 {
-    "bottom_nav": {
-        "button_label_home": "Home",
-        "button_label_search": "Hanapin",
-        "button_label_cart": "Cart",
-        "button_label_orders": "Orders",
-        "button_label_dashboard": "Dashboard"
+  "bottom_nav": {
+    "button_label_home": "Home",
+    "button_label_search": "Hanapin",
+    "button_label_cart": "Cart",
+    "button_label_orders": "Orders",
+    "button_label_dashboard": "Dashboard"
+  },
+  "auth_page": {
+    "subtitle_text_header": "FILIPINO MARKETPLACE · HCMC NODE",
+    "auth_button_group": {
+      "label_signin": "Sign in",
+      "label_signout": "Sign up"
     },
-    "auth_page": {
-        "subtitle_text_header": "FILIPINO MARKETPLACE · HCMC NODE",
-        "auth_button_group": {
-            "label_signin": "Sign in",
-            "label_signout": "Sign up"
-        },
-        "auth_input_fields": {
-            "common": {
-                "input_label_email": "EMAIL",
-                "input_label_password": "PASSWORD",
-                "input_label_full_name": "FULLNAME",
-                "input_label_role_selection": "I WANT TO"
-            },
-            "signin": {
-                "greeting_text_signin": "Welcome back, Ate!",
-                "greeting_subtext_signin": "Log in with your registerd email",
-                "button_label_text_signin": "Sign In"
-            },
-            "signup": {    
-                "greeting_text_signup": "Join Sariko! 🇵🇭",
-                "greeting_subtext_signup": "Buy or sell Filipino goods in HCMC",
-                "title_text_role_buyer": "Buy",
-                "title_subtext_role_buyer": "Find Filipino goods",
-                "title_text_role_seller": "Sell",
-                "title_subtext_role_seller": "Become a seller",
-                "button_label_text_signup": "Create Account"
-            }
-        }
-    },
-    "home_page": {
-        "section_header": {
-            "greeting_text_line_1": "Magandang umaga, Ate! ☀️",
-            "greeting_text_line_2": "Discover",
-            "greeting_location": "Filipino",
-            "greeting_text_line_3": "sellers near you"
-        },
-        "section_founding_sellers": {
-            "title": "Founding Sellers",
-            "button_label_see_all": "See all"
-        },
-        "section_featured_dishes": {
-            "title": "Featured Dishes",
-            "button_label_view_store": "View store"
-        },
-        "section_banner": {
-            "banner_text_line_1": "BECOME A FOUNDING SELLER",
-            "banner_text_line_2": "3 months FREE Negosyo Tier",
-            "banner_text_line_3": "50 founding slots · Unlimited listings · 15% commission"
-        }
-    },
-    "seller_page": {
-        "section_banner": {
-            "banner_card_rating_subtitle": "Rating",
-            "banner_card_orders_subtitle": "Orders",
-            "banner_card_status_subtitle": "Status",
-            "banner_card_status_text_open": "Open",
-            "banner_card_status_text_close": "Closed"
-        },
-        "section_banner_featured": {
-            "banner_text_line_1": "3 months FREE Negosyo Tier",
-            "banner_text_line_2": "∞ listings · 15% commission · Founding Seller"
-        }
+    "auth_input_fields": {
+      "common": {
+        "input_label_email": "EMAIL",
+        "input_label_password": "PASSWORD",
+        "input_label_full_name": "FULLNAME",
+        "input_label_role_selection": "I WANT TO"
+      },
+      "signin": {
+        "greeting_text_signin": "Welcome back, Ate!",
+        "greeting_subtext_signin": "Log in with your registerd email",
+        "button_label_text_signin": "Sign In"
+      },
+      "signup": {
+        "greeting_text_signup": "Join Sariko! 🇵🇭",
+        "greeting_subtext_signup": "Buy or sell Filipino goods in HCMC",
+        "title_text_role_buyer": "Buy",
+        "title_subtext_role_buyer": "Find Filipino goods",
+        "title_text_role_seller": "Sell",
+        "title_subtext_role_seller": "Become a seller",
+        "button_label_text_signup": "Create Account"
+      }
     }
+  },
+  "home_page": {
+    "section_header": {
+      "greeting_text_line_1": "Magandang umaga, Ate! ☀️",
+      "greeting_text_line_2": "Discover",
+      "greeting_location": "Filipino",
+      "greeting_text_line_3": "sellers near you"
+    },
+    "section_founding_sellers": {
+      "title": "Founding Sellers",
+      "button_label_see_all": "See all"
+    },
+    "section_featured_dishes": {
+      "title": "Featured Dishes",
+      "button_label_view_store": "View store"
+    },
+    "section_banner": {
+      "banner_text_line_1": "BECOME A FOUNDING SELLER",
+      "banner_text_line_2": "3 months FREE Negosyo Tier",
+      "banner_text_line_3": "50 founding slots · Unlimited listings · 15% commission"
+    }
+  },
+  "seller_page": {
+    "section_banner": {
+      "banner_card_rating_subtitle": "Rating",
+      "banner_card_orders_subtitle": "Orders",
+      "banner_card_status_subtitle": "Status",
+      "banner_card_status_text_open": "Open",
+      "banner_card_status_text_close": "Closed"
+    },
+    "section_banner_featured": {
+      "banner_text_line_1": "3 months FREE Negosyo Tier",
+      "banner_text_line_2": "∞ listings · 15% commission · Founding Seller"
+    }
+  }
 }
