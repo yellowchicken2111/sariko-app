@@ -1,11 +1,19 @@
 <script>
 import { LogIn } from 'lucide-vue-next';
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     components: {
         LogIn
+    },
+
+    computed: {
+        ...mapState(useAuthStore, [
+            "errors",
+            "inputSignInEmail",
+            "inputSignInPassword"
+        ])
     },
 
     methods: {
@@ -17,7 +25,11 @@ export default {
 </script>
 
 <template>
-    <q-btn flat no-caps class="button-signin" @click="onClickedSignin">
+    <q-btn flat no-caps
+    class="button-signin"
+    :disable="Object.values(errors).some((e) => !!e) || !inputSignInEmail || !inputSignInPassword"
+    @click="onClickedSignin"
+    >
         <LogIn class="icon"/> {{ $t('auth_page.auth_input_fields.signin.button_label_text_signin') }}
     </q-btn>
 </template>

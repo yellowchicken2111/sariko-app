@@ -1,5 +1,5 @@
 <script>
-import { mapState, mapWritableState } from 'pinia';
+import { mapState, mapWritableState, mapActions } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
 import { UserRound, Mail, LockKeyhole } from 'lucide-vue-next';
 import ButtonSignup from '@/components/auth/form-signup/ButtonSignup.vue';
@@ -23,7 +23,14 @@ export default {
             "inputSignUpFullName",
             "inputSignUpEmail",
             "inputSignUpPassword",
-            "isSelectedSignUpRoleSeller"
+            "isSelectedSignUpRoleSeller",
+            "errors"
+        ])
+    },
+
+    methods: {
+        ...mapActions(useAuthStore, [
+            "validateField"
         ])
     }
 }
@@ -47,14 +54,25 @@ export default {
         </div>
 
         <div class="input-container">
-            <UserRound class="icon"/>
             <q-input
+            dense
+            outlined
             type="text"
             class="input"
-            dense
-            placeholder="John Doe"
+            bg-color="bgInputField"
+            placeholder="Please enter your fullname"
+            :error="!!errors.inputSignUpFullName"
+            :error-message="errors.inputSignUpFullName"
+            @blur="validateField('inputSignUpFullName')"
             v-model="inputSignUpFullName"
-            />
+            >
+                <template v-slot:prepend>
+                     <UserRound color="white" class="icon"/>
+                </template>
+                <template v-slot:hint>
+                    <span class="hint-text">e.g. John Doe</span>
+                </template>
+            </q-input>
         </div>
 
         <div class="input-label">
@@ -62,14 +80,26 @@ export default {
         </div>
 
         <div class="input-container">
-            <Mail class="icon"/>
             <q-input
-            type="password"
-            class="input"
             dense
-            placeholder="johnydoe@gmail.com"
+            outlined
+            type="text"
+            class="input"
+            bg-color="bgInputField"
+            placeholder="Please enter your email address"
+            :error="!!errors.inputSignUpEmail"
+            :error-message="errors.inputSignUpEmail"
+            @blur="validateField('inputSignUpEmail')"
             v-model="inputSignUpEmail"
-            />
+            >
+                <template v-slot:prepend>
+                     <Mail color="white" class="icon"/>
+                </template>
+
+                <template v-slot:hint>
+                    <span class="hint-text">e.g. johndoe@gmail.com</span>
+                </template>
+            </q-input>
         </div>
 
         <div class="input-label">
@@ -77,14 +107,28 @@ export default {
         </div>
 
         <div class="input-container">
-            <LockKeyhole class="icon"/>
             <q-input
+            dense
+            outlined
             type="password"
             class="input"
-            dense
+            bg-color="bgInputField"
             placeholder="Please enter your password"
+            :error="!!errors.inputSignUpPassword"
+            :error-message="errors.inputSignUpPassword"
+            @blur="validateField('inputSignUpPassword')"
+            
             v-model="inputSignUpPassword"
-            />
+            >
+                <template v-slot:prepend>
+                     <LockKeyhole color="white" class="icon"/>
+                </template>
+
+                <template v-slot:hint>
+                    <span class="hint-text">Min. 6 characters</span>
+                </template>
+                
+            </q-input>
         </div>
 
         <div class="input-label">
@@ -92,7 +136,8 @@ export default {
         </div>
 
         <div class="input-role-selection">
-            <div :class="{'container-role': true, 'container-role-active': !isSelectedSignUpRoleSeller}">
+            <div @click="isSelectedSignUpRoleSeller=false" 
+            :class="{'container-role': true, 'container-role-active': !isSelectedSignUpRoleSeller}">
                 <div class="icon-role">
                     🛍️
                 </div>
@@ -106,7 +151,8 @@ export default {
                     </span>
                 </div>
             </div>
-            <div :class="{'container-role': true, 'container-role-active': isSelectedSignUpRoleSeller}">
+            <div @click="isSelectedSignUpRoleSeller=true" 
+            :class="{'container-role': true, 'container-role-active': isSelectedSignUpRoleSeller}">
                 <div class="icon-role">
                     🏪
                 </div>
@@ -172,9 +218,6 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 5px 10px;
-    background-color: var(--bg-main);
-    // background-color: #121b2e;
     border-radius: .75rem;
     margin-bottom: 10px;
 }
@@ -253,5 +296,13 @@ export default {
 
 :deep(.q-field__native) {
     color: #ffffff; 
+}
+
+:deep(.q-field__control) {
+    border-radius: 0.75rem;
+}
+
+.hint-text {
+    color: rgb(255, 255, 255, 0.5)
 }
 </style>

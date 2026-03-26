@@ -20,7 +20,7 @@ export const apiAuth = {
             password,
             options: {
                 data: {
-                    full_name: fullname,
+                    fullname: fullname,
                     is_seller: isSeller
                 },
             },

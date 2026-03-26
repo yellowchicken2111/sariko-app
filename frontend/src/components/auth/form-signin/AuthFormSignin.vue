@@ -58,14 +58,20 @@ export default {
             type="text"
             class="input"
             bg-color="bgInputField"
-            placeholder="johnydoe@gmail.com"
+            placeholder="Please enter your email address"
             :error="!!errors.inputSignInEmail"
             :error-message="errors.inputSignInEmail"
+            @blur="validateField('inputSignInEmail')"
             v-model="inputSignInEmail"
             >
                 <template v-slot:prepend>
                     <Mail color="white" class="icon"/>
                 </template>
+
+                <template v-slot:hint>
+                    <span class="hint-text">e.g. johndoe@gmail.com</span>
+                </template>
+
             </q-input>
         </div>
 
@@ -79,11 +85,19 @@ export default {
             outlined
             type="password"
             class="input"
+            bg-color="bgInputField"
             placeholder="Please enter your password"
+            :error="!!errors.inputSignInPassword"
+            :error-message="errors.inputSignInPassword"
+            @blur="validateField('inputSignInPassword')"
             v-model="inputSignInPassword"
             >
                 <template v-slot:prepend>
                     <LockKeyhole color="white" class="icon"/>
+                </template>
+
+                <template v-slot:hint>
+                    <span class="hint-text">Min. 6 characters</span>
                 </template>
             </q-input>
         </div>
@@ -138,11 +152,10 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 5px 10px;
     // background-color: var(--bg-main);
     // background-color: #121b2e;
     border-radius: .75rem;
-    margin-bottom: 10px;
+    margin-bottom: 10px;;
 }
 
 .icon {
@@ -151,7 +164,7 @@ export default {
 
 .input {
     width: 100%;
-    // background: var(--bg-main);
+    border-radius: 0.75rem;
 }
 
 .button-signin {
@@ -166,6 +179,14 @@ export default {
 }
 
 :deep(.q-field__native) {
-    color: #ffffff; 
+    color: #ffffff;
+}
+
+:deep(.q-field__control) {
+    border-radius: 0.75rem;
+}
+
+.hint-text {
+    color: rgb(255, 255, 255, 0.5)
 }
 </style>

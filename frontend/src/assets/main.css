@@ -49,3 +49,10 @@ html, body {
   font-size: 16px;
   line-height: 1.6;
 }
+
+.text-bgInputField {
+    color: #040A14 !important;
+}
+.bg-bgInputField {
+    background-color: #040A14 !important;
+}

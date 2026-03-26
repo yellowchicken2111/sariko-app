@@ -8,17 +8,17 @@ export const useAuthStore = defineStore("authStore", {
     state() {
         return {
 
-            // button group to choose action
-            isSignin: true,
-
             // signin
             inputSignInEmail: null,
             inputSignInPassword: null,
 
             // signup
-            inputSignUpFullName: null,
-            inputSignUpEmail: null,
-            inputSignUpPassword: null,
+            // inputSignUpFullName: null,
+            // inputSignUpEmail: null,
+            // inputSignUpPassword: null,
+            inputSignUpFullName: 'jack',
+            inputSignUpEmail: 'jack@sariko.store',
+            inputSignUpPassword: '123456',
             isSelectedSignUpRoleSeller: false,
 
             // errors state
@@ -236,9 +236,8 @@ export const useAuthStore = defineStore("authStore", {
         async onClickedSignup() {
             const isValid = this.validateAllFields("signup");
             if (!isValid) return;
-
             try {
-                const res = await apiAuth.apiSignup(
+                const res = await apiAuth.authSignup(
                     this.inputSignUpEmail,
                     this.inputSignUpPassword,
                     this.inputSignUpFullName,
@@ -256,7 +255,7 @@ export const useAuthStore = defineStore("authStore", {
                 }
             } catch (error) {
                 console.error(
-                    `Store use-auth-store Error - onClickedSignup - ${error.code - error}`
+                    `Store use-auth-store Error - onClickedSignup - ${error}`
                 );
                 let errorMessage = null;
                 if (error?.code == "user_already_exists") {

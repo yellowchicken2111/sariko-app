@@ -1,6 +1,4 @@
 <script>
-import { mapState } from 'pinia';
-import { useAuthStore } from '@/stores/auth/authStore';
 import AuthFormSignin from '@/components/auth/form-signin/AuthFormSignin.vue';
 import AuthFormSignup from '@/components/auth/form-signup/AuthFormSignup.vue';
 import ButtonSignup from '@/components/auth/form-signup/ButtonSignup.vue';
@@ -13,16 +11,15 @@ export default {
     },
 
     computed: {
-        ...mapState(useAuthStore, [
-            "isSignin"
-        ])
+        isActive() {
+            return this.$route.path === '/signin'
+        }
     },
 }
 </script>
 
 <template>
-
-    <div v-if="isSignin">
+    <div v-if="isActive">
         <div class="input">
             <AuthFormSignin />
         </div>

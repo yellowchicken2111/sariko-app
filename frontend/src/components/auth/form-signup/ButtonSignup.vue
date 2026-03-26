@@ -1,12 +1,22 @@
 <script>
-import { UserRoundPlus } from 'lucide-vue-next';
-import { mapActions } from 'pinia';
+import { Smartphone, UserRoundPlus } from 'lucide-vue-next';
+import { mapState, mapActions } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     components: {
         UserRoundPlus
     },
+
+    computed: {
+        ...mapState(useAuthStore, [
+            "errors",
+            "inputSignUpFullName",
+            "inputSignUpEmail",
+            "inputSignUpPassword"
+        ])
+    },
+
     methods: {
         ...mapActions(useAuthStore, [
             "onClickedSignup"
@@ -16,7 +26,10 @@ export default {
 </script>
 
 <template>
-    <q-btn flat no-caps class="button-signup" @click="onClickedSignup">
+    <q-btn flat no-caps 
+    :disable="Object.values(errors).some((e) => !!e) || !inputSignUpFullName || !inputSignUpEmail || !inputSignUpPassword"
+    class="button-signup" 
+    @click="onClickedSignup">
         <UserRoundPlus class="icon" /> {{ $t('auth_page.auth_input_fields.signup.button_label_text_signup') }}
     </q-btn>
 </template>

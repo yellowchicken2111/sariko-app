@@ -14,7 +14,8 @@ export default {
 
     methods: {
         onClicked(route) {
-            this.isSignin = route == 'signin'
+            const authStore = useAuthStore()
+            authStore.$reset()
             this.$router.push(`/${route}`)
         }
     },
