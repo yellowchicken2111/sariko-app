@@ -21,7 +21,7 @@ const routes = [
         component: () => import('@/pages/auth/AuthPage.vue')
     },
     {
-        path: '/seller/:id',
+        path: '/seller/:slugName',
         name: 'seller',
         component: () => import('@/pages/SellerPage.vue'),
         props: true

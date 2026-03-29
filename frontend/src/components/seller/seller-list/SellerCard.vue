@@ -8,6 +8,10 @@ export default {
             type: String,
             required: true
         },
+        sellerSlugName: {
+            type: String,
+            required: true
+        },
         sellerAvatarImageURL: {
             type: String,
             required: true
@@ -20,9 +24,7 @@ export default {
 
     methods: {
         onClicked() {
-            if (this.sellerIndex == 1) {
-                this.$router.push(`/seller/${this.sellerIndex}`)
-            }
+            this.$router.push(`/seller/${this.sellerSlugName}`)
         }
     }
 }

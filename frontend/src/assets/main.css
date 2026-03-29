@@ -56,3 +56,17 @@ html, body {
 .bg-bgInputField {
     background-color: #040A14 !important;
 }
+
+.quasar-notify-positive {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color:  var(--color-accent) !important;
+    color: #040A14 !important;
+    font-weight: 600;
+}
+
+.quasar-notify-negative {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: red;
+    color: white;
+    font-weight: 600;
+}

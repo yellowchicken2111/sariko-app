@@ -1,14 +1,17 @@
 import { defineStore } from 'pinia'
 import { sellers, menus } from '@/stores/data.js'
+import apiSellers from '@/apis/sellers/apiSellers'
+
 export const useSellerStore = defineStore('sellerStore', {
     
     state: () => {
         return {
             sellers: sellers,
             seller: null,
+            foundingSellers: [],
 
             // categories
-            categoriesMenu: [
+            menuCategories: [
                 {id: 1, label: 'Lutong Bahay', icon: '🍲'},
                 {id: 2, label: 'Silogs', icon: '🍳'},
                 {id: 3, label: 'Noodles', icon: '🍜'},
@@ -19,7 +22,8 @@ export const useSellerStore = defineStore('sellerStore', {
             selectedCategoryMenu: 'Lutong Bahay',
 
             // menu
-            menus: menus
+            menus: menus,
+            menu: []
         }
     },
 
@@ -44,5 +48,33 @@ export const useSellerStore = defineStore('sellerStore', {
             }
             return filtered;
         },
+    },
+
+    actions: {
+        
+        async getFoundingSellers() {
+            const res = await apiSellers.getFoundingSellers()
+            if (res?.data) {
+                this.foundingSellers = res.data.founding_sellers
+            }
+        },
+
+        async getSellerbySlugName(slugName) {
+            const res = await apiSellers.getSellerbySlugName(slugName)
+            if (res?.data) {
+                this.seller = res.data.seller
+                console.log(this.seller)
+            }
+        },
+
+        async getSellerFullMenu(slugName) {
+            const res = await apiSellers.getSellerFullMenu(slugName)
+            if (res?.data) {
+                this.menus = res.data.menus
+                this.menuCategories = this.menus.map(c => ({ id: c.id, name: c.name }))
+                this.selectedCategoryMenu = this.menus.find(menu => {return menu.food_items.length > 0}).id
+                this.menu = this.menus.find(menu => {return menu.food_items.length > 0}).food_items
+            }
+        }
     }
 })

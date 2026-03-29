@@ -13,7 +13,8 @@ export default {
             "errors",
             "inputSignUpFullName",
             "inputSignUpEmail",
-            "inputSignUpPassword"
+            "inputSignUpPassword",
+            "isLoading"
         ])
     },
 
@@ -40,7 +41,9 @@ export default {
     margin-right: 10px;
 }
 
+
 .button-signup {
+    width: 100%;
     background-color: $accent;
     color: var(--bg-main);
     font-weight: 700;
@@ -48,4 +51,14 @@ export default {
     padding: 10px 0px;
 }
 
+.spinner {
+    display: flex;
+    justify-content: center;
+    background-color: $accent;
+    color: var(--bg-main);
+    font-weight: 700;
+    border-radius: 1.5rem;
+    padding: 10px 0px;
+    font-size: 20px;
+}
 </style>

@@ -9,7 +9,7 @@ export default {
     },
     computed: {
         ...mapState(useSellerStore, [
-            "menus",
+            "menu",
             "selectedCategoryMenu"
         ])
     }
@@ -23,11 +23,11 @@ export default {
         <div class="container">
             <q-scroll-area style="height: 550px; white-space: nowrap;">
                 <div class="row q-gutter-md" style="justify-content: center;">
-                    <div v-for="menu in menus[selectedCategoryMenu]" class="col-6" style="width: 45%;">
+                    <div v-for="food in menu" class="col-6" style="width: 45%;">
                         <FoodCard
-                        :name="menu.name"
-                        :price="menu.price"
-                        :imgSrc="menu.imgSrc"
+                        :name="food.name"
+                        :price="food.price_text"
+                        :imgSrc="food.image_url"
                         />
                     </div>
                 </div>

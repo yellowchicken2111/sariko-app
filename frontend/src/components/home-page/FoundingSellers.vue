@@ -1,6 +1,6 @@
 <script>
 import { useI18n } from 'vue-i18n';
-import { mapState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import { useSellerStore } from '@/stores/seller/seller-store';
 import SellerCard from '@/components/seller/seller-list/SellerCard.vue';
 
@@ -17,8 +17,19 @@ export default {
 
     computed: {
         ...mapState(useSellerStore, [
-            "sellers"
+            "sellers",
+            "foundingSellers"
         ])
+    },
+
+    methods: {
+        ...mapActions(useSellerStore, [
+            "getFoundingSellers"
+        ])
+    },
+
+    created() {
+        this.getFoundingSellers()
     }
 }
 
@@ -45,12 +56,13 @@ export default {
             <q-scroll-area style="height: 100px; white-space: nowrap;">
                 <div class="row no-wrap">
                     
-                    <div v-for="(seller, index) in sellers" :key="seller.id" class="seller-card">
+                    <div v-for="(seller, index) in foundingSellers" :key="seller.id" class="seller-card">
                         <SellerCard 
                         :seller-index="index+1"
-                        :seller-name="seller.name"
-                        :seller-avatar-image-u-r-l="seller.avatarImg"
-                        :seller-featured-category="seller.name"
+                        :seller-name="seller.store_name",
+                        :seller-slug-name="seller.slug"
+                        :seller-avatar-image-u-r-l="seller.avatar_url"
+                        :seller-featured-category="'Exclusive Dishes'"
                         />
                     </div>
 

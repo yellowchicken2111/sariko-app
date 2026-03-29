@@ -24,7 +24,8 @@ export default {
             "inputSignUpEmail",
             "inputSignUpPassword",
             "isSelectedSignUpRoleSeller",
-            "errors"
+            "errors",
+            "isLoading"
         ])
     },
 
@@ -168,8 +169,11 @@ export default {
             </div>
         </div>
 
-        <div class="button-signup">
+        <div v-if="!isLoading" class="button-signup">
             <ButtonSignup />
+        </div>
+        <div v-else class="spinner">
+            <q-spinner color="primary" size="3em" />
         </div>
     </div>
 
@@ -286,6 +290,16 @@ export default {
 
 .button-signup {
     width: 100%;
+}
+
+.spinner {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    background-color: $accent;
+    border-radius: 1.5rem;
+    font-size: 10px;
+    padding: 5px 0px;
 }
 
 :deep(.q-field__native::placeholder) {

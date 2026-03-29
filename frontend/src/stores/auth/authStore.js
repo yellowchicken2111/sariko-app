@@ -7,19 +7,15 @@ import apiAuth from "@/apis/auth/apiAuth";
 export const useAuthStore = defineStore("authStore", {
     state() {
         return {
-
             // signin
-            inputSignInEmail: null,
-            inputSignInPassword: null,
+            inputSignInEmail: 'jack@sariko.store',
+            inputSignInPassword: '123456',
 
             // signup
-            // inputSignUpFullName: null,
-            // inputSignUpEmail: null,
-            // inputSignUpPassword: null,
-            inputSignUpFullName: 'jack',
-            inputSignUpEmail: 'jack@sariko.store',
-            inputSignUpPassword: '123456',
-            isSelectedSignUpRoleSeller: false,
+            inputSignUpFullName: 'Philippine BBQ Drinks',
+            inputSignUpEmail: 'seller.philippinebbqdrinks@sariko.store',
+            inputSignUpPassword: 'Dz9117&l51',
+            isSelectedSignUpRoleSeller: true,
 
             // errors state
             errors: {
@@ -30,11 +26,12 @@ export const useAuthStore = defineStore("authStore", {
                 inputSignUpPassword: null
             },
 
-            // user object
+            // user & session
             session: null,
             user: null,
+            isLoading: false,
 
-            //
+            // auth subscription
             _authSub: null,
         }
     },
@@ -46,50 +43,36 @@ export const useAuthStore = defineStore("authStore", {
             if (session?.user) {
                 const meta = session.user.user_metadata || {};
                 this.user = {
-                    avatar: `${meta.first_name?.[0]?.toUpperCase() ?? ""}${
-                        meta.last_name?.[0]?.toUpperCase() ?? ""
-                    }`,
-                    firstName: meta.first_name,
-                    lastName: meta.last_name,
-                    fullName:
-                        meta.full_name ||
-                        `${meta.first_name || ""} ${
-                            meta.last_name || ""
-                        }`.trim(),
+                    fullName: meta.fullname || '',
                     email: session.user.email,
+                    isSeller: meta.is_seller || false,
                 };
             } else {
+                this.session = null;
                 this.user = null;
             }
         },
 
         async bootstrap() {
-            if (this._authSub) return
+            if (this._authSub) return;
             try {
-                const res = await apiAuth.authGetSession()
+                const res = await apiAuth.authGetSession();
+                if (res?.session) {
+                    this._setFromSession(res.session);
+                }
 
-                if (!res.session) return null;
-
-                const session = res.session
-                this._setFromSession(session);
-
-                const {
-                    data: { subscription },
-                } = supabase.auth.onAuthStateChange((_event, session) => {
+                const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
                     this._setFromSession(session);
                 });
-
-                this._authSub = subscription;   
-
+                this._authSub = subscription;
             } catch (e) {
-                console.error(`Store use-auth-store Error - bootstrap - ${error}`);
+                console.error(`authStore - bootstrap - ${e}`);
             }
         },
 
         async getValidAccessToken() {
             const res = await apiAuth.authGetSession();
-
-            if (!(res.session)) return null;
+            if (!res?.session) return null;
 
             const now = Math.floor(Date.now() / 1000);
             const exp = res.session.expires_at ?? 0;
@@ -103,66 +86,31 @@ export const useAuthStore = defineStore("authStore", {
             return res.session.access_token;
         },
 
-        async init() {
-            try {
-                const res = await apiAuth.authGetSession();
-                if (res && res.session) {
-                    const userMeta = res.session.user.user_metadata;
-                    this.session = res.session;
-                    this.user = {
-                        avatar: `${userMeta.first_name[0]?.toUpperCase() ?? ""}${userMeta.last_name[0]?.toUpperCase() ?? ""}`,
-                        firstName: userMeta.first_name,
-                        lastName: userMeta.last_name,
-                        fullName: userMeta.full_name || `${userMeta.first_name} ${userMeta.last_name}`,
-                        email: res.session.user.email,
-                    };
-                }
-            } catch (error) {
-                console.error(`Store use-auth-store Error - init - ${error}`);
-            }
-        },
-
+        // validation
         validateField(field) {
             switch (field) {
                 case "inputSignInEmail":
-                    const inputSignInEmail = this.inputSignInEmail?.trim();
-                    this.errors.inputSignInEmail = !inputSignInEmail
+                case "inputSignUpEmail": {
+                    const value = this[field]?.trim();
+                    this.errors[field] = !value
                         ? "Email is required."
-                        : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputSignInEmail)
+                        : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
                         ? null
                         : "Invalid email format.";
                     break;
-
+                }
                 case "inputSignInPassword":
-                    const inputSignInPassword = this.inputSignInPassword;
-                    this.errors.inputSignInPassword = !inputSignInPassword
+                case "inputSignUpPassword": {
+                    const value = this[field];
+                    this.errors[field] = !value
                         ? "Password is required."
-                        : inputSignInPassword.length < 6
+                        : value.length < 6
                         ? "Password must be at least 6 characters."
                         : null;
                     break;
-
-                
-                case "inputSignUpEmail":
-                    const inputSignUpEmail = this.inputSignUpEmail.trim();
-                    this.errors.inputSignUpEmail = !inputSignUpEmail
-                        ? "Email is required."
-                        : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputSignUpEmail)
-                        ? null
-                        : "Invalid email format.";
-                    break;
-
-                case "inputSignUpPassword":
-                    const inputSignUpPassword = this.inputSignUpPassword;
-                    this.errors.inputSignUpPassword = !inputSignUpPassword
-                        ? "Password is required."
-                        : inputSignUpPassword.length < 6
-                        ? "Password must be at least 6 characters."
-                        : null;
-                    break;
-
+                }
                 case "inputSignUpFullName":
-                    this.errors.inputSignUpFullName = !this.inputSignUpFullName
+                    this.errors.inputSignUpFullName = !this.inputSignUpFullName?.trim()
                         ? "Full name is required."
                         : null;
                     break;
@@ -178,11 +126,10 @@ export const useAuthStore = defineStore("authStore", {
                 this.validateField("inputSignUpPassword");
                 this.validateField("inputSignUpFullName");
             }
-            
-            const hasError = Object.values(this.errors).some((e) => !!e);
-            return !hasError;
+            return !Object.values(this.errors).some((e) => !!e);
         },
 
+        // auth actions
         async onClickedSignin() {
             const isValid = this.validateAllFields("signin");
             if (!isValid) return;
@@ -193,41 +140,31 @@ export const useAuthStore = defineStore("authStore", {
                     this.inputSignInEmail,
                     this.inputSignInPassword
                 );
-                if (res?.session && res?.user) {
-                    const { session, user } = res;
-                    const meta = user.user_metadata || {};
-                    this.session = res.session;
-                    this.user = {
-                        avatar: '',
-                        fullName: meta.full_name,
-                        email: user.email,
-                    };
-                    router.push('/home');
-                } else {
-                    this.user = null;
-                    this.session = null;
-                    throw new Error("No user data");
-                }
+                if (!res?.session || !res?.user) throw new Error("No user data");
 
-            } catch (error) {
-                console.error(
-                    `Store use-auth-store Error - onClickedSignin - ${error}`
-                );
-                let errorMessage = null;
-                if (error?.code == "validation_failed") {    
-                    errorMessage = "An account with this email already exists. Please sign in or use a different email.";
-                } else if (error.code == "invalid_credentials") {
-                    errorMessage = "Incorrect email or password. Please try again.";
-                }
+                this._setFromSession(res.session);
 
                 Notify.create({
-                    type: "negative",
-                    message:
-                        errorMessage || "An unexpected error has occured. Please try again.",
+                    classes: 'quasar-notify-positive',
+                    message: "👋 Welcome to Sariko",
                     progress: true,
-                    position: "top-right",
+                    position: "bottom",
                 });
+                router.push('/home');
 
+            } catch (error) {
+                console.error(`authStore - onClickedSignin - ${error}`);
+                let errorMessage = null;
+                if (error?.code === "invalid_credentials") {
+                    errorMessage = "Incorrect email or password. Please try again.";
+                }
+                Notify.create({
+                    classes: 'quasar-notify-negative',
+                    message: errorMessage || "An unexpected error has occurred. Please try again.",
+                    progress: true,
+                    icon: 'fa-regular fa-circle-xmark',
+                    position: "bottom",
+                });
             } finally {
                 this.isLoading = false;
             }
@@ -236,6 +173,8 @@ export const useAuthStore = defineStore("authStore", {
         async onClickedSignup() {
             const isValid = this.validateAllFields("signup");
             if (!isValid) return;
+
+            this.isLoading = true;
             try {
                 const res = await apiAuth.authSignup(
                     this.inputSignUpEmail,
@@ -245,69 +184,65 @@ export const useAuthStore = defineStore("authStore", {
                 );
                 if (res?.session && res?.user) {
                     Notify.create({
-                        type: "positive",
-                        message:
-                            "Account created successfully. You can now sign in.",
+                        classes: 'quasar-notify-positive',
+                        message: "Account created successfully. You can now sign in.",
                         progress: true,
+                        icon: 'fa-regular fa-circle-check',
                         position: "bottom",
                     });
-                    router.push({ name: "signin", path: "/signin" });
+                    router.push({ name: "signin" });
                 }
             } catch (error) {
-                console.error(
-                    `Store use-auth-store Error - onClickedSignup - ${error}`
-                );
+                console.error(`authStore - onClickedSignup - ${error}`);
                 let errorMessage = null;
-                if (error?.code == "user_already_exists") {
-                    const errorMessage =
-                        "An account with this email already exists. Please sign in or use a different email.";
+                if (error?.code === "user_already_exists") {
+                    errorMessage = "An account with this email already exists. Please sign in or use a different email.";
                 }
-
                 Notify.create({
-                    type: "negative",
-                    message:
-                        errorMessage ||
-                        "An unexpected error has occured. Please try again.",
+                    classes: 'quasar-notify-negative',
+                    message: errorMessage || "An unexpected error has occurred. Please try again.",
                     progress: true,
-                    position: "top-right",
+                    icon: 'fa-regular fa-circle-xmark',
+                    position: "bottom",
                 });
+            } finally {
+                this.isLoading = false;
             }
         },
 
         async onClickedSignout() {
             try {
-                const res = await apiAuth.authSignout();
+                await apiAuth.authSignout();
                 this.session = null;
                 this.user = null;
                 Notify.create({
-                    type: "positive",
+                    classes: 'quasar-notify-positive',
                     message: "Signed out successfully.",
+                    progress: true,
+                    icon: 'fa-regular fa-circle-check',
                     position: "bottom",
                 });
                 router.push('/home');
             } catch (error) {
-                console.error(
-                    `Store use-auth-store Error - onClickedSignout - ${error}`
-                );
+                console.error(`authStore - onClickedSignout - ${error}`);
             }
         },
 
-        // for the case with no authorization
         async signOutRedirectSignIn() {
             try {
-                const res = await apiAuth.authSignout();
+                await apiAuth.authSignout();
                 this.session = null;
                 this.user = null;
-                $q.notify({
-                    type: "negative",
-                    timeout: 3000,
+                Notify.create({
+                    classes: 'quasar-notify-negative',
                     message: "Session expired. Please log in again.",
+                    progress: true,
+                    icon: 'fa-regular fa-circle-xmark',
+                    position: "bottom",
                 });
                 router.push("/signin");
             } catch (error) {
-                console.error(
-                    `Store use-auth-store Error - signOutRedirectSignIn - ${error}`
-                );
+                console.error(`authStore - signOutRedirectSignIn - ${error}`);
             }
         },
     }

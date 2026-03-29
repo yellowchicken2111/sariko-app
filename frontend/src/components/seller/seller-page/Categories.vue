@@ -11,18 +11,30 @@ export default {
 
     computed: {
         ...mapState(useSellerStore, [
-            "categoriesMenu"
+            "menuCategories",
+            "menus"
         ]),
 
         ...mapWritableState(useSellerStore, [
             "selectedCategoryMenu"
         ])
+    },
+
+    methods: {
+        ...mapActions(useSellerStore, [
+            "getSellerFullMenu"
+        ])
+    },
+
+    created() {
+        const sellerSlugName = this.$route.params.slugName
+        console.log({sellerSlugName})
+        this.getSellerFullMenu(sellerSlugName)
     }
 }
 </script>
 
 <template>
-
     <q-tabs
     no-caps=""
     dense 
@@ -34,9 +46,9 @@ export default {
     narrow-indicator 
     v-model="selectedCategoryMenu"
     >
-        <q-tab v-for="category in categoriesMenu" :name="category.label">
+        <q-tab v-for="category in menuCategories" :name="category.id">
             <div>
-                {{category.icon}} {{ category.label }}
+                {{category.icon}} {{ category.name }}
             </div>
         </q-tab>
     </q-tabs>

@@ -83,7 +83,7 @@ export default {
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
-        <router-link to="/seller/1" class="nav-item" :class="{ active: isActive('/seller') }">
+        <router-link to="/seller/teresa-canutba" class="nav-item" :class="{ active: isActive('/seller') }">
             <Search size="18px" />
             <div class="nav-label">{{$t('bottom_nav.button_label_search')}}</div>
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->

@@ -1,6 +1,15 @@
 <script>
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
+
+    computed: {
+        ...mapState(useAuthStore, [
+            "user"
+        ])
+    },
+
     methods: {
         onClickedSignin() {
             this.$router.push("/signin")
