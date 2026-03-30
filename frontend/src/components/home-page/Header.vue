@@ -14,7 +14,7 @@ export default {
         onClickedSignin() {
             this.$router.push("/signin")
         }
-    }
+    },
 }
 
 </script>

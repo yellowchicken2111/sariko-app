@@ -26,15 +26,17 @@ export default {
 </script>
 
 <template>
-    <div class="app-container">
-        <router-view/>
-        <!-- <router-view v-slot="{ Component }"> -->
-            <!-- <transition name="fade" mode="out-in">
-                <component :is="Component" />
-            </transition> -->
-        <!-- </router-view> -->
+    <div class="background">
+        <div class="app-container">
+            <router-view/>
+            <!-- <router-view v-slot="{ Component }"> -->
+                <!-- <transition name="fade" mode="out-in">
+                    <component :is="Component" />
+                </transition> -->
+            <!-- </router-view> -->
+        </div>
         <BottomNavigation v-if="showNavigation" />
-    </div>
+    </div>    
 </template>
 
 <style scoped>

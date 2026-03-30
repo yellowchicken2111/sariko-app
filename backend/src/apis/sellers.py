@@ -40,7 +40,7 @@ def get_founding_sellers(user=Depends(verify_token)):
 
 
 @router.get("/{slug_name}")
-def get_founding_sellers(slug_name, user=Depends(verify_token)):
+def get_seller_by_slug_name(slug_name, user=Depends(verify_token)):
     
     dao_seller_profiles = DAOSellerProfiles()
     seller = dao_seller_profiles.read_seller_by_slug_name(slug=slug_name)

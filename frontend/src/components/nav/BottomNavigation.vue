@@ -71,12 +71,17 @@ export default {
                 this.navItems[1].badge = newVal
             }
         }
+    },
+
+    mounted() {
+        const height = this.$refs.navRef?.offsetHeight || 0
+        document.documentElement.style.setProperty('--bottom-nav-height', `${height}px`)
     }
 }
 </script>
 
 <template>
-    <nav v-show="isShow" class="bottom-nav">
+    <nav ref="navRef" v-show="isShow" class="bottom-nav">
         <router-link to="/home" class="nav-item" :class="{ active: isActive('/home') }">
             <House size="18px" />
             <div class="nav-label">{{$t('bottom_nav.button_label_home')}}</div>
@@ -89,7 +94,7 @@ export default {
             <!-- <span v-if="item.badge && item.badge > 0" class="nav-badge">{{ item.badge }}</span> -->
         </router-link>
 
-        <router-link to="" class="nav-item">
+        <router-link to="/cart" class="nav-item">
             <div class="icon-cart">
                 <ShoppingCart size="18px" style="color: #2d271f"/>
             </div>
@@ -127,7 +132,7 @@ export default {
     padding: 8px 5px;
     padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    z-index: 0;
 }
 
 .nav-item {

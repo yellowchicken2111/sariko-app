@@ -53,7 +53,7 @@ export default {
 
         </div>
         <div>
-            <q-scroll-area style="height: 100px; white-space: nowrap;">
+            <q-scroll-area style="height: 80px; white-space: nowrap;">
                 <div class="row no-wrap">
                     
                     <div v-for="(seller, index) in foundingSellers" :key="seller.id" class="seller-card">

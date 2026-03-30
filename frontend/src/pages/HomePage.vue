@@ -4,7 +4,8 @@ import LayoutBaseHomePage from '@/layouts/home-page/LayoutBaseHomePage.vue'
 import Header from '@/components/home-page/Header.vue'
 import SearchBar from '@/components/home-page/SearchBar.vue'
 import Categories from '@/components/home-page/Categories.vue'
-import DiscoveryFeed from '@/components/home-page/DiscoveryFeed.vue'
+import FoundingSellers from '@/components/home-page/FoundingSellers.vue';
+import FeaturedDishes from '@/components/home-page/FeaturedDishes.vue';
 import Banner from '@/components/home-page/Banner.vue'
 import { categories, sellers } from '../stores/data'
 
@@ -16,7 +17,8 @@ export default {
         Categories,
         SellerCard,
         SearchBar,
-        DiscoveryFeed,
+        FoundingSellers,
+        FeaturedDishes,
         Banner
     },
     data() {
@@ -87,12 +89,16 @@ export default {
             <SearchBar />
         </template>
 
-        <template #CategoryChips>
+        <template #Categories>
             <Categories />
         </template>
 
-        <template #DiscoveryFeed>
-            <DiscoveryFeed />
+        <template #FoundingSellers>
+            <FoundingSellers />
+        </template>
+
+        <template #FeturedDishes>
+            <FeaturedDishes />
         </template>
 
         <template #Banner>

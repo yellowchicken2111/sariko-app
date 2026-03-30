@@ -11,6 +11,17 @@ export const useSellerStore = defineStore('sellerStore', {
             foundingSellers: [],
 
             // categories
+            homeMenuCategories: [
+                {id: 1, label: 'Lutong Bahay', icon: '🍲'},
+                {id: 2, label: 'Silogs', icon: '🍳'},
+                {id: 3, label: 'Noodles', icon: '🍜'},
+                {id: 4, label: 'Desserts', icon: '🍮'},
+                {id: 5, label: 'Frozen', icon: '❄️'},
+                {id: 6, label: 'Others', icon: ''},
+            ],
+            selectedHomeMenuCategory: 'Lutong Bahay',
+
+            // categories
             menuCategories: [
                 {id: 1, label: 'Lutong Bahay', icon: '🍲'},
                 {id: 2, label: 'Silogs', icon: '🍳'},

@@ -1,9 +1,15 @@
 <script>
+export default {
+    mounted() {
+        const height = this.$refs.refContent?.offsetHeight || 0
+        document.documentElement.style.setProperty('--page-home-comp-banner-height', `${height}px`)
+    }
+}
 </script>
 
 <template>
 
-    <div class="container">
+    <div ref="refContent" class="container">
 
         <div class="banner-text">
 
