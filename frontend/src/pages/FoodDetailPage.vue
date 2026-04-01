@@ -71,7 +71,7 @@
 
 <script>
 import { sellers } from '../stores/data'
-import { useCartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/_cartStore'
 
 export default {
     name: 'FoodDetailPage',

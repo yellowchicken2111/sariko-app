@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { useCartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/_cartStore'
 import { computed } from 'vue'
 
 export default {

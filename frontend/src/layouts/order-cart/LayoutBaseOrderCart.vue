@@ -24,7 +24,7 @@
 <style lang="scss" scoped>
 
 .background {
-    background-color: blueviolet;
+    // background-color: blueviolet;
     width: 100vw;
     height: 100vh;
 }
@@ -39,11 +39,11 @@
 }
 
 .section-cart-items {
-    background-color: red;
+    width: 100%;
 }
 
 .section-total-amount {
-    background-color: red;
+    // background-color: red;
 }
 
 </style>

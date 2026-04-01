@@ -1,34 +1,17 @@
 import { supabase } from '@/lib/supabase.js'
 import { apiClient } from "@/lib/axiosPolicy.js"
 
-export const apiSellers = {
+export const apiCarts = {
 
-    getSellerbySlugName: async (slugName) => {
+    getCart: async() => {
         try {
-            const response = await apiClient.get(`/v1/sellers/${slugName}`)
+            const response = await apiClient.get('/v1/cart')
             return response
         } catch (error) {
-            throw new Error(error.response?.data?.detail || 'Failed to getSellerbySlugName')
-        }
-    },
-
-    getFoundingSellers: async () => {
-        try {
-            const response = await apiClient.get(`/v1/sellers/founding`)
-            return response
-        } catch (error) {
-            throw new Error(error.response?.data?.detail || 'Failed to getFoundingSellers')
-        }
-    },
-
-    getSellerFullMenu: async (slugName) => {
-        try {
-            const response = await apiClient.get(`/v1/sellers/${slugName}/menu`)
-            return response
-        } catch (error) {
-            throw new Error(error.response?.data?.detail || 'Failed to getSellerFullMenu')
+            throw new Error(error.response?.data?.detail || 'Failed to getCart')
         }
     }
+
 }
 
-export default apiSellers;
+export default apiCarts;

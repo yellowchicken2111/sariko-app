@@ -27,12 +27,12 @@ from dao.dao_users import DAOUsers
 router = APIRouter(prefix="/cart")
 logger = logging.getLogger(__name__)
 
-@router.get("/")
+@router.get("")
 def get_current_cart(user=Depends(verify_token)):
         
     dao_cart_items = DAOCartItems()
-    items = dao_cart_items.read_cart_items_by_user_id(user_id=user["id"])    
-    return {"success": True, "items": items}
+    cart = dao_cart_items.read_cart_items_by_user_id(user_id=user["id"])    
+    return {"success": True, "cart": cart}
 
 
 @router.post("/add")

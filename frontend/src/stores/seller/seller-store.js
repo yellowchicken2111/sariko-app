@@ -64,27 +64,40 @@ export const useSellerStore = defineStore('sellerStore', {
     actions: {
         
         async getFoundingSellers() {
-            const res = await apiSellers.getFoundingSellers()
-            if (res?.data) {
-                this.foundingSellers = res.data.founding_sellers
+            try {
+                const res = await apiSellers.getFoundingSellers()
+                if (res?.data) {
+                    this.foundingSellers = res.data.founding_sellers
+                }
+            } catch (e) {
+                console.error(`sellerStore - getFoundingSellers - ${e}`);
             }
         },
 
         async getSellerbySlugName(slugName) {
-            const res = await apiSellers.getSellerbySlugName(slugName)
-            if (res?.data) {
-                this.seller = res.data.seller
-                console.log(this.seller)
+            try {
+                const res = await apiSellers.getSellerbySlugName(slugName)
+                if (res?.data) {
+                    this.seller = res.data.seller
+                    console.log(this.seller)
+                }
+            } catch (e) {
+                console.error(`sellerStore - getSellerbySlugName - ${e}`);
             }
+            
         },
 
         async getSellerFullMenu(slugName) {
-            const res = await apiSellers.getSellerFullMenu(slugName)
-            if (res?.data) {
-                this.menus = res.data.menus
-                this.menuCategories = this.menus.map(c => ({ id: c.id, name: c.name }))
-                this.selectedCategoryMenu = this.menus.find(menu => {return menu.food_items.length > 0}).id
-                this.menu = this.menus.find(menu => {return menu.food_items.length > 0}).food_items
+            try {
+                const res = await apiSellers.getSellerFullMenu(slugName)
+                if (res?.data) {
+                    this.menus = res.data.menus
+                    this.menuCategories = this.menus.map(c => ({ id: c.id, name: c.name }))
+                    this.selectedCategoryMenu = this.menus.find(menu => {return menu.food_items.length > 0}).id
+                    this.menu = this.menus.find(menu => {return menu.food_items.length > 0}).food_items
+                }
+            } catch (e) {
+                console.error(`sellerStore - getSellerFullMenu - ${e}`);
             }
         }
     }

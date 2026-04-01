@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { useCartStore } from '../stores/cartStore'
+import { useCartStore } from '../stores/_cartStore'
 
 export default {
   name: 'CartItem',

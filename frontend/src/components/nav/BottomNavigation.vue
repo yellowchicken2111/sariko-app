@@ -1,5 +1,4 @@
 <script>
-import { useCartStore } from '@/stores/cartStore'
 import { House, Search, ShoppingCart, Clipboard, PanelsRightBottom } from 'lucide-vue-next';
 import { routerKey } from 'vue-router';
 
@@ -10,10 +9,6 @@ export default {
         House, Search, ShoppingCart, Clipboard, PanelsRightBottom
     },
 
-    setup() {
-        const cartStore = useCartStore()
-        return { cartStore }
-    },
     data() {
         return {
             navItems: [
@@ -48,10 +43,6 @@ export default {
         }
     },
     computed: {
-        cartCount() {
-            return this.cartStore.itemCount
-        },
-
         isShow() {
             return this.$route.path != '/signin' && this.$route.path != '/signup'
         }
@@ -64,14 +55,14 @@ export default {
             return this.$route.path.startsWith(path)
         }
     },
-    watch: {
-        cartCount: {
-            immediate: true,
-            handler(newVal) {
-                this.navItems[1].badge = newVal
-            }
-        }
-    },
+    // watch: {
+    //     cartCount: {
+    //         immediate: true,
+    //         handler(newVal) {
+    //             this.navItems[1].badge = newVal
+    //         }
+    //     }
+    // },
 
     mounted() {
         const height = this.$refs.navRef?.offsetHeight || 0
