@@ -1,5 +1,5 @@
 <script>
-import { CirclePlus, CircleMinus } from 'lucide-vue-next';
+import { CirclePlus, CircleMinus, Plus, Minus, HeartOff } from 'lucide-vue-next';
 
 export default {
     props: {
@@ -26,11 +26,19 @@ export default {
         itemQuantity: {
             required: true,
             type: Number
+        },
+        sellerStore: {
+            require: true,
+            type: String
+        },
+        sellerSlugName: {
+            require: true,
+            type: String
         }
     },
 
     components: {
-        CirclePlus, CircleMinus
+        CirclePlus, CircleMinus, Plus, Minus
     }
 }
 </script>
@@ -58,7 +66,9 @@ export default {
                                 {{ itemName }}
                             </div>
                             <div class="item-category">
-                                {{ itemCategory }}
+                                {{ itemCategory }} &nbsp;
+                                | &nbsp;
+                                <a class="store-name" :href="`/seller/${sellerSlugName}`">{{ sellerStore }}</a>
                             </div>
                         </div>
                         <div class="group-2">
@@ -68,7 +78,7 @@ export default {
                             <div class="item-quantity">
                                 <div class="button-sub-quantity">
                                     <q-btn flat round dense size="12px">
-                                        <CircleMinus color="white" style="background-color: black; border-radius: 50%;"/>
+                                        <Minus style="color: white; background-color: black; border-radius: 50%;"/>
                                     </q-btn>
                                 </div>
                                 
@@ -77,7 +87,7 @@ export default {
                                 </div>
                                 <div class="button-add-quantity">
                                     <q-btn flat round dense size="12px">
-                                        <CirclePlus style="color: black; background-color: #f5A623; border-radius: 50%;"/>
+                                        <Plus style="color: black; background-color: #f5A623; border-radius: 50%;"/>
                                     </q-btn>
 
                                 </div>
@@ -97,17 +107,19 @@ export default {
 <style lang="scss" scoped>
 
 .background {
-    padding: 15px;
+    padding: 5px;
 }
 
 .container { 
     font-family: $sariko-font-family-secondary;
     padding: 10px;
     border-radius: 1rem;
+    // background-color: rgb(10, 10, 1);
+    border: solid 1px rgb(105, 105, 98);
 }
 
 .item-image {
-    border-radius: .75rem;
+    border-radius: 1rem;
 }
 
 .item-metadata {
@@ -136,6 +148,11 @@ export default {
     color: rgb(255, 255, 255, 0.5);
 }
 
+.store-name {
+    font-weight: 600;
+    color: var(--color-info)
+}
+
 .group-2 {
     display: flex;
     justify-content: space-between;
@@ -158,7 +175,6 @@ export default {
 .button-add-quantity {
     // background-color: white;
     border-radius: 50%;
-    color: $accent
 }
 
 .button-sub-quantity {

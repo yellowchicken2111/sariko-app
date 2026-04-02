@@ -39,6 +39,8 @@ export default {
                 :item-category="item.category"
                 :item-img-src="item.imgSrc"
                 :item-quantity="item.quantity"
+                :seller-store="item.sellerStore"
+                :seller-slug-name="item.sellerSlugName"
                 />
             </div>
         </div>
@@ -46,4 +48,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.container {
+    padding: 0px 15px;
+}
 </style>

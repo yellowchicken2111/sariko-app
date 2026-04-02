@@ -35,7 +35,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: var(--bottom-nav-height);
+    padding-top: 20px;
 }
 
 .section-cart-items {
@@ -43,7 +43,7 @@
 }
 
 .section-total-amount {
-    // background-color: red;
+    width: 100%;
 }
 
 </style>

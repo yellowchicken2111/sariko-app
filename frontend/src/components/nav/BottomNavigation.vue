@@ -44,7 +44,9 @@ export default {
     },
     computed: {
         isShow() {
-            return this.$route.path != '/signin' && this.$route.path != '/signup'
+            return this.$route.path != '/signin' 
+                && this.$route.path != '/signup'
+                && this.$route.path != '/cart'
         }
     },
     methods: {

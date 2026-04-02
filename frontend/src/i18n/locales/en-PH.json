@@ -68,5 +68,13 @@
       "banner_text_line_1": "3 months FREE Negosyo Tier",
       "banner_text_line_2": "∞ listings · 15% commission · Founding Seller"
     }
+  },
+  "cart_page": {
+    "section_total_amount": {
+        "title_subtotal": "Subtotal",
+        "title_estimated_delivery_fee": "Estimated Delivery Fee",
+        "title_total_amount": "Total Amount",
+        "button_label_checkout": "Checkout"
+    }
   }
 }
