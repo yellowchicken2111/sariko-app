@@ -1,7 +1,7 @@
 <script>
 import { useI18n } from 'vue-i18n';
 import { mapActions, mapState } from 'pinia';
-import { useSellerStore } from '@/stores/seller/seller-store';
+import { useSellerStore } from '@/stores/seller/sellerStore';
 import SellerCard from '@/components/seller/seller-list/SellerCard.vue';
 
 export default {

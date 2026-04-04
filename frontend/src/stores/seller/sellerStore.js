@@ -33,12 +33,17 @@ export const useSellerStore = defineStore('sellerStore', {
             selectedCategoryMenu: 'Lutong Bahay',
 
             // menu
-            menus: menus,
-            menu: []
+            menus: menus
         }
     },
 
     getters: {
+        menu(state) {
+            if (!state.selectedCategoryMenu || !state.menus.length) return []
+            const category = state.menus.find(m => m.id === state.selectedCategoryMenu)
+            return category?.food_items || []
+        },
+
         filteredSellers() {
             let filtered = this.sellers;
 
@@ -94,7 +99,6 @@ export const useSellerStore = defineStore('sellerStore', {
                     this.menus = res.data.menus
                     this.menuCategories = this.menus.map(c => ({ id: c.id, name: c.name }))
                     this.selectedCategoryMenu = this.menus.find(menu => {return menu.food_items.length > 0}).id
-                    this.menu = this.menus.find(menu => {return menu.food_items.length > 0}).food_items
                 }
             } catch (e) {
                 console.error(`sellerStore - getSellerFullMenu - ${e}`);

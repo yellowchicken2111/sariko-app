@@ -6,6 +6,12 @@ const routes = [
         redirect: '/home'
     },
     {
+        path: '/dummy',
+        name: 'dummy',
+        // component: () => import('@/components/order-cart/ModalCartConflict.vue')
+        component: () => import('@/pages/Onboarding.vue')
+    },
+    {
         path: '/home',
         name: 'home',
         component: () => import('@/pages/HomePage.vue')
@@ -38,9 +44,20 @@ const routes = [
         component: () => import('@/pages/CartPage.vue')
     },
     {
+        path: '/checkout',
+        name: 'checkout',
+        component: () => import('@/pages/CheckoutPage.vue')
+    },
+    {
         path: '/orders',
         name: 'orders',
         component: () => import('@/pages/OrdersPage.vue')
+    },
+    {
+        path: '/orders/:orderId',
+        name: 'order-confirmation',
+        component: () => import('@/pages/OrderConfirmationPage.vue'),
+        props: true
     },
     {
         path: '/dashboard',

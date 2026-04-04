@@ -35,3 +35,13 @@ __pycache__
 backend/.sandbox
 backend/src/envs
 backend/src/logs
+
+CLAUDE.md
+
+# idea
+.idea
+
+
+
+# prototype designs
+frontend/.prototype

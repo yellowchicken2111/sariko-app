@@ -32,8 +32,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #1a2843;
+    /* background-color: #1a2843; */
     /* background: var(--bg-main); */
+    background-color: #121b2f;
     padding: 50px 0px 100px 0px;
 }
 

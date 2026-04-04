@@ -1,6 +1,6 @@
 <script>
 import { mapActions, mapWritableState, mapState } from 'pinia';
-import { useSellerStore } from '@/stores/seller/seller-store';
+import { useSellerStore } from '@/stores/seller/sellerStore';
 
 export default {
     computed: {

@@ -47,6 +47,7 @@ export default {
             return this.$route.path != '/signin' 
                 && this.$route.path != '/signup'
                 && this.$route.path != '/cart'
+                && this.$route.path != '/dummy'
         }
     },
     methods: {

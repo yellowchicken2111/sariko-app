@@ -20,9 +20,10 @@ export default {
     },
 
     mounted() {
-        const cartStore = useCartStore()
-        cartStore.$reset()
-        cartStore.getCurrentCart()
+        if (!this.cartItems.length) {
+            const cartStore = useCartStore()
+            cartStore.getCurrentCart()
+        }
     }
 }
 
@@ -31,18 +32,20 @@ export default {
 <template>
     <div class="background">
         <div class="container">
-            <div v-for="item in cartItems">
-                <ItemCard 
-                :item-id="item.id"
-                :item-name="item.name"
-                :item-price-text="item.priceText"
-                :item-category="item.category"
-                :item-img-src="item.imgSrc"
-                :item-quantity="item.quantity"
-                :seller-store="item.sellerStore"
-                :seller-slug-name="item.sellerSlugName"
-                />
-            </div>
+            <q-scroll-area class="cart-items-scroll-area">
+                <div v-for="item in cartItems">
+                    <ItemCard 
+                    :item-id="item.id"
+                    :item-name="item.name"
+                    :item-price-text="item.priceText"
+                    :item-category="item.category"
+                    :item-img-src="item.imgSrc"
+                    :item-quantity="item.quantity"
+                    :seller-store="item.sellerStore"
+                    :seller-slug-name="item.sellerSlugName"
+                    />
+                </div>
+            </q-scroll-area>
         </div>
     </div>
 </template>
@@ -50,5 +53,10 @@ export default {
 <style lang="scss" scoped>
 .container {
     padding: 0px 15px;
+}
+
+.cart-items-scroll-area {
+    height: calc(100vh - var(--breadcrumbs-height) - var(--total-amount-height) - 20px);
+    white-space: nowrap;
 }
 </style>

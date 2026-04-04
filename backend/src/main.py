@@ -16,7 +16,7 @@ from fastapi.exceptions import RequestValidationError
 from lifespan import lifespan
 
 from apis import (
-    users, sellers, cart
+    users, sellers, cart, orders
 )
 
 
@@ -73,6 +73,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(users.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(sellers.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(cart.router, prefix="/rest/v1", tags=["v1"])
+app.include_router(orders.router, prefix="/rest/v1", tags=["v1"])
 
 app.add_middleware(
     CORSMiddleware,

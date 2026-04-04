@@ -1,20 +1,32 @@
 <script>
-import { HandCoins, ScanBarcode } from 'lucide-vue-next';
+import { ScanBarcode } from 'lucide-vue-next';
+import { mapState, mapGetters } from 'pinia';
+import { useCartStore } from '@/stores/cart/cartStore.js';
+
 export default {
     components: {
-        HandCoins, ScanBarcode
+        ScanBarcode
+    },
+
+    computed: {
+        ...mapGetters(useCartStore, ['subtotalText'])
+    },
+
+    mounted() {
+        const heightTotalAmounts = this.$refs?.totalAmountsRef?.offsetHeight || 0
+        document.documentElement.style.setProperty('--total-amount-height', `${heightTotalAmounts}px`)
     }
 }
 </script>
 
 <template>
-    <div class="container">
+    <div ref='totalAmountsRef' class="container">
         <div class="subtotal-section">
             <div class="title sub-color">
                 {{ $t('cart_page.section_total_amount.title_subtotal')  }}
             </div>
             <div class="price-text">
-                1,030,000
+                {{ subtotalText }}
             </div>
         </div>
 
@@ -22,8 +34,8 @@ export default {
             <div class="title sub-color">
                 {{ $t('cart_page.section_total_amount.title_estimated_delivery_fee')  }}
             </div>
-            <div class="price-text">
-                63,000
+            <div class="price-text sub-color">
+                --
             </div>
         </div>
 
@@ -34,12 +46,12 @@ export default {
                 {{ $t('cart_page.section_total_amount.title_total_amount')  }}
             </div>
             <div class="price-text">
-                63,000
+                {{ subtotalText }}
             </div>
-        </div>        
+        </div>
 
         <div class="button-checkout">
-            <q-btn class="button" dense no-caps>
+            <q-btn class="button" dense no-caps @click="$router.push('/checkout')">
                 <ScanBarcode class="icon" /> Checkout
             </q-btn>
         </div>

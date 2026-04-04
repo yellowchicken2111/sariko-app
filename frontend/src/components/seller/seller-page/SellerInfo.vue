@@ -2,7 +2,8 @@
 import { mapActions, mapState } from 'pinia';
 import LayoutSellerInfo from '@/layouts/seller/LayoutSellerInfo.vue';
 import { Check, Star, Flame } from 'lucide-vue-next';
-import { useSellerStore } from '@/stores/seller/seller-store';
+import { useSellerStore } from '@/stores/seller/sellerStore'
+
 export default {
     
     components: {
@@ -29,7 +30,7 @@ export default {
     
     mounted() {
         const sellerSlugName = this.$route.params.slugName
-        this.seller = this.getSellerbySlugName(sellerSlugName)
+        this.getSellerbySlugName(sellerSlugName)
         // this.sellerIndex = this.foundingSellers.findIndex(seller => seller.slug == sellerSlugName)
     }
 }

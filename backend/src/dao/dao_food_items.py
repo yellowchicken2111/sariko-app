@@ -22,7 +22,7 @@ class DAOFoodItems(DAOBase):
         #     return result.data
         
         query = self._supabase_client.table('menu_categories')
-        query = query.select('id, name, food_items(name, price_text, image_url)').order("sort_order").eq("seller_id", seller_id)
+        query = query.select('id, name, food_items(id, name, price_text, image_url)').order("sort_order").eq("seller_id", seller_id)
         result = query.execute()
         if result and result.data:
             return result.data

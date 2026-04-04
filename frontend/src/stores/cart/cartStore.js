@@ -1,12 +1,35 @@
 import { defineStore } from "pinia";
 import apiCarts from "@/apis/cart/apiCart";
-import { error } from "highcharts";
+import { TicketSlash } from "lucide-vue-next";
 
 export const useCartStore = defineStore("cartStore", {
     state() {
         return {
             cart: null,
-            cartItems: []
+            cartItems: [],
+
+            // modal conflict store
+            firstSeller: null,
+            secondSeller: null,
+            isShowModalCartConflict: false,
+            pendingSellerId: null,
+            pendingFoodItemId: null,
+            pendingSellerName: null
+        }
+    },
+
+    getters: {
+        subtotal(state) {
+            return state.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        },
+        subtotalText() {
+            return new Intl.NumberFormat('vi-VN').format(this.subtotal) + ' ₫'
+        },
+        itemCount(state) {
+            return state.cartItems.reduce((sum, item) => sum + item.quantity, 0)
+        },
+        currentSellerSlug(state) {
+            return state.cartItems[0]?.sellerSlugName || null
         }
     },
 
@@ -14,9 +37,9 @@ export const useCartStore = defineStore("cartStore", {
         async getCurrentCart() {
             try {
                 const res = await apiCarts.getCart()
-                if (res?.data?.success) {
+                if ((res.data?.success) && (res.data?.cart)) {
                     this.cart = res.data.cart
-            
+
                     const _cartItems = this.cart.cart_items
                     for (let i=0; i<_cartItems.length; i++) {
                         this.cartItems.push({
@@ -35,16 +58,73 @@ export const useCartStore = defineStore("cartStore", {
             } catch (e) {
                 console.error(`cartStore - getCurrentCart - ${e}`);
             }
-            
         },
 
-        async updateQuantity(itemId, newQuantity) {
+        async addItem(sellerId, foodItemId, newSellerName) {
             try {
-                const res = await apiCarts.updateQuantity(this.cart.id, itemId, newQuantity)
+                await apiCarts.addItem(sellerId, foodItemId)
+                await this.refreshCart()
+            } catch (e) {
+                if (e.message === 'another seller') {
+                    this.pendingSellerId = sellerId
+                    this.pendingFoodItemId = foodItemId
+                    this.pendingSellerName = newSellerName
+                    this.showConflictModal(e.currentSellerName || '', newSellerName || '')
+                } else {
+                    console.error(`cartStore - addItem - ${e}`)
+                }
+            }
+        },
+
+        async clearCartAndAddItem() {
+            try {
+                await apiCarts.clearCart()
+                this.cart = null
+                this.cartItems = []
+                this.isShowModalCartConflict = false
+
+                if (this.pendingSellerId && this.pendingFoodItemId) {
+                    await apiCarts.addItem(this.pendingSellerId, this.pendingFoodItemId)
+                    await this.refreshCart()
+                }
+
+                this.pendingSellerId = null
+                this.pendingFoodItemId = null
+                this.pendingSellerName = null
+            } catch (e) {
+                console.error(`cartStore - clearCartAndAddItem - ${e}`)
+            }
+        },
+
+        async refreshCart() {
+            this.cart = null
+            this.cartItems = []
+            await this.getCurrentCart()
+        },
+
+        async updateQuantity(foodItemId, newQuantity) {
+            try {
+                await apiCarts.updateQuantity(foodItemId, newQuantity)
+                const item = this.cartItems.find(i => i.id === foodItemId)
+                if (item) item.quantity = newQuantity
             } catch (e) {
                 console.error(`cartStore - updateQuantity - ${e}`);
             }
-            
+        },
+
+        async removeItem(foodItemId) {
+            try {
+                await apiCarts.removeItem(foodItemId)
+                this.cartItems = this.cartItems.filter(i => i.id !== foodItemId)
+            } catch (e) {
+                console.error(`cartStore - removeItem - ${e}`);
+            }
+        },
+
+        showConflictModal(firstSeller, secondSeller) {
+            this.firstSeller = firstSeller
+            this.secondSeller = secondSeller
+            this.isShowModalCartConflict = true
         }
     }
 })

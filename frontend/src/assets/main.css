@@ -54,7 +54,9 @@ html, body {
     color: #040A14 !important;
 }
 .bg-bgInputField {
-    background-color: #040A14 !important;
+    /* background-color: #040A14 !important; */
+    /* background-color: #1f2940; */
+    background-color: #1f2940;
 }
 
 .quasar-notify-positive {

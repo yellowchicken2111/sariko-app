@@ -1,6 +1,6 @@
 <script>
 import { mapState } from 'pinia';
-import { useSellerStore } from '@/stores/seller/seller-store.js';
+import { useSellerStore } from '@/stores/seller/sellerStore.js';
 import { useHomeStore } from '@/stores/homeStore';
 import SellerCard from '@/components/seller/seller-list/SellerCard.vue';
 

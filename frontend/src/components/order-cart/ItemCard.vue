@@ -1,5 +1,6 @@
 <script>
-import { CirclePlus, CircleMinus, Plus, Minus, HeartOff } from 'lucide-vue-next';
+import { Plus, Minus } from 'lucide-vue-next';
+import { useCartStore } from '@/stores/cart/cartStore.js';
 
 export default {
     props: {
@@ -38,7 +39,25 @@ export default {
     },
 
     components: {
-        CirclePlus, CircleMinus, Plus, Minus
+        Plus, Minus
+    },
+
+    setup() {
+        const cartStore = useCartStore()
+        return { cartStore }
+    },
+
+    methods: {
+        async onClickPlus() {
+            await this.cartStore.updateQuantity(this.itemId, this.itemQuantity + 1)
+        },
+        async onClickMinus() {
+            if (this.itemQuantity <= 1) {
+                await this.cartStore.removeItem(this.itemId)
+            } else {
+                await this.cartStore.updateQuantity(this.itemId, this.itemQuantity - 1)
+            }
+        }
     }
 }
 </script>
@@ -77,19 +96,18 @@ export default {
                             </div>
                             <div class="item-quantity">
                                 <div class="button-sub-quantity">
-                                    <q-btn flat round dense size="12px">
+                                    <q-btn flat round dense size="12px" @click="onClickMinus">
                                         <Minus style="color: white; background-color: black; border-radius: 50%;"/>
                                     </q-btn>
                                 </div>
-                                
+
                                 <div class="item-price-text">
                                     {{ itemQuantity }}
                                 </div>
                                 <div class="button-add-quantity">
-                                    <q-btn flat round dense size="12px">
+                                    <q-btn flat round dense size="12px" @click="onClickPlus">
                                         <Plus style="color: black; background-color: #f5A623; border-radius: 50%;"/>
                                     </q-btn>
-
                                 </div>
                             </div>
                         </div>

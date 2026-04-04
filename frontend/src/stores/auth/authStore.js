@@ -3,6 +3,7 @@ import { router } from "@/plugins/router";
 import { Notify } from "quasar";
 import { supabase } from "@/lib/supabase";
 import apiAuth from "@/apis/auth/apiAuth";
+import { useCartStore } from "@/stores/cart/cartStore";
 
 export const useAuthStore = defineStore("authStore", {
     state() {
@@ -59,6 +60,13 @@ export const useAuthStore = defineStore("authStore", {
                 const res = await apiAuth.authGetSession();
                 if (res?.session) {
                     this._setFromSession(res.session);
+
+                    try {
+                        const cartStore = useCartStore();
+                        await cartStore.getCurrentCart();
+                    } catch (e) {
+                        console.error(`authStore - bootstrap - cart preload failed: ${e}`);
+                    }
                 }
 
                 const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -143,6 +151,13 @@ export const useAuthStore = defineStore("authStore", {
                 if (!res?.session || !res?.user) throw new Error("No user data");
 
                 this._setFromSession(res.session);
+
+                try {
+                    const cartStore = useCartStore();
+                    await cartStore.getCurrentCart();
+                } catch (e) {
+                    console.error(`authStore - onClickedSignin - cart preload failed: ${e}`);
+                }
 
                 Notify.create({
                     classes: 'quasar-notify-positive',

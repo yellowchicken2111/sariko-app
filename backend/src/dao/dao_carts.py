@@ -18,7 +18,7 @@ class DAOCarts(DAOBase):
         try:
         
             query = self._supabase_client.table(self._table_name)
-            query = query.select('id, seller_id').eq("user_id", user_id)
+            query = query.select('id, seller_id, seller_profiles(store_name)').eq("user_id", user_id)
             
             query = query.maybe_single()
             result = query.execute()
@@ -36,6 +36,21 @@ class DAOCarts(DAOBase):
     
     
     
+    def delete_cart(self, cart_id: str):
+
+        try:
+            self._supabase_client.table(self._table_name) \
+                .delete() \
+                .eq("id", cart_id) \
+                .execute()
+
+            return True
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - delete_cart with cart_id {cart_id}: {e}")
+        except Exception as e:
+            raise Exception(f"error delete_cart with cart_id {cart_id}: {e}")
+
     def create_cart(self, user_id: str, seller_id: str):
         
         try:

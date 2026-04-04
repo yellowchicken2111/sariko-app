@@ -53,12 +53,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .orders-page {
     min-height: 100vh;
     background: var(--bg-main);
     padding: 16px;
     padding-top: calc(16px + env(safe-area-inset-top, 0));
+    font-family: $sariko-font-family-secondary;
 }
 
 .header {
