@@ -1,4 +1,8 @@
 {
+    "breadcrumbs": {
+        "cart_page": "Cart",
+        "checkout_page": "Checkout"
+    },   
     "common": {
         "button_label_cancel": "Cancel"
     },
@@ -45,6 +49,17 @@
             "section_phone_number": {
                 "title": "Phone Number",
                 "tooltip": "Sellers and riders will use this to contact you"
+            },
+            "section_delivery_address": {
+                "title": "Delivery Address",
+                "text_placeholder_address_details": "Address Details (building, floor, landmark)"
+            },
+            "section_preferred_language": {
+                "title": "Preferred Language"
+            },
+            "button_group": {
+                "button_label_text_start_ordering": "Start Ordering",
+                "button_label_text_skip_for_now": "Skip for now"
             }
         }
     },
@@ -83,6 +98,10 @@
         }
     },
     "cart_page": {
+        "section_delivery_address": {
+            "title": "Delivery to {name}",
+            "button_label_text_edit": "Change"
+        },
         "section_total_amount": {
             "title_subtotal": "Subtotal",
             "title_estimated_delivery_fee": "Estimated Delivery Fee",
@@ -95,6 +114,11 @@
             "text_message_2": " Adding items from will replace your current cart with",
             "button_label_go_to_cart": "Go to Cart",
             "button_label_clear_cart": "Clear Cart and Add new item"
+        }
+    },
+    "checkout_page": {
+        "section_cart_review": {
+            "text_item": "item(s)"
         }
     }
 }

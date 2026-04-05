@@ -1,11 +1,16 @@
 <script>
 import LayoutBaseBuyerOnboarding from '@/layouts/onboarding/buyer/LayoutBaseBuyerOnboarding.vue';
-import InputFieldPhoneNumber from '@/components/onboarding/buyer/InputFieldPhoneNumber.vue';
-
+import PhoneNumber from '@/components/onboarding/buyer/PhoneNumber.vue';
+import DeliveryAddress from '@/components/onboarding/buyer/DeliveryAddress.vue';
+import PreferredLanguage from '@/components/onboarding/buyer/PreferredLanguage.vue';
+import ButtonGroup from '@/components/onboarding/buyer/ButtonGroup.vue';
 export default {
     components: {
         LayoutBaseBuyerOnboarding,
-        InputFieldPhoneNumber
+        PhoneNumber,
+        DeliveryAddress,
+        PreferredLanguage,
+        ButtonGroup
     }
 }
 </script>
@@ -24,19 +29,19 @@ export default {
         </template>
 
         <template #PhoneNumberSection>
-            <InputFieldPhoneNumber />
+            <PhoneNumber />
         </template>
 
         <template #DeliveryAddressSection>
-            JKL
+            <DeliveryAddress />
         </template>
 
-        <template #PreferedLanguageSection>
-            MNO
+        <template #PreferredLanguageSection>
+            <PreferredLanguage />
         </template>
 
         <template #ButtonGroupSection>
-            MNO
+            <ButtonGroup />
         </template>
 
     </LayoutBaseBuyerOnboarding>

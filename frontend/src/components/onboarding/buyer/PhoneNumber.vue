@@ -70,7 +70,7 @@ export default {
 }
 
 .icon-phone {
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .input-container {
@@ -89,6 +89,10 @@ export default {
     width: 100%;
 }
 
+.tooltip {
+    color: var(--text-muted);
+    font-size: 12px;
+}
 
 :deep(.q-field__native) {
     color: #ffffff;
@@ -104,19 +108,5 @@ export default {
 
 .input .q-field__control {
     border-radius: .75rem;
-}
-
-.my-select-popup {
-    background-color: #1a1a1a !important;
-    color: white !important;
-}
-
-.my-select-popup .q-item {
-    background-color: #1a1a1a !important;
-    color: white !important;
-}
-
-.my-select-popup .q-item--active {
-    color: #ff9f43 !important;
 }
 </style>

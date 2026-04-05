@@ -8,8 +8,7 @@ const routes = [
     {
         path: '/dummy',
         name: 'dummy',
-        // component: () => import('@/components/order-cart/ModalCartConflict.vue')
-        component: () => import('@/pages/Onboarding.vue')
+        component: () => import('@/pages/CheckoutPage.vue')
     },
     {
         path: '/home',

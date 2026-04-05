@@ -27,6 +27,14 @@ export const useAuthStore = defineStore("authStore", {
                 inputSignUpPassword: null
             },
 
+            // onborading user
+            inputPhoneNumber: null,
+            inputAddress: null,
+            inputAddressDetails: null,
+            inputLat: null,
+            inputLon: null,
+            selectedPreferedLanguage: 'English',
+
             // user & session
             session: null,
             user: null,

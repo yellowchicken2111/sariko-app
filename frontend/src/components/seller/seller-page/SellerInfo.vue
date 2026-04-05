@@ -23,15 +23,6 @@ export default {
     },
 
     methods: {
-        ...mapActions(useSellerStore, [
-            "getSellerbySlugName"
-        ])
-    },
-    
-    mounted() {
-        const sellerSlugName = this.$route.params.slugName
-        this.getSellerbySlugName(sellerSlugName)
-        // this.sellerIndex = this.foundingSellers.findIndex(seller => seller.slug == sellerSlugName)
     }
 }
 

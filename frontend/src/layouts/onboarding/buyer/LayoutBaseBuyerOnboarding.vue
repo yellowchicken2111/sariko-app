@@ -23,8 +23,8 @@
                 <slot name="DeliveryAddressSection" />
             </div>
 
-            <div class="prefred-language-section">
-                <slot name="PreferedLanguageSection" />
+            <div class="preferred-language-section">
+                <slot name="PreferredLanguageSection" />
             </div>
 
             <div class="button-group-section">
@@ -50,6 +50,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 50px 30px 0px 30px;
 }
 
 .header-greeting-text {
@@ -58,22 +59,25 @@
     margin-bottom: 10px;
 }
 
-.header-greeting-text {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 10px;
+.header-greeting-subtext {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 30px;
 }
 
 .phone-number-section {
     width: 100%;
+    margin-bottom: 30px;
 }
 
 .delivery-address-section {
     width: 100%;
+    margin-bottom: 30px;
 }
 
-.prefred-language-section {
+.preferred-language-section {
     width: 100%;
+    margin-bottom: 40px;
 }
 
 .button-group-section {

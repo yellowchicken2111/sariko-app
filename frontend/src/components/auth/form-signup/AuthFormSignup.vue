@@ -256,8 +256,8 @@ export default {
     justify-self: flex-start;
     width: 49%;
     padding: 12px 0px 15px 0px;
-    border-radius: 0.75rem;
-    background-color: var(--bg-main);
+    border-radius: 1rem;
+    background-color: var(--bg-surface);
 }
 
 .container-role-active {

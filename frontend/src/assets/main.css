@@ -9,6 +9,8 @@
   --text-secondary: #9ca3af; /* lower opacity text */
   --text-muted: rgba(255, 255, 255, 0.5);
   --text-active: #f5A623;
+
+  --accent-dim: rgba(250, 204, 21, 0.12);
   
   /* Primary Palette */
   --color-primary: #121b2f; 

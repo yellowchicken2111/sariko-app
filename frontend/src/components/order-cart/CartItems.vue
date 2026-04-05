@@ -56,7 +56,7 @@ export default {
 }
 
 .cart-items-scroll-area {
-    height: calc(100vh - var(--breadcrumbs-height) - var(--total-amount-height) - 20px);
+    height: calc(100vh - var(--breadcrumbs-height) - var(--total-amount-height) - var(--delivery-adress-height) - 40px);
     white-space: nowrap;
 }
 </style>

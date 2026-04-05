@@ -82,9 +82,9 @@ export const useSellerStore = defineStore('sellerStore', {
         async getSellerbySlugName(slugName) {
             try {
                 const res = await apiSellers.getSellerbySlugName(slugName)
+                console.log('getSellerbySlugName response:', res?.data)
                 if (res?.data) {
                     this.seller = res.data.seller
-                    console.log(this.seller)
                 }
             } catch (e) {
                 console.error(`sellerStore - getSellerbySlugName - ${e}`);

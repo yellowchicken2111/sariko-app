@@ -1,5 +1,4 @@
 <script>
-import SellerCard from '../components/SellerCard.vue'
 import LayoutBaseHomePage from '@/layouts/home-page/LayoutBaseHomePage.vue'
 import Header from '@/components/home-page/Header.vue'
 import SearchBar from '@/components/home-page/SearchBar.vue'
@@ -15,7 +14,6 @@ export default {
         LayoutBaseHomePage,
         Header,
         Categories,
-        SellerCard,
         SearchBar,
         FoundingSellers,
         FeaturedDishes,

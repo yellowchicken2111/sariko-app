@@ -1,77 +1,42 @@
 <script>
-import LayoutBaseCheckout from '@/layouts/checkout/LayoutBaseCheckout.vue'
-import CheckoutHeader from '@/components/checkout/CheckoutHeader.vue'
-import DeliveryMethodSelector from '@/components/checkout/DeliveryMethodSelector.vue'
-import DeliveryAddressInput from '@/components/checkout/DeliveryAddressInput.vue'
-import OrderSummary from '@/components/checkout/OrderSummary.vue'
-import NoteInput from '@/components/checkout/NoteInput.vue'
-import PaymentMethodCard from '@/components/checkout/PaymentMethodCard.vue'
-import CheckoutFooter from '@/components/checkout/CheckoutFooter.vue'
-import { useCartStore } from '@/stores/cart/cartStore.js'
-import { useCheckoutStore } from '@/stores/checkout/checkoutStore.js'
+import LayoutBaseCheckoutPage from '@/layouts/checkout/LayoutBaseCheckoutPage.vue';
+import BreadCrums from '@/components/checkout/BreadCrums.vue';
+import DeliveryAddress from '@/components/checkout/DeliveryAddress.vue';
+import CartReview from '@/components/checkout/CartReview.vue';
+import TotalAmounts from '@/components/checkout/TotalAmounts.vue';
 
 export default {
     name: 'CheckoutPage',
-
     components: {
-        LayoutBaseCheckout,
-        CheckoutHeader,
-        DeliveryMethodSelector,
-        DeliveryAddressInput,
-        OrderSummary,
-        NoteInput,
-        PaymentMethodCard,
-        CheckoutFooter
-    },
-
-    computed: {
-        showAddress() {
-            const checkoutStore = useCheckoutStore()
-            return checkoutStore.deliveryMethod === 'delivery'
-        }
-    },
-
-    mounted() {
-        const cartStore = useCartStore()
-        if (!cartStore.cartItems.length) {
-            cartStore.getCurrentCart()
-        }
+        LayoutBaseCheckoutPage,
+        BreadCrums,
+        DeliveryAddress,
+        CartReview,
+        TotalAmounts
     }
 }
 </script>
 
 <template>
-    <LayoutBaseCheckout>
+    <LayoutBaseCheckoutPage>
 
-        <template #Header>
-            <CheckoutHeader @back="$router.back()" />
-        </template>
-
-        <template #DeliveryMethod>
-            <DeliveryMethodSelector />
+        <template #Breadcrumbs>
+            <BreadCrums />
         </template>
 
         <template #DeliveryAddress>
-            <DeliveryAddressInput v-if="showAddress" />
+            <DeliveryAddress />
         </template>
 
-        <template #OrderSummary>
-            <OrderSummary />
+        <template #CartPreview>
+            <CartReview />
         </template>
 
-        <template #Note>
-            <NoteInput />
+        <template #TotalAmounts>
+            <TotalAmounts />
         </template>
 
-        <template #PaymentMethod>
-            <PaymentMethodCard />
-        </template>
-
-        <template #Footer>
-            <CheckoutFooter />
-        </template>
-
-    </LayoutBaseCheckout>
+    </LayoutBaseCheckoutPage>
 </template>
 
 <style scoped>

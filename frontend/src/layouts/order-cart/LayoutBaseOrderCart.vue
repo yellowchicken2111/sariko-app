@@ -11,8 +11,9 @@ export default {
 
     mounted() {
         const cartStore = useCartStore()
-        cartStore.$reset()
-        cartStore.getCurrentCart()
+        if (!cartStore.cartItems.length) {
+            cartStore.getCurrentCart()
+        }
     }
 }
 
@@ -28,8 +29,12 @@ export default {
 
         <div v-if="cartItems.length > 0" class="container">
 
+            <div class="section-delivery-address">
+                <slot name="DeliveryAddress" />
+            </div>
+
             <div class="section-cart-items">
-                    <slot name="CartItems" />
+                <slot name="CartItems" />
             </div>
 
             <div class="section-total-amount">
@@ -63,7 +68,11 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding-top: 20px;
+}
+
+.section-delivery-address {
+    width: 100%;
+    padding: 0px 20px;
 }
 
 .section-cart-items {

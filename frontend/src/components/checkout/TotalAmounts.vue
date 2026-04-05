@@ -21,6 +21,35 @@ export default {
 
 <template>
     <div ref='totalAmountsRef' class="container">
+        <div class="subtotal-section">
+            <div class="title sub-color">
+                {{ $t('cart_page.section_total_amount.title_subtotal')  }}
+            </div>
+            <div class="price-text">
+                {{ subtotalText }}
+            </div>
+        </div>
+
+        <div class="subtotal-section">
+            <div class="title sub-color">
+                {{ $t('cart_page.section_total_amount.title_estimated_delivery_fee')  }}
+            </div>
+            <div class="price-text sub-color">
+                --
+            </div>
+        </div>
+
+        <div class="dashed-line" />
+
+        <div class="subtotal-section">
+            <div class="title-total">
+                {{ $t('cart_page.section_total_amount.title_total_amount')  }}
+            </div>
+            <div class="price-text">
+                {{ subtotalText }}
+            </div>
+        </div>
+
         <div class="button-checkout">
             <q-btn class="button" dense no-caps @click="$router.push('/checkout')">
                 <ScanBarcode class="icon" /> Checkout · {{ subtotalText }}

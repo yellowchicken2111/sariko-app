@@ -23,7 +23,7 @@ export default {
             </q-btn>
         </div>
         <div class="title">
-            {{ $t('breadcrumbs.cart_page') }}
+            {{ $t('breadcrumbs.checkout_page') }}
         </div>
         <div>
             <q-btn class="button" dense no-caps @click="">
