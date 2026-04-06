@@ -25,7 +25,7 @@ export default {
 
         <div class="col card-info">
             <div style="color: white; font-weight: 800;">
-                127
+                6
             </div>
             <div style="font-size: 8px; font-weight: 600; color: rgb(122, 140, 174)">
                 {{ $t('seller_page.section_banner.banner_card_orders_subtitle') }}
