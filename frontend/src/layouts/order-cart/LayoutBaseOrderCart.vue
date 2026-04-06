@@ -29,18 +29,23 @@ export default {
 
         <div v-if="cartItems.length > 0" class="container">
 
-            <div class="section-delivery-address">
-                <slot name="DeliveryAddress" />
-            </div>
+            <q-scroll-area class="scroll-area">
+                <div class="section-delivery-address">
+                    <slot name="DeliveryAddress" />
+                </div>
 
-            <div class="section-cart-items">
-                <slot name="CartItems" />
-            </div>
+                <div class="section-cart-items">
+                    <slot name="CartItems" />
+                </div>
+
+                <div class="section-note">
+                    <slot name="NoteInput" />
+                </div>
+            </q-scroll-area>
 
             <div class="section-total-amount">
                 <slot name="TotalAmount" />
             </div>
-
         </div>
 
         <div v-else>
@@ -67,20 +72,32 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    overflow: hidden;
+}
+
+.scroll-area {
+    flex: 1;
+    width: 100%;
 }
 
 .section-delivery-address {
     width: 100%;
-    padding: 0px 20px;
+    padding: 0px 10px;
+    margin-bottom: 20px;
 }
 
 .section-cart-items {
     width: 100%;
 }
 
+.section-note {
+    width: 100%;
+    padding: 20px 10px;
+}
+
 .section-total-amount {
     width: 100%;
+    flex-shrink: 0;
 }
 
 </style>

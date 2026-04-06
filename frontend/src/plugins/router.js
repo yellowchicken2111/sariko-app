@@ -5,11 +5,11 @@ const routes = [
         path: '/',
         redirect: '/home'
     },
-    {
-        path: '/dummy',
-        name: 'dummy',
-        component: () => import('@/pages/CheckoutPage.vue')
-    },
+    // {
+    //     // path: '/dummy',
+    //     // name: 'dummy',
+    //     // // component: () => import('@/pages/CheckoutPage.vue')
+    // },
     {
         path: '/home',
         name: 'home',
@@ -42,11 +42,11 @@ const routes = [
         name: 'cart',
         component: () => import('@/pages/CartPage.vue')
     },
-    {
-        path: '/checkout',
-        name: 'checkout',
-        component: () => import('@/pages/CheckoutPage.vue')
-    },
+    // {
+    //     path: '/checkout',
+    //     name: 'checkout',
+    //     component: () => import('@/pages/CheckoutPage.vue')
+    // },
     {
         path: '/orders',
         name: 'orders',

@@ -1,5 +1,5 @@
 <script>
-import { Plus, Minus } from 'lucide-vue-next';
+import { Plus, Minus, Star } from 'lucide-vue-next';
 import { useCartStore } from '@/stores/cart/cartStore.js';
 
 export default {
@@ -39,7 +39,7 @@ export default {
     },
 
     components: {
-        Plus, Minus
+        Plus, Minus, Star
     },
 
     setup() {
@@ -69,7 +69,7 @@ export default {
 
             <div class="row q-gutter-md">
 
-                <div class="col-3">
+                <div class="col-2">
                     <q-img
                     class="item-image"
                     sizes="12px"
@@ -85,9 +85,7 @@ export default {
                                 {{ itemName }}
                             </div>
                             <div class="item-category">
-                                {{ itemCategory }} &nbsp;
-                                | &nbsp;
-                                <a class="store-name" :href="`/seller/${sellerSlugName}`">{{ sellerStore }}</a>
+                                <div>{{ itemCategory }}</div> &nbsp; | &nbsp; <Star color="#f5A623" size="12px"/> &nbsp; 4.5
                             </div>
                         </div>
                         <div class="group-2">
@@ -96,7 +94,7 @@ export default {
                             </div>
                             <div class="item-quantity">
                                 <div class="button-sub-quantity">
-                                    <q-btn flat round dense size="12px" @click="onClickMinus">
+                                    <q-btn flat round dense size="10px" @click="onClickMinus">
                                         <Minus style="color: white; background-color: black; border-radius: 50%;"/>
                                     </q-btn>
                                 </div>
@@ -105,7 +103,7 @@ export default {
                                     {{ itemQuantity }}
                                 </div>
                                 <div class="button-add-quantity">
-                                    <q-btn flat round dense size="12px" @click="onClickPlus">
+                                    <q-btn flat round dense size="10px" @click="onClickPlus">
                                         <Plus style="color: black; background-color: #f5A623; border-radius: 50%;"/>
                                     </q-btn>
                                 </div>
@@ -125,15 +123,13 @@ export default {
 <style lang="scss" scoped>
 
 .background {
-    padding: 5px;
+    padding: 5px 0px 0px 20px;
 }
 
 .container { 
     font-family: $sariko-font-family-secondary;
     padding: 10px;
-    border-radius: 1rem;
-    // background-color: rgb(10, 10, 1);
-    border: solid 1px rgb(105, 105, 98);
+    // border: solid 1px 
 }
 
 .item-image {
@@ -155,29 +151,33 @@ export default {
 }
 
 .item-name {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 600;
     color: $accent;
 }
 
 .item-category {
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
     font-weight: 600;
     color: rgb(255, 255, 255, 0.5);
 }
 
 .store-name {
-    font-weight: 600;
+    font-size: 10px;
+    font-weight:600;
     color: var(--color-info)
 }
 
 .group-2 {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .item-price {
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -187,6 +187,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     background-color: rgb(255, 255, 255, 0.2);
+    padding: 0px 4px 1px 2px;
     border-radius: 1rem;
 }
 

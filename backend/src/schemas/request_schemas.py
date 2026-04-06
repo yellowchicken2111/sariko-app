@@ -3,7 +3,7 @@ from typing import (
     Union,
     Optional
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 # Cart API
@@ -18,7 +18,7 @@ class RequestAddCartItem(BaseModel):
 
 class RequestUpdateCartItem(BaseModel):
     food_item_id: str
-    quantity: int
+    quantity: int = Field(gt=0)
 
 # Order API
 class RequestCreateOrder(BaseModel):

@@ -1,11 +1,11 @@
 <script>
-import { MapPin, Phone, SquarePen } from 'lucide-vue-next';
+import { MapPin, Phone, Pen } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth/authStore';
 import { mapState } from 'pinia';
 
 export default {
     components: {
-        MapPin, Phone, SquarePen
+        MapPin, Phone, Pen
     },
     computed: {
         ...mapState(useAuthStore, [
@@ -31,8 +31,8 @@ export default {
                     {{ user?.fullName || 'jack'}}
                 </div>
             </div>
-            <q-btn class="button" no-caps flat dense>
-                <SquarePen size="16px" />
+            <q-btn  class="button" no-caps flat dense>
+                <Pen size="14px" />
                 <!-- {{ $t('cart_page.section_delivery_address.button_label_text_edit') }} -->
             </q-btn>
         </div>
@@ -61,7 +61,6 @@ export default {
 .container-delivery-address {
     padding: 10px 15px 0px 15px;
     font-family: $sariko-font-family-secondary;
-    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 1rem;
 }
@@ -70,7 +69,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 
 .title {
@@ -85,7 +84,8 @@ export default {
 
 .button {
     border: solid 1px var(--border-color);
-    border-radius: .25rem;
+    padding: 5px;
+    border-radius: 50%;
 }
 
 .name {
@@ -106,9 +106,11 @@ export default {
 
 .icon {
     margin-right: 8px;
+    // color: var(--text-muted);
 }
 
 .text {
-    font-size: 12px;
+    font-size: 14px;
+    // color: var(--text-muted);
 }
 </style>

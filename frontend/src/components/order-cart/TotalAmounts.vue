@@ -1,15 +1,55 @@
 <script>
 import { ScanBarcode } from 'lucide-vue-next';
-import { mapState, mapGetters } from 'pinia';
+import { mapGetters, mapState } from 'pinia';
 import { useCartStore } from '@/stores/cart/cartStore.js';
+import { useOrderStore } from '@/stores/order/orderStore.js';
+import { useAuthStore } from '@/stores/auth/authStore.js';
 
 export default {
     components: {
         ScanBarcode
     },
 
+    data() {
+        return {
+            submitting: false
+        }
+    },
+
     computed: {
-        ...mapGetters(useCartStore, ['subtotalText'])
+        ...mapGetters(useCartStore, ['subtotalText']),
+        ...mapState(useCartStore, ['cartItems', 'note']),
+
+        canPlaceOrder() {
+            return this.cartItems.length > 0 && !this.submitting
+        },
+    },
+
+    methods: {
+        async onPlaceOrder() {
+            if (this.submitting) return
+            this.submitting = true
+            try {
+                const authStore = useAuthStore()
+                const address = authStore.user?.address || ''
+                const orderStore = useOrderStore()
+                const order = await orderStore.placeOrder('delivery', address, this.note || null)
+                if (order) {
+                    const cartStore = useCartStore()
+                    cartStore.$reset()
+                    this.$router.push({ name: 'order-confirmation', params: { orderId: order.id } })
+                }
+            } catch (e) {
+                console.error(e)
+                this.$q.notify({
+                    type: 'negative',
+                    message: 'Failed to place order. Please try again.',
+                    position: 'top'
+                })
+            } finally {
+                this.submitting = false
+            }
+        }
     },
 
     mounted() {
@@ -21,9 +61,38 @@ export default {
 
 <template>
     <div ref='totalAmountsRef' class="container">
+        <div class="subtotal-section">
+            <div class="title sub-color">
+                {{ $t('cart_page.section_total_amount.title_subtotal')  }}
+            </div>
+            <div class="price-text">
+                {{ subtotalText }}
+            </div>
+        </div>
+
+        <div class="subtotal-section">
+            <div class="title sub-color">
+                {{ $t('cart_page.section_total_amount.title_estimated_delivery_fee')  }}
+            </div>
+            <div class="price-text sub-color">
+                --
+            </div>
+        </div>
+
+        <div class="dashed-line" />
+
+        <div class="subtotal-section">
+            <div class="title-total">
+                {{ $t('cart_page.section_total_amount.title_total_amount')  }}
+            </div>
+            <div class="price-text">
+                {{ subtotalText }}
+            </div>
+        </div>
+
         <div class="button-checkout">
-            <q-btn class="button" dense no-caps @click="$router.push('/checkout')">
-                <ScanBarcode class="icon" /> Checkout · {{ subtotalText }}
+            <q-btn class="button" dense no-caps :loading="submitting" :disable="!canPlaceOrder" @click="onPlaceOrder">
+                <ScanBarcode class="icon" /> Place Order · {{ subtotalText }}
             </q-btn>
         </div>
     </div>

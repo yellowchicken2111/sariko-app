@@ -18,16 +18,16 @@ export default {
 
     <div ref="breadcrumbsRef" class="breadcrumbs">
         <div>
-            <q-btn class="button" dense no-caps @click="$router.back()">
-                <ChevronLeft class="icon" />
+            <q-btn class="button" round dense no-caps size="12px" @click="$router.back()">
+                <ChevronLeft :size="18" />
             </q-btn>
         </div>
         <div class="title">
             {{ $t('breadcrumbs.cart_page') }}
         </div>
         <div>
-            <q-btn class="button" dense no-caps @click="">
-                <EllipsisVertical class="icon" />
+            <q-btn class="button" round dense no-caps size="12px" @click="">
+                <EllipsisVertical :size="18" />
             </q-btn>
         </div>
     </div>
@@ -44,8 +44,6 @@ export default {
 
 .button {
     background-color: rgb(255, 255, 255, 0.2);
-    border-radius: 50%;
-    padding: 10px;
 }
 
 .title {

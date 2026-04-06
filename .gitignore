@@ -36,8 +36,6 @@ backend/.sandbox
 backend/src/envs
 backend/src/logs
 
-CLAUDE.md
-
 # idea
 .idea
 

@@ -1,4 +1,3 @@
-import { supabase } from '@/lib/supabase.js'
 import { apiClient } from "@/lib/axiosPolicy.js"
 
 export const apiCarts = {

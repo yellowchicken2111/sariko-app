@@ -99,7 +99,7 @@
     },
     "cart_page": {
         "section_delivery_address": {
-            "title": "Delivery to {name}",
+            "title": "DELIVERY TO {name}",
             "button_label_text_edit": "Change"
         },
         "section_total_amount": {

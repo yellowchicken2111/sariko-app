@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import apiCarts from "@/apis/cart/apiCart";
-import { TicketSlash } from "lucide-vue-next";
 
 export const useCartStore = defineStore("cartStore", {
     state() {
@@ -14,7 +13,10 @@ export const useCartStore = defineStore("cartStore", {
             isShowModalCartConflict: false,
             pendingSellerId: null,
             pendingFoodItemId: null,
-            pendingSellerName: null
+            pendingSellerName: null,
+
+            // note
+            note: ''
         }
     },
 
@@ -39,6 +41,7 @@ export const useCartStore = defineStore("cartStore", {
                 const res = await apiCarts.getCart()
                 if ((res.data?.success) && (res.data?.cart)) {
                     this.cart = res.data.cart
+                    this.cartItems = []
 
                     const _cartItems = this.cart.cart_items
                     for (let i=0; i<_cartItems.length; i++) {
