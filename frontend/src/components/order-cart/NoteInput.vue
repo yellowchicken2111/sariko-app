@@ -41,6 +41,7 @@ export default {
     border-radius: 1rem;
     padding: 10px 15px;
     font-family: $sariko-font-family-secondary;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .title {

@@ -44,7 +44,7 @@ class DAOOrders(DAOBase):
     def read_orders_by_user_id(self, user_id: str):
         try:
             result = self._supabase_client.table(self._table_name) \
-                .select("id, status, total_amount, delivery_fee, payment_status, delivery_method, created_at, seller_profiles(store_name, slug, avatar_url)") \
+                .select("id, seller_id, status, total_amount, delivery_fee, payment_status, delivery_method, created_at, seller_profiles(store_name, slug, avatar_url)") \
                 .eq("user_id", user_id) \
                 .order("created_at", desc=True) \
                 .execute()

@@ -7,6 +7,7 @@ export const useOrderStore = defineStore("orderStore", {
             orders: [],
             currentOrder: null,
             loading: false,
+            selectedFilter: 'all',
         }
     },
 

@@ -30,6 +30,18 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
     if not cart or not cart.get("cart_items"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cart is empty")
 
+    # Idempotency: check if user has a pending order from same seller created in last 60s
+    dao_orders = DAOOrders()
+    recent = dao_orders.read_orders_by_user_id(user_id=user_id)
+    if recent:
+        import datetime
+        now = datetime.datetime.utcnow()
+        for r in recent:
+            if r["seller_id"] == cart["seller_id"] and r["status"] == "pending":
+                created = datetime.datetime.fromisoformat(r["created_at"].replace("Z", "+00:00").replace("+00:00", ""))
+                if (now - created).total_seconds() < 60:
+                    raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Duplicate order detected. Please wait.")
+
     # 2. Calculate total
     cart_items = cart["cart_items"]
     total_amount = sum(
@@ -38,7 +50,6 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
     )
 
     # 3. Create order
-    dao_orders = DAOOrders()
     order = dao_orders.create_order(
         user_id=user_id,
         seller_id=cart["seller_id"],
@@ -51,13 +62,20 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
     if not order:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create order")
 
-    # 4. Copy cart items → order items (snapshot)
-    dao_order_items = DAOOrderItems()
-    dao_order_items.create_order_items_from_cart(order_id=order["id"], cart_items=cart_items)
+    # 4. Copy cart items → order items (snapshot). Rollback order if fails.
+    try:
+        dao_order_items = DAOOrderItems()
+        dao_order_items.create_order_items_from_cart(order_id=order["id"], cart_items=cart_items)
+    except Exception as e:
+        dao_orders.update_order_status(order_id=order["id"], status="cancelled")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create order items")
 
-    # 5. Clear cart
-    dao_cart = DAOCarts()
-    dao_cart.delete_cart(cart_id=cart["id"])
+    # 5. Clear cart (best-effort — order already committed)
+    try:
+        dao_cart = DAOCarts()
+        dao_cart.delete_cart(cart_id=cart["id"])
+    except Exception as e:
+        logger.warning(f"Failed to clear cart after order {order['id']}: {e}")
 
     return {"success": True, "order": order}
 

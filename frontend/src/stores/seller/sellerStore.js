@@ -82,7 +82,6 @@ export const useSellerStore = defineStore('sellerStore', {
         async getSellerbySlugName(slugName) {
             try {
                 const res = await apiSellers.getSellerbySlugName(slugName)
-                console.log('getSellerbySlugName response:', res?.data)
                 if (res?.data) {
                     this.seller = res.data.seller
                 }
@@ -98,7 +97,7 @@ export const useSellerStore = defineStore('sellerStore', {
                 if (res?.data) {
                     this.menus = res.data.menus
                     this.menuCategories = this.menus.map(c => ({ id: c.id, name: c.name }))
-                    this.selectedCategoryMenu = this.menus.find(menu => {return menu.food_items.length > 0}).id
+                    this.selectedCategoryMenu = this.menus.find(menu => menu.food_items.length > 0)?.id || null
                 }
             } catch (e) {
                 console.error(`sellerStore - getSellerFullMenu - ${e}`);

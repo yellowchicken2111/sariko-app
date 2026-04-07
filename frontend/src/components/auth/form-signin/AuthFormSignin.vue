@@ -28,7 +28,8 @@ export default {
 
     methods: {
         ...mapActions(useAuthStore, [
-            "validateField"
+            "validateField",
+            "onClickedSignin"
         ])
     }
 }
@@ -36,7 +37,7 @@ export default {
 
 <template>
 
-    <div class="container">
+    <q-form class="container" @submit.prevent="onClickedSignin">
 
         <div class="greeting">
             <div class="text-greeting">
@@ -105,7 +106,7 @@ export default {
         <div class="button-signin">
             <ButtonSignin />
         </div>
-    </div>
+    </q-form>
 
 </template>
 

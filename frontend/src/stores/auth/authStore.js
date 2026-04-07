@@ -9,14 +9,14 @@ export const useAuthStore = defineStore("authStore", {
     state() {
         return {
             // signin
-            inputSignInEmail: 'jack@sariko.store',
-            inputSignInPassword: '123456',
+            inputSignInEmail: '',
+            inputSignInPassword: '',
 
             // signup
-            inputSignUpFullName: 'Philippine BBQ Drinks',
-            inputSignUpEmail: 'seller.philippinebbqdrinks@sariko.store',
-            inputSignUpPassword: 'Dz9117&l51',
-            isSelectedSignUpRoleSeller: true,
+            inputSignUpFullName: '',
+            inputSignUpEmail: '',
+            inputSignUpPassword: '',
+            isSelectedSignUpRoleSeller: false,
 
             // errors state
             errors: {
@@ -206,14 +206,15 @@ export const useAuthStore = defineStore("authStore", {
                     this.isSelectedSignUpRoleSeller,
                 );
                 if (res?.session && res?.user) {
+                    this._setFromSession(res.session);
                     Notify.create({
                         classes: 'quasar-notify-positive',
-                        message: "Account created successfully. You can now sign in.",
+                        message: "Welcome to Sariko! Let's set up your profile.",
                         progress: true,
                         icon: 'fa-regular fa-circle-check',
                         position: "bottom",
                     });
-                    router.push({ name: "signin" });
+                    router.push({ name: "onboarding" });
                 }
             } catch (error) {
                 console.error(`authStore - onClickedSignup - ${error}`);
@@ -238,6 +239,7 @@ export const useAuthStore = defineStore("authStore", {
                 await apiAuth.authSignout();
                 this.session = null;
                 this.user = null;
+                useCartStore().$reset();
                 Notify.create({
                     classes: 'quasar-notify-positive',
                     message: "Signed out successfully.",
@@ -256,6 +258,7 @@ export const useAuthStore = defineStore("authStore", {
                 await apiAuth.authSignout();
                 this.session = null;
                 this.user = null;
+                useCartStore().$reset();
                 Notify.create({
                     classes: 'quasar-notify-negative',
                     message: "Session expired. Please log in again.",

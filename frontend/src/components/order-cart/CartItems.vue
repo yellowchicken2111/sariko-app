@@ -87,6 +87,7 @@ export default {
     padding: 15px 15px 15px 10px;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
+    background: rgba(255, 255, 255, 0.05);
 }   
 
 .seller-store {
@@ -116,5 +117,6 @@ export default {
     // background-color: var(--bg-surface);
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
+    background: rgba(255, 255, 255, 0.05);
 }
 </style>

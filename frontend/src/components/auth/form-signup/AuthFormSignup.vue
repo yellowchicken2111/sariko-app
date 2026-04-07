@@ -31,7 +31,8 @@ export default {
 
     methods: {
         ...mapActions(useAuthStore, [
-            "validateField"
+            "validateField",
+            "onClickedSignup"
         ])
     }
 }
@@ -39,7 +40,7 @@ export default {
 
 <template>
 
-    <div class="container">
+    <q-form class="container" @submit.prevent="onClickedSignup">
 
         <div class="greeting">
             <div class="text-greeting">
@@ -169,13 +170,10 @@ export default {
             </div>
         </div>
 
-        <div v-if="!isLoading" class="button-signup">
+        <div class="button-signup">
             <ButtonSignup />
         </div>
-        <div v-else class="spinner">
-            <q-spinner color="primary" size="3em" />
-        </div>
-    </div>
+    </q-form>
 
 </template>
 

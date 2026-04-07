@@ -31,7 +31,7 @@ export default {
             this.submitting = true
             try {
                 const authStore = useAuthStore()
-                const address = authStore.user?.address || ''
+                const address = authStore.inputAddress || authStore.user?.address || ''
                 const orderStore = useOrderStore()
                 const order = await orderStore.placeOrder('delivery', address, this.note || null)
                 if (order) {
@@ -41,6 +41,8 @@ export default {
                 }
             } catch (e) {
                 console.error(e)
+                const cartStore = useCartStore()
+                await cartStore.refreshCart()
                 this.$q.notify({
                     type: 'negative',
                     message: 'Failed to place order. Please try again.',

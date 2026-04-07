@@ -126,10 +126,9 @@ export default {
     padding: 5px 0px 0px 20px;
 }
 
-.container { 
+.container {
     font-family: $sariko-font-family-secondary;
     padding: 10px;
-    // border: solid 1px 
 }
 
 .item-image {

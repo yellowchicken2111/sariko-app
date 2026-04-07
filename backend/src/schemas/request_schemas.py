@@ -1,5 +1,6 @@
 from typing import (
     List,
+    Literal,
     Union,
     Optional
 )
@@ -22,6 +23,6 @@ class RequestUpdateCartItem(BaseModel):
 
 # Order API
 class RequestCreateOrder(BaseModel):
-    delivery_method: str  # "pickup" or "delivery"
+    delivery_method: Literal["pickup", "delivery"]
     delivery_address: Optional[str] = None
     note: Optional[str] = None

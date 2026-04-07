@@ -12,13 +12,8 @@ export default {
         ...mapState(useAuthStore, [
             "errors",
             "inputSignInEmail",
-            "inputSignInPassword"
-        ])
-    },
-
-    methods: {
-        ...mapActions(useAuthStore, [
-            "onClickedSignin"
+            "inputSignInPassword",
+            "isLoading"
         ])
     }
 }
@@ -26,9 +21,10 @@ export default {
 
 <template>
     <q-btn flat no-caps
+    type="submit"
     class="button-signin"
+    :loading="isLoading"
     :disable="Object.values(errors).some((e) => !!e) || !inputSignInEmail || !inputSignInPassword"
-    @click="onClickedSignin"
     >
         <LogIn class="icon"/> {{ $t('auth_page.auth_input_fields.signin.button_label_text_signin') }}
     </q-btn>

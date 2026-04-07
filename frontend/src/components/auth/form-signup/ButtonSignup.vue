@@ -27,10 +27,11 @@ export default {
 </script>
 
 <template>
-    <q-btn flat no-caps 
+    <q-btn flat no-caps
+    type="submit"
+    :loading="isLoading"
     :disable="Object.values(errors).some((e) => !!e) || !inputSignUpFullName || !inputSignUpEmail || !inputSignUpPassword"
-    class="button-signup" 
-    @click="onClickedSignup">
+    class="button-signup">
         <UserRoundPlus class="icon" /> {{ $t('auth_page.auth_input_fields.signup.button_label_text_signup') }}
     </q-btn>
 </template>

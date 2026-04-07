@@ -1,10 +1,10 @@
 <script>
-import { CircleCheckBig, ShoppingBag, ChevronLeft } from 'lucide-vue-next';
+import { CircleCheckBig, Clock, CircleX, ShoppingBag, ChevronLeft } from 'lucide-vue-next';
 import { useOrderStore } from '@/stores/order/orderStore.js';
 
 export default {
     components: {
-        CircleCheckBig, ShoppingBag, ChevronLeft
+        CircleCheckBig, Clock, CircleX, ShoppingBag, ChevronLeft
     },
 
     props: {
@@ -18,6 +18,8 @@ export default {
         return {
             order: null,
             loading: true,
+            cancelling: false,
+            showCancelDialog: false,
         }
     },
 
@@ -35,25 +37,84 @@ export default {
                 cancelled: 'Cancelled',
             }
             return map[this.order?.status] || this.order?.status
+        },
+        statusColor() {
+            const map = {
+                pending: 'amber',
+                confirmed: 'info',
+                ready: 'positive',
+                done: 'positive',
+                cancelled: 'negative',
+            }
+            return map[this.order?.status] || 'grey'
+        },
+        statusTitle() {
+            const map = {
+                pending: 'Order Placed!',
+                confirmed: 'Order Confirmed',
+                ready: 'Order Ready!',
+                done: 'Order Completed',
+                cancelled: 'Order Cancelled',
+            }
+            return map[this.order?.status] || 'Order'
+        },
+        statusSubtext() {
+            const map = {
+                pending: 'Your order has been sent. The seller will confirm shortly.',
+                confirmed: 'The seller is preparing your order.',
+                ready: this.order?.delivery_method === 'delivery'
+                    ? 'Your order is ready for pickup by rider.'
+                    : 'Your order is ready! Head to the store.',
+                done: 'Enjoy your meal!',
+                cancelled: 'This order has been cancelled.',
+            }
+            return map[this.order?.status] || ''
+        },
+        statusIconColor() {
+            const map = {
+                pending: '#f59e0b',
+                confirmed: '#3b82f6',
+                ready: '#10b981',
+                done: '#10b981',
+                cancelled: '#ef4444',
+            }
+            return map[this.order?.status] || '#ffffff'
+        },
+        isPending() {
+            return this.order?.status === 'pending'
+        },
+        isDone() {
+            return this.order?.status === 'done'
+        },
+        isCancelled() {
+            return this.order?.status === 'cancelled'
         }
     },
 
     async mounted() {
         const orderStore = useOrderStore()
-
-        if (orderStore.currentOrder?.id === this.orderId) {
-            this.order = orderStore.currentOrder
-            this.loading = false
-        } else {
-            await orderStore.getOrderDetail(this.orderId)
-            this.order = orderStore.currentOrder
-            this.loading = false
-        }
+        await orderStore.getOrderDetail(this.orderId)
+        this.order = orderStore.currentOrder
+        this.loading = false
     },
 
     methods: {
         formatPrice(value) {
             return new Intl.NumberFormat('vi-VN').format(value) + ' ₫'
+        },
+
+        async onCancelOrder() {
+            this.cancelling = true
+            try {
+                const orderStore = useOrderStore()
+                await orderStore.cancelOrder(this.orderId)
+                this.order = { ...this.order, status: 'cancelled' }
+                this.showCancelDialog = false
+            } catch (e) {
+                this.$q.notify({ type: 'negative', message: 'Failed to cancel order', position: 'top' })
+            } finally {
+                this.cancelling = false
+            }
         }
     }
 }
@@ -66,7 +127,7 @@ export default {
             <q-btn flat round dense @click="$router.push('/orders')">
                 <ChevronLeft />
             </q-btn>
-            <div class="header-title">Order Confirmation</div>
+            <div class="header-title">Order Detail</div>
             <div style="width: 40px" />
         </div>
 
@@ -76,20 +137,21 @@ export default {
 
         <div v-else-if="order" class="content">
 
-            <div class="success-icon">
-                <CircleCheckBig :size="64" color="#10b981" />
+            <!-- Status Icon -->
+            <div class="status-icon">
+                <CircleX v-if="isCancelled" :size="64" :color="statusIconColor" />
+                <Clock v-else-if="isPending" :size="64" :color="statusIconColor" />
+                <CircleCheckBig v-else :size="64" :color="statusIconColor" />
             </div>
 
-            <div class="success-text">Order Placed!</div>
-            <div class="success-subtext">
-                Your order has been placed successfully.
-                The seller will confirm your order shortly.
-            </div>
+            <div class="status-title">{{ statusTitle }}</div>
+            <div class="status-subtext">{{ statusSubtext }}</div>
 
+            <!-- Order Info Card -->
             <div class="order-card">
                 <div class="order-row">
                     <span class="label">Status</span>
-                    <q-badge :color="order.status === 'pending' ? 'amber' : 'positive'" text-color="black">
+                    <q-badge :color="statusColor" text-color="black">
                         {{ statusLabel }}
                     </q-badge>
                 </div>
@@ -125,7 +187,12 @@ export default {
                 </div>
             </div>
 
+            <!-- Actions -->
             <div class="actions">
+                <q-btn v-if="isPending" class="btn-cancel" flat dense no-caps @click="showCancelDialog = true">
+                    Cancel Order
+                </q-btn>
+
                 <q-btn class="btn-orders" dense no-caps @click="$router.push('/orders')">
                     <ShoppingBag style="margin-right: 8px" :size="18" />
                     View My Orders
@@ -136,6 +203,20 @@ export default {
             </div>
 
         </div>
+
+        <!-- Cancel Confirmation Dialog -->
+        <q-dialog v-model="showCancelDialog">
+            <q-card class="cancel-dialog">
+                <q-card-section>
+                    <div class="dialog-title">Cancel this order?</div>
+                    <div class="dialog-text">This action cannot be undone.</div>
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat no-caps label="Keep Order" v-close-popup />
+                    <q-btn flat no-caps label="Cancel Order" color="negative" :loading="cancelling" @click="onCancelOrder" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
 
     </div>
 </template>
@@ -173,17 +254,17 @@ export default {
     align-items: center;
 }
 
-.success-icon {
+.status-icon {
     margin-bottom: 16px;
 }
 
-.success-text {
+.status-title {
     font-size: 22px;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
-.success-subtext {
+.status-subtext {
     font-size: 14px;
     color: rgba(255,255,255,0.5);
     text-align: center;
@@ -193,7 +274,8 @@ export default {
 
 .order-card {
     width: 100%;
-    background-color: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 28px;
@@ -237,6 +319,16 @@ export default {
     gap: 10px;
 }
 
+.btn-cancel {
+    width: 100%;
+    color: $negative;
+    border: 1px solid rgba($negative, 0.3);
+    padding: 12px 0;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 15px;
+}
+
 .btn-orders {
     width: 100%;
     background-color: $accent;
@@ -251,5 +343,22 @@ export default {
     width: 100%;
     color: rgba(255,255,255,0.6);
     font-size: 14px;
+}
+
+.cancel-dialog {
+    background-color: #1f2940;
+    border-radius: 16px;
+    min-width: 280px;
+}
+
+.dialog-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.dialog-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
 }
 </style>

@@ -115,29 +115,30 @@ See `backend/src/sql/create_tables.sql` for full schema.
 - Border radius: 16px ($radius-base)
 - Quasar components + Lucide icons
 
-## Current Status (as of Apr 7, 2026)
+## Current Status (as of Apr 8, 2026)
 
 ### Done
-- Home page (browse sellers, founding sellers, featured dishes)
-- Seller page (info, menu, category filter, skeleton loading)
-- Cart (add/remove, qty +/-, single-seller conflict modal, note, delivery address, place order)
-- Auth (signin, signup, session restore, cart preload on login)
-- Buyer onboarding (phone, delivery address with Leaflet map, language preference)
-- Backend: Cart APIs, Order APIs (create, list, detail, cancel)
-- Order confirmation page
+- Home page (browse sellers, founding sellers with skeleton, featured dishes with 6-item limit)
+- Seller page (info, menu, category filter, section-level skeleton loading, empty menu state)
+- Cart page (add/remove, qty +/-, single-seller conflict modal, note, delivery address, place order — merged cart+checkout like ShopeeFood)
+- Auth (signin, signup with Enter key support, loading states, session restore, cart preload on login, cart clear on signout)
+- Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — wired into signup flow
+- Backend: Cart APIs (add with duplicate check, update with qty>0 validation, remove, clear)
+- Backend: Order APIs (create with rollback + idempotency guard, list, detail, cancel)
+- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled, cancel button with dialog)
+- Order history page (layout, breadcrumbs, filter tabs, order cards — wired to real GET /orders API)
 
 ### TODO (MVP required)
-- Order History page (frontend — wire to real API, currently mock data)
-- Order Detail/Tracking page (frontend)
 - Seller Dashboard + order management (backend + frontend — no seller-side APIs exist yet)
 - Payment (bank transfer QR at minimum)
+- VNPay sandbox integration (creds expected Apr 8)
 - Vietnamese localization
 - Policy pages
 - Production deployment
 
 ### Known Issues (from code review)
-- Order creation not atomic (partial failure risk)
-- No idempotency guard on POST /orders
-- OrdersPage.vue uses mock data instead of real API
-- `q-scroll-area` needs fixed parent height + `overflow: hidden` on container
-- Some components have flash of empty state before data loads
+- Onboarding data not persisted to backend (no PATCH /users/me/profile endpoint)
+- No route guards (authenticated pages accessible without login)
+- `delivery_method` hardcoded to 'delivery' — no UI to choose pickup
+- `refreshCart()` causes brief flash of empty state before data loads
+- Order confirmation uses stale store data when navigating from place order (items/seller missing from POST response)
