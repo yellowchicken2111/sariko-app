@@ -64,7 +64,7 @@ export default {
 }
 
 .breadcrumbs {
-    // background-color: blue;
+    padding: 15px;
 }
 
 .container {

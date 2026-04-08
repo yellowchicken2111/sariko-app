@@ -16,7 +16,7 @@ from fastapi.exceptions import RequestValidationError
 from lifespan import lifespan
 
 from apis import (
-    users, sellers, cart, orders
+    users, sellers, cart, orders, payments
 )
 
 
@@ -74,6 +74,7 @@ app.include_router(users.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(sellers.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(cart.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(orders.router, prefix="/rest/v1", tags=["v1"])
+app.include_router(payments.router, prefix="/rest/v1", tags=["v1"])
 
 app.add_middleware(
     CORSMiddleware,
@@ -82,6 +83,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def get_health():
+    return {"success": True, "version": "v0", "service": "sariko-api"}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)

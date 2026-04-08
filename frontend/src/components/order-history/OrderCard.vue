@@ -24,10 +24,15 @@ export default {
             const d = new Date(this.order.created_at)
             return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
         },
+        isUnpaid() {
+            return this.order.payment_status === 'pending' && this.order.status !== 'cancelled'
+        },
         statusClass() {
+            if (this.isUnpaid) return 'status-unpaid'
             return `status-${this.order.status}`
         },
         statusLabel() {
+            if (this.isUnpaid) return 'Unpaid'
             const map = {
                 pending: 'Pending',
                 confirmed: 'Confirmed',
@@ -148,6 +153,11 @@ export default {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+}
+
+.status-unpaid {
+    background: rgba(249, 115, 22, 0.12);
+    color: #f97316;
 }
 
 .status-pending {

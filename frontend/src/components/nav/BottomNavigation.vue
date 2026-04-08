@@ -24,11 +24,14 @@ export default {
             return this.cartStore.itemCount
         },
         isShow() {
-            return this.$route.path != '/signin'
-                && this.$route.path != '/signup'
-                && this.$route.path != '/cart'
-                && this.$route.path != '/dummy'
-                && this.$route.path != '/onboarding'
+            const path = this.$route.path
+            return path != '/signin'
+                && path != '/signup'
+                && path != '/cart'
+                && path != '/dummy'
+                && path != '/onboarding'
+                && path != '/payment/return'
+                && !path.match(/^\/orders\/[^/]+$/)
         }
     },
     methods: {

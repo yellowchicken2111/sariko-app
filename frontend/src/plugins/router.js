@@ -60,6 +60,11 @@ const routes = [
     //     component: () => import('@/pages/CheckoutPage.vue')
     // },
     {
+        path: '/payment/return',
+        name: 'payment-return',
+        component: () => import('@/pages/PaymentReturnPage.vue')
+    },
+    {
         path: '/orders',
         name: 'orders',
         component: () => import('@/pages/OrdersPage.vue'),

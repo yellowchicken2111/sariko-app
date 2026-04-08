@@ -10,12 +10,14 @@ export default {
         tabs() {
             const source = this.orders
             const all = source.length
-            const active = source.filter(o => ['pending', 'confirmed', 'ready'].includes(o.status)).length
+            const unpaid = source.filter(o => o.payment_status === 'pending' && o.status !== 'cancelled').length
+            const active = source.filter(o => o.payment_status === 'paid' && ['pending', 'confirmed', 'ready'].includes(o.status)).length
             const completed = source.filter(o => o.status === 'done').length
             const cancelled = source.filter(o => o.status === 'cancelled').length
 
             return [
                 { key: 'all', label: 'All', count: all },
+                { key: 'unpaid', label: 'Unpaid', count: unpaid },
                 { key: 'active', label: 'Active', count: active },
                 { key: 'completed', label: 'Completed', count: completed },
                 { key: 'cancelled', label: 'Cancelled', count: cancelled },

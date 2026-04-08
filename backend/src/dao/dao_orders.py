@@ -83,6 +83,7 @@ class DAOOrders(DAOBase):
             result = self._supabase_client.table(self._table_name) \
                 .select("id, user_id, status, total_amount, delivery_fee, payment_status, delivery_method, delivery_address, note, created_at, users(name, email), order_items(id, name_snapshot, price_snapshot, quantity)") \
                 .eq("seller_id", seller_id) \
+                .eq("payment_status", "paid") \
                 .order("created_at", desc=True) \
                 .execute()
 
@@ -125,3 +126,37 @@ class DAOOrders(DAOBase):
             raise Exception(f"Supabase error - update_order_status: {e}")
         except Exception as e:
             raise Exception(f"error update_order_status: {e}")
+
+    def read_order_by_id_raw(self, order_id: str):
+        """Read order by ID without user scoping (for IPN server-to-server)."""
+        try:
+            result = self._supabase_client.table(self._table_name) \
+                .select("id, payment_status, status") \
+                .eq("id", order_id) \
+                .maybe_single() \
+                .execute()
+
+            return result.data if result and result.data else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_order_by_id_raw: {e}")
+        except Exception as e:
+            raise Exception(f"error read_order_by_id_raw: {e}")
+
+    def update_payment_status(self, order_id: str, payment_status: str, transaction_ref: str = None):
+        try:
+            update_data = {"payment_status": payment_status}
+            if transaction_ref:
+                update_data["transaction_ref"] = transaction_ref
+
+            self._supabase_client.table(self._table_name) \
+                .update(update_data) \
+                .eq("id", order_id) \
+                .execute()
+
+            return True
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - update_payment_status: {e}")
+        except Exception as e:
+            raise Exception(f"error update_payment_status: {e}")

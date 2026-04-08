@@ -35,7 +35,7 @@ export default {
             </div>
 
             <div class="featured-dishes-section">
-                <slot name="FeturedDishes" />
+                <slot name="FeaturedDishes" />
             </div>
 
             <div ref="bannerContent" class="banner">

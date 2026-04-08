@@ -31,11 +31,12 @@ Both must run simultaneously for local development. No test runner or linter is 
 - **Style**: Options API (not Composition API)
 - **Routing**: Vue Router with lazy-loaded pages
 - **Pattern**: Page = Layout (slots) + Components. Layout handles positioning/CSS, Components handle logic/store access.
+- **Full guide**: See `FRONTEND_GUIDE.md` for complete file inventory, pattern rules with examples, routes table, styling conventions, and shared components.
 - **API layer**: Axios with interceptors in `lib/axiosPolicy.js` — auto-injects Supabase access token, handles 401 refresh
 - **Auth**: Supabase JS client (`lib/supabase.js`), session managed in `stores/auth/authStore.js`
 - **Stores**: Domain-split Pinia stores — `authStore`, `cartStore`, `orderStore`, `homeStore`, `sellerStore`
 - **Components read/write stores directly** (not via props/events). This is a deliberate decision for this project.
-- **i18n**: vue-i18n with Filipino/English, locale persisted in localStorage
+- **i18n**: vue-i18n with Filipino/English + Vietnamese (`en-PH`, `vi`), locale persisted in localStorage
 - **Icons**: Lucide Vue Next
 - **Maps**: Leaflet (for delivery address)
 
@@ -71,8 +72,19 @@ Both must run simultaneously for local development. No test runner or linter is 
 - `GET /sellers/{slug_name}` — Seller profile
 - `GET /sellers/{slug_name}/menu` — Full menu grouped by category
 
+#### Seller Dashboard (`/sellers/me`)
+- `GET /sellers/me/orders` — List orders for authenticated seller
+- `GET /sellers/me/orders/{order_id}` — Seller order detail with items
+- `PATCH /sellers/me/orders/{order_id}/status` — Update order status (pending→confirmed→ready→done, with cancellation)
+
 #### Users (`/users`)
 - `GET /users/info/me` — Current user profile
+- `PATCH /users/me/profile` — Update user profile + upsert delivery address
+
+#### Payments (`/payments`)
+- `POST /payments/vnpay/create` — Create VNPay payment URL (HMAC-SHA512 signed)
+- `GET /payments/vnpay/ipn` — VNPay server-to-server IPN callback (verifies hash, updates payment status)
+- `GET /payments/vnpay/return` — VNPay browser return URL (read-only hash validation)
 
 ## Environment Setup
 
@@ -116,7 +128,7 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Border radius: 16px ($radius-base)
 - Quasar components + Lucide icons
 
-## Current Status (as of Apr 8, 2026)
+## Current Status (as of Apr 9, 2026)
 
 ### Done (Buyer-side)
 - Home page (browse sellers, founding sellers with skeleton, featured dishes with 6-item limit)
@@ -124,37 +136,50 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Food detail page (product info, qty selector, add to cart with toast notification)
 - Cart page (add/remove, qty +/-, single-seller conflict modal, note, delivery address, place order — merged cart+checkout like ShopeeFood)
 - Auth (signin, signup with Enter key support, loading states, session restore, cart preload on login, cart clear on signout)
-- Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI done, not persisted to backend
-- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled, cancel button with dialog, VND formatting)
-- Order history page (layout, breadcrumbs, filter tabs, order cards — wired to real GET /orders API)
+- Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI + backend persist via PATCH /users/me/profile
+- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled + awaiting payment state, cancel button with dialog, Pay Now retry button, VND formatting)
+- Order history page (filter tabs: All/Unpaid/Active/Completed/Cancelled, order cards with Unpaid badge, wired to real GET /orders API)
+- Account page (profile header, seller badge, buyer/seller mode switcher, settings links, sign out)
+- Vietnamese localization (vi.json 100% in sync with en-PH.json, vue-i18n configured)
+- Route guards (beforeEach: requiresAuth for cart/orders/dashboard/account/onboarding, guestOnly for signin/signup, redirect preserved)
+- Bottom nav hidden on order detail pages, payment return, cart, auth, onboarding
 - Backend: Sellers APIs (founding list, by slug, full menu by slug)
 - Backend: Cart APIs (add with duplicate check + single-seller constraint, update with qty>0 validation, remove, clear)
-- Backend: Order APIs (create with rollback + idempotency guard, list, detail, cancel — buyer-side only)
+- Backend: Order APIs (create with rollback + idempotency guard, list, detail, cancel — buyer-side)
+- Backend: VNPay payment gateway (create payment URL with full UUID txn_ref, IPN webhook with idempotency check, return URL verification — return endpoint is public/no auth)
+- Frontend: VNPay redirect flow (place order → VNPay gateway → payment return page, Pay Now retry on order detail)
+- Frontend: Payment return page (success/failed states, filters vnp_* params only)
+
+### Done (Seller-side)
+- Backend: Seller Dashboard APIs (GET /sellers/me/orders filtered to paid orders only, GET .../orders/{id}, PATCH .../status with state machine: pending→confirmed→ready→done + cancellation)
+- Frontend: SellerDashboard.vue wired to real APIs (no mock data)
+- Backend: core/sellers.py get_seller_full_menu() complete
+
+### Done (Architecture / Code Quality)
+- All 12 pages follow Page + Layout + Components pattern (see memory for rules)
+- Shared `PageBreadcrumbs` component used across Cart, My Orders, Order Detail
+- App.vue flex-direction fixed (column) for proper child layout rendering
+- Padding responsibility moved to Layout layer (not Components)
+- HomePage dead mock-data code cleaned up
 
 ### Partial / Stub
-- Seller Dashboard — UI with mock data exists, NO backend API integration
-- Onboarding — UI components exist but data NOT persisted (no PATCH /users/me/profile endpoint)
-- CheckoutStore — does not exist, checkout logic handled by cartStore + orderStore
-- Backend: GET /sellers/ — stub (just `pass`)
-- Backend: core/sellers.py — get_seller_full_menu() incomplete
+- `sellerStore.js` initializes with mock data from `data.js` for browse pages (overwritten by API calls at runtime — cosmetic issue)
+- `FoodDetailPage` refactored to pattern but needs `sellerStore.loadFoodDetail()`, `currentFood`, `currentSeller`, `foodQuantity` wired in store (old version used deprecated `_cartStore` + mock `data.js`)
+- Backend: `GET /sellers/` — stub (just `pass`, not used by any frontend page)
+- VNPay — backend endpoints done, sandbox testing in progress
+- Account page — UI done, but "Terms & Privacy Policy" menu item is not linked (no policy page exists)
 
 ### TODO (MVP required)
-- Seller Dashboard backend APIs (seller's orders list, update order status: confirm/ready/complete)
-- Seller Dashboard frontend wiring to real APIs
-- Payment (bank transfer QR at minimum)
-- VNPay sandbox integration (creds expected Apr 8)
-- Vietnamese localization (only en-PH locale exists)
-- Route guards (authenticated pages accessible without login)
-- PATCH /users/me/profile endpoint (persist onboarding data)
-- Policy pages
+- Wire FoodDetailPage to real sellerStore (currently broken after refactor — needs store methods)
+- Policy pages (Terms & Privacy)
 - Production deployment
+- Restrict CORS origins for production
 
-### Known Issues (from code review)
-- Onboarding data not persisted to backend (no PATCH /users/me/profile endpoint)
-- No route guards (authenticated pages accessible without login)
+### Known Issues
+- `/dashboard` route only checks login, not seller role — any logged-in user can access
+- No logic to consume `redirect` query param after successful signin
 - `delivery_method` hardcoded to 'delivery' — no UI to choose pickup
 - `refreshCart()` causes brief flash of empty state before data loads
-- Order confirmation uses stale store data when navigating from place order (items/seller missing from POST response)
-- OrderConfirmationPage hardcodes `vi-VN` locale formatting but no Vietnamese translation file exists
-- lifespan.py references `get_redis_service()` which is not implemented
+- `lifespan.py` calls `get_redis_service()` which is not imported/implemented (latent bug — will crash if lifespan runs)
 - Backend CORS allows all origins (should restrict in production)
+- `DashboardStats` and `RecentOrders` both call `getOrders()` independently (duplicated API call — could share via store)

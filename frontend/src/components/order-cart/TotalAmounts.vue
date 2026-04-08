@@ -4,6 +4,7 @@ import { mapGetters, mapState } from 'pinia';
 import { useCartStore } from '@/stores/cart/cartStore.js';
 import { useOrderStore } from '@/stores/order/orderStore.js';
 import { useAuthStore } from '@/stores/auth/authStore.js';
+import apiPayments from '@/apis/payments/apiPayments.js';
 
 export default {
     components: {
@@ -37,6 +38,19 @@ export default {
                 if (order) {
                     const cartStore = useCartStore()
                     cartStore.$reset()
+
+                    // Redirect to VNPay payment
+                    try {
+                        const payRes = await apiPayments.createVnpayPayment(order.id)
+                        if (payRes?.data?.payment_url) {
+                            window.location.href = payRes.data.payment_url
+                            return
+                        }
+                    } catch (payErr) {
+                        console.error('VNPay redirect failed, going to order confirmation:', payErr)
+                    }
+
+                    // Fallback: go to order confirmation if VNPay fails
                     this.$router.push({ name: 'order-confirmation', params: { orderId: order.id } })
                 }
             } catch (e) {

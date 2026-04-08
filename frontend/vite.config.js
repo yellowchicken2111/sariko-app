@@ -89,6 +89,6 @@ export default defineConfig({
                 changeOrigin: true,
             }
         },
-        allowedHosts: ['29028c0a736e.ngrok-free.app']
+        allowedHosts: ['preorbital-mona-magical.ngrok-free.dev']
     }
 })

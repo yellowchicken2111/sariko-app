@@ -39,6 +39,7 @@ export default {}
     top: 0;
     z-index: 50;
     flex-shrink: 0;
+    padding: 15px;
 }
 
 .filter-tabs-section {
