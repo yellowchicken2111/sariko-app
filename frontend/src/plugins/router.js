@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth/authStore'
+
+let _bootstrapped = false
 
 const routes = [
     {
@@ -18,17 +21,20 @@ const routes = [
     {
         path: '/signin',
         name: 'signin',
-        component: () => import('@/pages/auth/AuthPage.vue')
+        component: () => import('@/pages/auth/AuthPage.vue'),
+        meta: { guestOnly: true }
     },
     {
         path: '/signup',
         name: 'signup',
-        component: () => import('@/pages/auth/AuthPage.vue')
+        component: () => import('@/pages/auth/AuthPage.vue'),
+        meta: { guestOnly: true }
     },
     {
         path: '/onboarding',
         name: 'onboarding',
-        component: () => import('@/pages/Onboarding.vue')
+        component: () => import('@/pages/Onboarding.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/seller/:slugName',
@@ -45,7 +51,8 @@ const routes = [
     {
         path: '/cart',
         name: 'cart',
-        component: () => import('@/pages/CartPage.vue')
+        component: () => import('@/pages/CartPage.vue'),
+        meta: { requiresAuth: true }
     },
     // {
     //     path: '/checkout',
@@ -55,18 +62,33 @@ const routes = [
     {
         path: '/orders',
         name: 'orders',
-        component: () => import('@/pages/OrdersPage.vue')
+        component: () => import('@/pages/OrdersPage.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/orders/:orderId',
         name: 'order-confirmation',
         component: () => import('@/pages/OrderConfirmationPage.vue'),
-        props: true
+        props: true,
+        meta: { requiresAuth: true }
     },
     {
         path: '/dashboard',
         name: 'dashboard',
-        component: () => import('@/pages/SellerDashboard.vue')
+        component: () => import('@/pages/SellerDashboard.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account',
+        name: 'account',
+        component: () => import('@/pages/AccountPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/notifications',
+        name: 'notifications',
+        component: () => import('@/pages/NotificationsPage.vue'),
+        meta: { requiresAuth: true }
     }
 ]
 
@@ -79,6 +101,25 @@ export const router = createRouter({
         } else {
             return { top: 0 }
         }
+    }
+})
+
+router.beforeEach(async (to) => {
+    const authStore = useAuthStore()
+
+    if (!_bootstrapped) {
+        await authStore.bootstrap()
+        _bootstrapped = true
+    }
+
+    const isLoggedIn = !!authStore.user
+
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        return { name: 'signin', query: { redirect: to.fullPath } }
+    }
+
+    if (to.meta.guestOnly && isLoggedIn) {
+        return { name: 'home' }
     }
 })
 

@@ -104,7 +104,8 @@ Commit messages use conventional prefixes: `feat:`, `fix:`, `refactor:`
 
 users, seller_profiles, menu_categories, food_items, carts, cart_items, orders, order_items, reviews, payments, user_addresses, deliveries
 
-See `backend/src/sql/create_tables.sql` for full schema.
+See `backend/src/sql/create_tables.sql` for full schema (consolidated from v1+v2).
+Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for reference only.
 
 ## Design System
 
@@ -117,22 +118,34 @@ See `backend/src/sql/create_tables.sql` for full schema.
 
 ## Current Status (as of Apr 8, 2026)
 
-### Done
+### Done (Buyer-side)
 - Home page (browse sellers, founding sellers with skeleton, featured dishes with 6-item limit)
 - Seller page (info, menu, category filter, section-level skeleton loading, empty menu state)
+- Food detail page (product info, qty selector, add to cart with toast notification)
 - Cart page (add/remove, qty +/-, single-seller conflict modal, note, delivery address, place order — merged cart+checkout like ShopeeFood)
 - Auth (signin, signup with Enter key support, loading states, session restore, cart preload on login, cart clear on signout)
-- Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — wired into signup flow
-- Backend: Cart APIs (add with duplicate check, update with qty>0 validation, remove, clear)
-- Backend: Order APIs (create with rollback + idempotency guard, list, detail, cancel)
-- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled, cancel button with dialog)
+- Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI done, not persisted to backend
+- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled, cancel button with dialog, VND formatting)
 - Order history page (layout, breadcrumbs, filter tabs, order cards — wired to real GET /orders API)
+- Backend: Sellers APIs (founding list, by slug, full menu by slug)
+- Backend: Cart APIs (add with duplicate check + single-seller constraint, update with qty>0 validation, remove, clear)
+- Backend: Order APIs (create with rollback + idempotency guard, list, detail, cancel — buyer-side only)
+
+### Partial / Stub
+- Seller Dashboard — UI with mock data exists, NO backend API integration
+- Onboarding — UI components exist but data NOT persisted (no PATCH /users/me/profile endpoint)
+- CheckoutStore — does not exist, checkout logic handled by cartStore + orderStore
+- Backend: GET /sellers/ — stub (just `pass`)
+- Backend: core/sellers.py — get_seller_full_menu() incomplete
 
 ### TODO (MVP required)
-- Seller Dashboard + order management (backend + frontend — no seller-side APIs exist yet)
+- Seller Dashboard backend APIs (seller's orders list, update order status: confirm/ready/complete)
+- Seller Dashboard frontend wiring to real APIs
 - Payment (bank transfer QR at minimum)
 - VNPay sandbox integration (creds expected Apr 8)
-- Vietnamese localization
+- Vietnamese localization (only en-PH locale exists)
+- Route guards (authenticated pages accessible without login)
+- PATCH /users/me/profile endpoint (persist onboarding data)
 - Policy pages
 - Production deployment
 
@@ -142,3 +155,6 @@ See `backend/src/sql/create_tables.sql` for full schema.
 - `delivery_method` hardcoded to 'delivery' — no UI to choose pickup
 - `refreshCart()` causes brief flash of empty state before data loads
 - Order confirmation uses stale store data when navigating from place order (items/seller missing from POST response)
+- OrderConfirmationPage hardcodes `vi-VN` locale formatting but no Vietnamese translation file exists
+- lifespan.py references `get_redis_service()` which is not implemented
+- Backend CORS allows all origins (should restrict in production)

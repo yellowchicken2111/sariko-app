@@ -8,10 +8,11 @@
     },
     "bottom_nav": {
         "button_label_home": "Home",
-        "button_label_search": "Hanapin",
         "button_label_cart": "Cart",
         "button_label_orders": "Orders",
-        "button_label_dashboard": "Dashboard"
+        "button_label_dashboard": "Dashboard",
+        "button_label_notifications": "Alerts",
+        "button_label_account": "Account"
     },
     "auth_page": {
         "subtitle_text_header": "FILIPINO MARKETPLACE · HCMC NODE",

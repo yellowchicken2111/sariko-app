@@ -1,0 +1,125 @@
+{
+    "breadcrumbs": {
+        "cart_page": "Giỏ hàng",
+        "checkout_page": "Thanh toán"
+    },
+    "common": {
+        "button_label_cancel": "Hủy"
+    },
+    "bottom_nav": {
+        "button_label_home": "Trang chủ",
+        "button_label_cart": "Giỏ hàng",
+        "button_label_orders": "Đơn hàng",
+        "button_label_dashboard": "Quản lý",
+        "button_label_notifications": "Thông báo",
+        "button_label_account": "Tài khoản"
+    },
+    "auth_page": {
+        "subtitle_text_header": "CHỢ FILIPINO · HỒ CHÍ MINH",
+        "auth_button_group": {
+            "label_signin": "Đăng nhập",
+            "label_signout": "Đăng ký"
+        },
+        "auth_input_fields": {
+            "common": {
+                "input_label_email": "EMAIL",
+                "input_label_password": "MẬT KHẨU",
+                "input_label_full_name": "HỌ TÊN",
+                "input_label_role_selection": "TÔI MUỐN"
+            },
+            "signin": {
+                "greeting_text_signin": "Chào mừng trở lại!",
+                "greeting_subtext_signin": "Đăng nhập bằng email đã đăng ký",
+                "button_label_text_signin": "Đăng nhập"
+            },
+            "signup": {
+                "greeting_text_signup": "Tham gia Sariko! 🇵🇭",
+                "greeting_subtext_signup": "Mua hoặc bán đồ ăn Filipino tại TPHCM",
+                "title_text_role_buyer": "Mua",
+                "title_subtext_role_buyer": "Tìm đồ ăn Filipino",
+                "title_text_role_seller": "Bán",
+                "title_subtext_role_seller": "Trở thành người bán",
+                "button_label_text_signup": "Tạo tài khoản"
+            }
+        }
+    },
+    "onboarding_page": {
+        "buyer": {
+            "greeting_text": "Chào mừng đến Sariko!",
+            "greeting_subtext": "Hãy cùng thiết lập để bạn có thể đặt món ngon",
+            "section_phone_number": {
+                "title": "Số điện thoại",
+                "tooltip": "Người bán và tài xế sẽ dùng số này để liên hệ bạn"
+            },
+            "section_delivery_address": {
+                "title": "Địa chỉ giao hàng",
+                "text_placeholder_address_details": "Chi tiết địa chỉ (tòa nhà, tầng, mốc)"
+            },
+            "section_preferred_language": {
+                "title": "Ngôn ngữ ưa thích"
+            },
+            "button_group": {
+                "button_label_text_start_ordering": "Bắt đầu đặt hàng",
+                "button_label_text_skip_for_now": "Bỏ qua"
+            }
+        }
+    },
+    "home_page": {
+        "section_header": {
+            "greeting_text_line_1": "Chào buổi sáng! ☀️",
+            "greeting_text_line_2": "Khám phá",
+            "greeting_location": "Filipino",
+            "greeting_text_line_3": "người bán gần bạn"
+        },
+        "section_founding_sellers": {
+            "title": "Người bán sáng lập",
+            "button_label_see_all": "Xem tất cả"
+        },
+        "section_featured_dishes": {
+            "title": "Món nổi bật",
+            "button_label_view_store": "Xem cửa hàng"
+        },
+        "section_banner": {
+            "banner_text_line_1": "TRỞ THÀNH NGƯỜI BÁN SÁNG LẬP",
+            "banner_text_line_2": "3 tháng MIỄN PHÍ gói Negosyo",
+            "banner_text_line_3": "50 suất · Đăng không giới hạn · Hoa hồng 15%"
+        }
+    },
+    "seller_page": {
+        "section_banner": {
+            "banner_card_rating_subtitle": "Đánh giá",
+            "banner_card_orders_subtitle": "Đơn hàng",
+            "banner_card_status_subtitle": "Trạng thái",
+            "banner_card_status_text_open": "Mở",
+            "banner_card_status_text_close": "Đóng"
+        },
+        "section_banner_featured": {
+            "banner_text_line_1": "3 tháng MIỄN PHÍ gói Negosyo",
+            "banner_text_line_2": "∞ sản phẩm · Hoa hồng 15% · Người bán sáng lập"
+        }
+    },
+    "cart_page": {
+        "section_delivery_address": {
+            "title": "GIAO ĐẾN {name}",
+            "button_label_text_edit": "Thay đổi"
+        },
+        "section_total_amount": {
+            "title_subtotal": "Tạm tính",
+            "title_estimated_delivery_fee": "Phí giao hàng (ước tính)",
+            "title_total_amount": "Tổng cộng",
+            "button_label_checkout": "Đặt hàng"
+        },
+        "modal_cart_conflict": {
+            "title_header": "Tạo giỏ hàng mới?",
+            "text_message_1": "Bạn đã có sản phẩm từ",
+            "text_message_2": " Thêm sản phẩm từ cửa hàng khác sẽ thay thế giỏ hàng hiện tại",
+            "button_label_go_to_cart": "Đi đến giỏ hàng",
+            "button_label_clear_cart": "Xóa giỏ và thêm mới"
+        }
+    },
+    "checkout_page": {
+        "section_cart_review": {
+            "text_item": "sản phẩm"
+        }
+    }
+}

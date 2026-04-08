@@ -54,8 +54,20 @@ class DAOSellerProfiles(DAOBase):
             raise Exception(f"error read_seller_id_by_slug_name with slug {slug}: {e}")
             
         
-    def read_seller_profiles_by_seller_id(self, seller_id):
-        pass
+    def read_seller_profile_by_user_id(self, user_id: str):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .select("id, store_name, slug, avatar_url")
+                .eq("user_id", user_id)
+                .maybe_single()
+                .execute()
+            )
+            return result.data if result and result.data else None
+
+        except Exception as e:
+            raise Exception(f"error read_seller_profile_by_user_id: {e}")
     
     def read_store_slug_name_by_seller_id(self, seller_id):
         

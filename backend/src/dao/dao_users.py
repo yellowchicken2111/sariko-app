@@ -35,4 +35,28 @@ class DAOUsers(DAOBase):
                 
         except Exception as e:
             raise Exception(f"error get_users with user_id {user_id}: {e}")
-        
+
+    def update_user_profile(self, user_id: str, data: dict):
+        try:
+            update_fields = {}
+            if "phone" in data and data["phone"] is not None:
+                update_fields["phone"] = data["phone"]
+            if "preferred_language" in data and data["preferred_language"] is not None:
+                update_fields["preferred_language"] = data["preferred_language"]
+
+            if not update_fields:
+                return None
+
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .update(update_fields)
+                .eq("id", user_id)
+                .execute()
+            )
+            return result.data[0] if result and result.data else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - update_user_profile: {e}")
+        except Exception as e:
+            raise Exception(f"error update_user_profile: {e}")

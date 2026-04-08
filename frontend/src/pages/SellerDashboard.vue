@@ -56,18 +56,31 @@
         <!-- Recent Orders -->
         <section class="recent-orders-section">
             <h2 class="section-title">Recent Orders</h2>
-            <div class="orders-list">
-                <div v-for="order in dashboardData.recentOrders" :key="order.id" class="order-item">
+
+            <div v-if="isLoading" class="orders-list">
+                <q-skeleton v-for="n in 3" :key="n" type="rect" height="80px" style="border-radius: 16px;" animation="pulse" />
+            </div>
+
+            <div v-else-if="recentOrders.length === 0" class="empty-state">
+                <p>No orders yet</p>
+            </div>
+
+            <div v-else class="orders-list">
+                <div v-for="order in recentOrders" :key="order.id" class="order-item">
                     <div class="order-info">
                         <h4 class="customer-name">{{ order.customerName }}</h4>
-                        <p class="order-items-text">{{ order.items.join(', ') }}</p>
+                        <p class="order-items-text">{{ order.itemsText }}</p>
                         <span class="order-time">{{ order.time }}</span>
                     </div>
                     <div class="order-actions">
-                        <span class="order-status" :class="getStatusClass(order.status)">
-                            {{ order.status }}
+                        <span class="order-status" :class="getStatusClass(order.displayStatus)">
+                            {{ order.displayStatus }}
                         </span>
-                        <button class="action-btn" @click="updateStatus(order)">
+                        <button
+                            v-if="order.status !== 'done' && order.status !== 'cancelled'"
+                            class="action-btn"
+                            @click="updateStatus(order)"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -79,58 +92,107 @@
                 </div>
             </div>
         </section>
-
-        <!-- Toast notification -->
-        <transition name="toast">
-            <div v-if="showToast" class="toast">
-                {{ toastMessage }}
-            </div>
-        </transition>
     </div>
 </template>
 
 <script>
-import { dashboardData } from '../stores/data'
+import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard'
+import { Notify } from 'quasar'
+
+const STATUS_DISPLAY = {
+    pending: 'Pending',
+    confirmed: 'Preparing',
+    ready: 'Ready',
+    done: 'Delivered',
+    cancelled: 'Cancelled',
+}
+
+const STATUS_NEXT = {
+    pending: 'confirmed',
+    confirmed: 'ready',
+    ready: 'done',
+}
 
 export default {
     name: 'SellerDashboard',
     data() {
         return {
-            dashboardData: dashboardData,
-            showToast: false,
-            toastMessage: ''
+            orders: [],
+            isLoading: true,
         }
     },
     computed: {
+        dashboardData() {
+            const totalOrders = this.orders.length
+            const revenue = this.orders
+                .filter(o => o.status !== 'cancelled')
+                .reduce((sum, o) => sum + (o.total_amount || 0), 0)
+            const pendingOrders = this.orders.filter(o => o.status === 'pending').length
+
+            return { totalOrders, revenue, pendingOrders }
+        },
         formattedRevenue() {
             return this.dashboardData.revenue.toLocaleString()
-        }
+        },
+        recentOrders() {
+            return this.orders.slice(0, 20).map(order => ({
+                ...order,
+                displayStatus: STATUS_DISPLAY[order.status] || order.status,
+                customerName: order.users?.name || order.users?.email || 'Customer',
+                itemsText: (order.order_items || []).map(i => i.name_snapshot).join(', '),
+                time: new Date(order.created_at).toLocaleString(),
+            }))
+        },
+    },
+    async mounted() {
+        await this.fetchOrders()
     },
     methods: {
-        getStatusClass(status) {
+        async fetchOrders() {
+            this.isLoading = true
+            try {
+                const res = await apiSellerDashboard.getOrders()
+                this.orders = res.orders || []
+            } catch (e) {
+                console.error('Failed to fetch seller orders:', e)
+            } finally {
+                this.isLoading = false
+            }
+        },
+        getStatusClass(displayStatus) {
             const statusMap = {
                 'Pending': 'status-pending',
                 'Preparing': 'status-preparing',
                 'Ready': 'status-ready',
                 'Delivered': 'status-delivered',
-                'Cancelled': 'status-cancelled'
+                'Cancelled': 'status-cancelled',
             }
-            return statusMap[status] || 'status-pending'
+            return statusMap[displayStatus] || 'status-pending'
         },
-        updateStatus(order) {
-            const statusFlow = ['Pending', 'Preparing', 'Ready', 'Delivered']
-            const currentIndex = statusFlow.indexOf(order.status)
+        async updateStatus(order) {
+            const nextStatus = STATUS_NEXT[order.status]
+            if (!nextStatus) return
 
-            if (currentIndex < statusFlow.length - 1) {
-                order.status = statusFlow[currentIndex + 1]
-                this.toastMessage = `Order updated to ${order.status}`
-                this.showToast = true
-                setTimeout(() => {
-                    this.showToast = false
-                }, 2000)
+            try {
+                await apiSellerDashboard.updateOrderStatus(order.id, nextStatus)
+                order.status = nextStatus
+                Notify.create({
+                    classes: 'quasar-notify-positive',
+                    message: `Order updated to ${STATUS_DISPLAY[nextStatus]}`,
+                    progress: true,
+                    position: 'bottom',
+                })
+            } catch (e) {
+                console.error('Failed to update order status:', e)
+                Notify.create({
+                    classes: 'quasar-notify-negative',
+                    message: 'Failed to update order status',
+                    progress: true,
+                    position: 'bottom',
+                })
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

@@ -1,5 +1,6 @@
 import { createI18n  } from 'vue-i18n'
 import en_ph from '@/i18n/locales/en-PH.json'
+import vi from '@/i18n/locales/vi.json'
 
 const savedLang = localStorage.getItem("lang") || "en_ph";
 
@@ -9,6 +10,7 @@ const i18n = createI18n({
     fallbackLocale: "en_ph",
     messages: {
         en_ph,
+        vi,
     }
 })
 

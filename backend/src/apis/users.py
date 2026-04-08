@@ -16,6 +16,8 @@ from fastapi import (
 
 from core.auth import verify_token
 from dao.dao_users import DAOUsers
+from dao.dao_user_addresses import DAOUserAddresses
+from schemas.request_schemas import RequestUpdateProfile
 
 router = APIRouter(prefix="/users")
 logger = logging.getLogger(__name__)
@@ -45,6 +47,33 @@ def get_current_user_profile(user=Depends(verify_token)):
         )
         
         
+@router.patch("/me/profile")
+def update_current_user_profile(body: RequestUpdateProfile, user=Depends(verify_token)):
+    try:
+        user_id = user["id"]
+        dao_users = DAOUsers()
+        updated_user = dao_users.update_user_profile(user_id, body.model_dump(exclude_none=True))
+
+        if body.address:
+            dao_addresses = DAOUserAddresses()
+            dao_addresses.upsert_default_address(
+                user_id=user_id,
+                address=body.address,
+                address_details=body.address_details,
+                lat=body.lat,
+                lon=body.lon,
+            )
+
+        return {"success": True, "user": updated_user}
+
+    except Exception as e:
+        logger.exception(f"Exception in PATCH /users/me/profile: {repr(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"{repr(e)}",
+        )
+
+
 @router.get("/info/{user_id}")
 def get_user_profile(user_id: str, user=Depends(verify_token)):
     pass

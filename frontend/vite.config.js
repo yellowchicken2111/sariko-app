@@ -85,6 +85,7 @@ export default defineConfig({
         proxy: {
             '/rest': {
                 target: 'http://localhost:5000',
+                // target: 'http://10.10.1.114:5000',
                 changeOrigin: true,
             }
         },

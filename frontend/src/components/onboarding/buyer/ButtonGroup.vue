@@ -1,14 +1,46 @@
 <script>
+import { useAuthStore } from '@/stores/auth/authStore'
+import apiUsers from '@/apis/users/apiUsers'
+
+export default {
+    data() {
+        return {
+            isSaving: false,
+        }
+    },
+    methods: {
+        async saveAndContinue() {
+            const authStore = useAuthStore()
+            this.isSaving = true
+            try {
+                await apiUsers.updateProfile({
+                    phone: authStore.inputPhoneNumber,
+                    preferred_language: authStore.selectedPreferedLanguage,
+                    address: authStore.inputAddress,
+                    address_details: authStore.inputAddressDetails,
+                    lat: authStore.inputLat,
+                    lon: authStore.inputLon,
+                })
+            } catch (e) {
+                console.error('Failed to save onboarding profile:', e)
+            } finally {
+                this.isSaving = false
+                this.$router.push('/home')
+            }
+        },
+    },
+}
 </script>
 
 <template>
     <div class="button-container">
-        
+
         <q-btn
         class="button-start-ordering"
         flat
         no-caps
-        to="/home"
+        :loading="isSaving"
+        @click="saveAndContinue"
         >
             {{ $t('onboarding_page.buyer.button_group.button_label_text_start_ordering') }}
         </q-btn>

@@ -94,13 +94,15 @@ export const useSellerStore = defineStore('sellerStore', {
         async getSellerFullMenu(slugName) {
             try {
                 const res = await apiSellers.getSellerFullMenu(slugName)
-                if (res?.data) {
-                    this.menus = res.data.menus
-                    this.menuCategories = this.menus.map(c => ({ id: c.id, name: c.name }))
-                    this.selectedCategoryMenu = this.menus.find(menu => menu.food_items.length > 0)?.id || null
-                }
+                const menus = res?.data?.menus || []
+                this.menus = menus
+                this.menuCategories = menus.map(c => ({ id: c.id, name: c.name }))
+                this.selectedCategoryMenu = menus.find(menu => menu.food_items?.length > 0)?.id || null
             } catch (e) {
                 console.error(`sellerStore - getSellerFullMenu - ${e}`);
+                this.menus = []
+                this.menuCategories = []
+                this.selectedCategoryMenu = null
             }
         }
     }

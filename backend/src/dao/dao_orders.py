@@ -78,6 +78,37 @@ class DAOOrders(DAOBase):
         except Exception as e:
             raise Exception(f"error read_order_by_id: {e}")
 
+    def read_orders_by_seller_id(self, seller_id: str):
+        try:
+            result = self._supabase_client.table(self._table_name) \
+                .select("id, user_id, status, total_amount, delivery_fee, payment_status, delivery_method, delivery_address, note, created_at, users(name, email), order_items(id, name_snapshot, price_snapshot, quantity)") \
+                .eq("seller_id", seller_id) \
+                .order("created_at", desc=True) \
+                .execute()
+
+            return result.data if result and result.data else []
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_orders_by_seller_id: {e}")
+        except Exception as e:
+            raise Exception(f"error read_orders_by_seller_id: {e}")
+
+    def read_order_by_id_for_seller(self, order_id: str, seller_id: str):
+        try:
+            result = self._supabase_client.table(self._table_name) \
+                .select("id, user_id, status, total_amount, delivery_fee, payment_status, delivery_method, delivery_address, note, created_at, users(name, email), order_items(id, name_snapshot, price_snapshot, unit_label_snapshot, quantity)") \
+                .eq("id", order_id) \
+                .eq("seller_id", seller_id) \
+                .maybe_single() \
+                .execute()
+
+            return result.data if result and result.data else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_order_by_id_for_seller: {e}")
+        except Exception as e:
+            raise Exception(f"error read_order_by_id_for_seller: {e}")
+
     def update_order_status(self, order_id: str, status: str):
         try:
             result = self._supabase_client.table(self._table_name) \

@@ -39,6 +39,7 @@ export const useAuthStore = defineStore("authStore", {
             session: null,
             user: null,
             isLoading: false,
+            viewMode: 'buyer', // 'buyer' | 'seller'
 
             // auth subscription
             _authSub: null,
@@ -56,6 +57,9 @@ export const useAuthStore = defineStore("authStore", {
                     email: session.user.email,
                     isSeller: meta.is_seller || false,
                 };
+                if (this.viewMode === 'buyer' && meta.is_seller) {
+                    this.viewMode = 'seller'
+                }
             } else {
                 this.session = null;
                 this.user = null;
@@ -173,7 +177,8 @@ export const useAuthStore = defineStore("authStore", {
                     progress: true,
                     position: "bottom",
                 });
-                router.push('/home');
+                const redirect = router.currentRoute.value.query.redirect || '/home';
+                router.push(redirect);
 
             } catch (error) {
                 console.error(`authStore - onClickedSignin - ${error}`);
@@ -251,6 +256,10 @@ export const useAuthStore = defineStore("authStore", {
             } catch (error) {
                 console.error(`authStore - onClickedSignout - ${error}`);
             }
+        },
+
+        switchViewMode() {
+            this.viewMode = this.viewMode === 'buyer' ? 'seller' : 'buyer'
         },
 
         async signOutRedirectSignIn() {
