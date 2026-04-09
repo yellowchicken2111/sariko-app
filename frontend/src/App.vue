@@ -1,11 +1,17 @@
 <script>
 import BottomNavigation from '@/components/nav/BottomNavigation.vue'
+import { setUpAxiosPolicy } from "@/lib/axiosPolicy.js";
 
 export default {
     name: 'App',
     components: {
         BottomNavigation
     },
+
+    setup() {        
+        setUpAxiosPolicy();
+    },
+
     data() {
         return {}
     },
@@ -20,23 +26,27 @@ export default {
 </script>
 
 <template>
-    <div class="app-container">
-        <router-view/>
-        <!-- <router-view v-slot="{ Component }"> -->
-            <!-- <transition name="fade" mode="out-in">
-                <component :is="Component" />
-            </transition> -->
-        <!-- </router-view> -->
+    <div class="background">
+        <div class="app-container">
+            <router-view/>
+            <!-- <router-view v-slot="{ Component }"> -->
+                <!-- <transition name="fade" mode="out-in">
+                    <component :is="Component" />
+                </transition> -->
+            <!-- </router-view> -->
+        </div>
         <BottomNavigation v-if="showNavigation" />
-    </div>
+    </div>    
 </template>
 
 <style scoped>
+
 .app-container {
     min-height: 100vh;
     max-width: 800px;
     width: 100%;
     display: flex;
+    flex-direction: column;
     margin: auto;
 }
 

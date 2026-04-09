@@ -28,3 +28,18 @@ next-env.d.ts
 .aider*
 
 .vscode
+
+*.pyc
+__pycache__
+
+backend/.sandbox
+backend/src/envs
+backend/src/logs
+
+# idea
+.idea
+
+
+
+# prototype designs
+frontend/.prototype

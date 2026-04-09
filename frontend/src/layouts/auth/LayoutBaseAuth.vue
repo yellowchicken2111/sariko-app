@@ -26,13 +26,16 @@
 <style scoped>
 
 .background {
-    height: 100vh;
+    min-height: 100vh;
+    height: fit-content;
     width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 10%;
-    background-color: #1B2A4A;
+    /* background-color: #1a2843; */
+    /* background: var(--bg-main); */
+    background-color: #121b2f;
+    padding: 50px 0px 100px 0px;
 }
 
 .container {
@@ -40,10 +43,11 @@
 }
 
 .section-auth-header {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .section-auth-button-group {
     width: 100%;
+    margin-bottom: 20px;
 }
 </style>

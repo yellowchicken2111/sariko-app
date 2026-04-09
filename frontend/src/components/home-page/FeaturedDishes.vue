@@ -8,10 +8,24 @@ export default {
         FeaturedDishCard
     },
 
+    data() {
+        return {
+            maxVisible: 6
+        }
+    },
+
     computed: {
         ...mapState(useHomeStore, [
             "featuredDishes"
-        ])
+        ]),
+
+        visibleDishes() {
+            return this.featuredDishes.slice(0, this.maxVisible)
+        },
+
+        hasMore() {
+            return this.featuredDishes.length > this.maxVisible
+        }
     }
 }
 
@@ -36,18 +50,20 @@ export default {
 
     </div>
     <div>
-        <q-scroll-area style="height: 400px; white-space: nowrap;">
-            <div class="row q-gutter-md" style="justify-content: stretch;">
-                <div v-for="(dish, index) in featuredDishes" class="col-6" style="width: 45%;">
-                    <FeaturedDishCard
-                    :name="dish.name"
-                    :price="dish.price"
-                    :imgSrc="dish.imgSrc"
-                    />
-                </div>
-
+        <div class="row q-gutter-md" style="justify-content: stretch;">
+            <div v-for="(dish, index) in visibleDishes" :key="index" class="col-6" style="width: 45%;">
+                <FeaturedDishCard
+                :name="dish.name"
+                :price="dish.price"
+                :imgSrc="dish.imgSrc"
+                />
             </div>
-        </q-scroll-area>
+        </div>
+        <div v-if="hasMore" class="see-all-container">
+            <q-btn class="btn-see-all" flat dense no-caps>
+                See all ({{ featuredDishes.length }})
+            </q-btn>
+        </div>
     </div>
 
 </div>
@@ -69,5 +85,17 @@ export default {
 .title {
     font-size: 13px;
     font-weight: 700;
+}
+
+.see-all-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.btn-see-all {
+    color: $accent;
+    font-size: 13px;
+    font-weight: 600;
 }
 </style>

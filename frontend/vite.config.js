@@ -85,9 +85,10 @@ export default defineConfig({
         proxy: {
             '/rest': {
                 target: 'http://localhost:5000',
+                // target: 'http://10.10.1.114:5000',
                 changeOrigin: true,
             }
         },
-        allowedHosts: ['29028c0a736e.ngrok-free.app']
+        allowedHosts: ['preorbital-mona-magical.ngrok-free.dev']
     }
 })

@@ -1,0 +1,41 @@
+from typing import (
+    List,
+    Literal,
+    Union,
+    Optional
+)
+from pydantic import BaseModel, Field
+
+
+# Cart API
+class RequestReadCartItems(BaseModel):
+    cart_id: Optional[str] = None
+    seller_id: Optional[str] = None
+    
+class RequestAddCartItem(BaseModel):
+    seller_id: str
+    food_item_id: str
+    quantity: Optional[int] = 1
+
+class RequestUpdateCartItem(BaseModel):
+    food_item_id: str
+    quantity: int = Field(gt=0)
+
+# User Profile API
+class RequestUpdateProfile(BaseModel):
+    phone: Optional[str] = None
+    preferred_language: Optional[str] = None
+    address: Optional[str] = None
+    address_details: Optional[str] = None
+    lat: Optional[float] = None
+    lon: Optional[float] = None
+
+# Order API
+class RequestCreateOrder(BaseModel):
+    delivery_method: Literal["pickup", "delivery"]
+    delivery_address: Optional[str] = None
+    note: Optional[str] = None
+
+# Seller Order API
+class RequestUpdateOrderStatus(BaseModel):
+    status: Literal["confirmed", "ready", "done", "cancelled"]

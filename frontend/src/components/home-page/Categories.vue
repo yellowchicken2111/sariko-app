@@ -1,22 +1,21 @@
 <script>
 import { mapActions, mapWritableState, mapState } from 'pinia';
-import { useSellerStore } from '@/stores/seller/seller-store';
+import { useSellerStore } from '@/stores/seller/sellerStore';
 
 export default {
     computed: {
         ...mapState(useSellerStore, [
-            "categoriesMenu"
+            "homeMenuCategories"
         ]),
 
         ...mapWritableState(useSellerStore, [
-            "selectedCategoryMenu"
+            "selectedHomeMenuCategory"
         ])
     }
 }
 </script>
 
 <template>
-
     <q-tabs
     no-caps=""
     dense 
@@ -26,9 +25,9 @@ export default {
     indicator-color="transparent"
     outside-arrows
     align="justify"
-    v-model="selectedCategoryMenu"
+    v-model="selectedHomeMenuCategory"
     >
-        <q-tab class="category" v-for="category in categoriesMenu" :name="category.label">
+        <q-tab class="category" v-for="category in homeMenuCategories" :name="category.label">
             <div>
                 {{category.icon}} {{ category.label }}
             </div>

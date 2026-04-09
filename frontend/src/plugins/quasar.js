@@ -8,9 +8,7 @@ export default function useQuasarPlugin(app) {
         iconSet: iconSet,
         config: {
             brand: {
-                // primary: '#027BE3',
-                // secondary: '#26A69A',
-                // accent: '#9C27B0',
+                bgInputField: '#040A14',
             }
         }
     })

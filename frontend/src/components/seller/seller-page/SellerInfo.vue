@@ -1,10 +1,28 @@
 <script>
+import { mapActions, mapState } from 'pinia';
 import LayoutSellerInfo from '@/layouts/seller/LayoutSellerInfo.vue';
 import { Check, Star, Flame } from 'lucide-vue-next';
+import { useSellerStore } from '@/stores/seller/sellerStore'
+
 export default {
+    
     components: {
         LayoutSellerInfo,
         Check, Flame, Star
+    },
+
+    data() {
+        return {
+        }
+    },
+
+    computed: {
+        ...mapState(useSellerStore, [
+            "seller"
+        ])
+    },
+
+    methods: {
     }
 }
 
@@ -16,19 +34,19 @@ export default {
 
         <template #SellerAvatar>
             <q-avatar size="64px">
-                <img src="/seller-avatar/seller_dummy_avatar_teresa.jpg">
+                <img :src="seller?.avatar_url">
             </q-avatar>
         </template>
 
         <template #SellerName>
             <div class="seller-name">
-                Teresa Canutba
+                {{ seller?.store_name }}
             </div>
         </template>
 
         <template #SellerAddress>
             <div class="seller-address">
-                🏠 Lutong Bahay · District 2, HCMC
+                🏠 {{ seller?.address }}
             </div>
         </template>         
 
@@ -38,14 +56,14 @@ export default {
                 class="tag-1"
                 >
                     <Star size="12px" :stroke-width='3'/>
-                    &nbsp Founding #1
+                    &nbsp Founding Seller
                 </q-chip>
 
                 <q-chip
                 class="tag-2"
                 >
                     <Check size="12px" :stroke-width='3'/>
-                    &nbsp Verify
+                    &nbsp Verified
                 </q-chip>
 
                 <q-chip

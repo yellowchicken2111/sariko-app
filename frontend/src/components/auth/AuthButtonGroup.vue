@@ -14,7 +14,8 @@ export default {
 
     methods: {
         onClicked(route) {
-            this.isSignin = route == 'signin'
+            const authStore = useAuthStore()
+            authStore.$reset()
             this.$router.push(`/${route}`)
         }
     },
@@ -50,7 +51,7 @@ export default {
 
 .button-group {
     width: 80%;
-    background-color: #151e2d;
+    background-color: var(--bg-main);
     padding: 3px;
     border-radius: 1.5rem;
 }
@@ -63,12 +64,12 @@ export default {
     padding: 10px 20px;
     height: 100%;
     border-radius: 1.5rem;
+    color: #49505c;
 }
 
 .button-active {
     background-color: $accent;
     color: #1B2A4A;
-    
 }
 
 </style>

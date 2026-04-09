@@ -31,9 +31,7 @@
                 <slot name="Menu" />
             </div>
 
-            <div class="">
-
-            </div>
+            <div class="safe-area" style="height: 85px;" />
 
         </div>
 
@@ -63,6 +61,8 @@
 }
 
 .categories-section {
+    width: 100%;
+    display: flex;
     margin-bottom: 0px;
 }
 

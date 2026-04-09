@@ -14,10 +14,11 @@
     },
     "dependencies": {
         "@quasar/extras": "^1.17.0",
-        "@supabase/supabase-js": "^2.89.0",
-        "axios": "^1.9.0",
+        "@supabase/supabase-js": "^2.100.0",
+        "axios": "1.9.0",
         "highcharts": "^12.4.0",
         "highcharts-vue": "^2.0.1",
+        "leaflet": "^1.9.4",
         "lucide-vue-next": "^0.516.0",
         "pinia": "^2.1.7",
         "pinia-plugin-persist": "^1.0.0",

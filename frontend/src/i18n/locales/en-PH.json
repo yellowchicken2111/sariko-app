@@ -1,16 +1,67 @@
 {
+    "breadcrumbs": {
+        "cart_page": "Cart",
+        "checkout_page": "Checkout"
+    },   
+    "common": {
+        "button_label_cancel": "Cancel"
+    },
     "bottom_nav": {
         "button_label_home": "Home",
-        "button_label_search": "Hanapin",
         "button_label_cart": "Cart",
         "button_label_orders": "Orders",
-        "button_label_dashboard": "Dashboard"
+        "button_label_dashboard": "Dashboard",
+        "button_label_notifications": "Alerts",
+        "button_label_account": "Account"
     },
     "auth_page": {
         "subtitle_text_header": "FILIPINO MARKETPLACE · HCMC NODE",
         "auth_button_group": {
             "label_signin": "Sign in",
             "label_signout": "Sign up"
+        },
+        "auth_input_fields": {
+            "common": {
+                "input_label_email": "EMAIL",
+                "input_label_password": "PASSWORD",
+                "input_label_full_name": "FULLNAME",
+                "input_label_role_selection": "I WANT TO"
+            },
+            "signin": {
+                "greeting_text_signin": "Welcome back, Ate!",
+                "greeting_subtext_signin": "Log in with your registerd email",
+                "button_label_text_signin": "Sign In"
+            },
+            "signup": {
+                "greeting_text_signup": "Join Sariko! 🇵🇭",
+                "greeting_subtext_signup": "Buy or sell Filipino goods in HCMC",
+                "title_text_role_buyer": "Buy",
+                "title_subtext_role_buyer": "Find Filipino goods",
+                "title_text_role_seller": "Sell",
+                "title_subtext_role_seller": "Become a seller",
+                "button_label_text_signup": "Create Account"
+            }
+        }
+    },
+    "onboarding_page": {
+        "buyer": {
+            "greeting_text": "Welcome to Sariko!",
+            "greeting_subtext": "Let's get you ready to order delicious",
+            "section_phone_number": {
+                "title": "Phone Number",
+                "tooltip": "Sellers and riders will use this to contact you"
+            },
+            "section_delivery_address": {
+                "title": "Delivery Address",
+                "text_placeholder_address_details": "Address Details (building, floor, landmark)"
+            },
+            "section_preferred_language": {
+                "title": "Preferred Language"
+            },
+            "button_group": {
+                "button_label_text_start_ordering": "Start Ordering",
+                "button_label_text_skip_for_now": "Skip for now"
+            }
         }
     },
     "home_page": {
@@ -45,6 +96,30 @@
         "section_banner_featured": {
             "banner_text_line_1": "3 months FREE Negosyo Tier",
             "banner_text_line_2": "∞ listings · 15% commission · Founding Seller"
+        }
+    },
+    "cart_page": {
+        "section_delivery_address": {
+            "title": "DELIVERY TO {name}",
+            "button_label_text_edit": "Change"
+        },
+        "section_total_amount": {
+            "title_subtotal": "Subtotal",
+            "title_estimated_delivery_fee": "Estimated Delivery Fee",
+            "title_total_amount": "Total Amount",
+            "button_label_checkout": "Checkout"
+        },
+        "modal_cart_conflict": {
+            "title_header": "Start a new cart?",
+            "text_message_1": "You already have items from",
+            "text_message_2": " Adding items from will replace your current cart with",
+            "button_label_go_to_cart": "Go to Cart",
+            "button_label_clear_cart": "Clear Cart and Add new item"
+        }
+    },
+    "checkout_page": {
+        "section_cart_review": {
+            "text_item": "item(s)"
         }
     }
 }

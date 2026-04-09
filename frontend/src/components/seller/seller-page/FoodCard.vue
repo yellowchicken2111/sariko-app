@@ -1,6 +1,16 @@
 <script>
+import { mapActions, mapState } from 'pinia';
+import { useSellerStore } from '@/stores/seller/sellerStore';
+import { useCartStore } from '@/stores/cart/cartStore';
+
 export default {
     props: {
+
+        itemId: {
+            required: true,
+            type: String
+        },
+
         name: {
             required: true,
             type: String
@@ -15,7 +25,20 @@ export default {
             required: true,
             type: String
         }
+    },
+
+    computed: {
+        ...mapState(useSellerStore, [
+            "seller"
+        ])
+    },
+
+    methods: {
+        ...mapActions(useCartStore, [
+            "addItem"
+        ])
     }
+
 }
 </script>
 
@@ -46,6 +69,7 @@ export default {
                 flat
                 dense
                 no-caps
+                @click="addItem(seller.id, itemId, seller.store_name)"
                 >
                     <q-icon name="fa-solid fa-circle-plus" style="color: #f5A623" />
                 </q-btn>

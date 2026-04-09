@@ -1,10 +1,13 @@
 <script>
+import { mapState } from 'pinia';
+import { useSellerStore } from '@/stores/seller/sellerStore';
 import LayoutBaseSellerPage from '@/layouts/seller/LayoutBaseSellerPage.vue';
 import SellerInfo from '@/components/seller/seller-page/SellerInfo.vue';
 import Banner from '@/components/seller/seller-page/Banner.vue';
 import BannerFeatured from '@/components/seller/seller-page/BannerFeatured.vue'
 import Categories from '@/components/seller/seller-page/Categories.vue';
 import Menu from '@/components/seller/seller-page/Menu.vue';
+import SellerPageSkeleton from '@/components/seller/seller-page/SellerPageSkeleton.vue';
 
 export default {
     components: {
@@ -13,20 +16,37 @@ export default {
         Banner,
         BannerFeatured,
         Categories,
-        Menu
+        Menu,
+        SellerPageSkeleton
+    },
+
+    computed: {
+        ...mapState(useSellerStore, ['seller'])
+    },
+
+    mounted() {
+        const sellerStore = useSellerStore()
+        sellerStore.seller = null
+        sellerStore.menus = []
+        sellerStore.menuCategories = []
+        sellerStore.selectedCategoryMenu = null
+        const slugName = this.$route.params.slugName
+        sellerStore.getSellerbySlugName(slugName)
     }
 }
 </script>
 
 <template>
 
-    <LayoutBaseSellerPage>
+    <SellerPageSkeleton v-if="!seller" />
+
+    <LayoutBaseSellerPage v-else>
 
         <template #SellerInfo>
             <SellerInfo />
         </template>
 
-        <template #BannerHeader> 
+        <template #BannerHeader>
             <Banner />
         </template>
 
