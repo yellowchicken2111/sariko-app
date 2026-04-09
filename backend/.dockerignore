@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+src/envs/.env.*
+src/logs/
+.git
+.gitignore
+*.md
