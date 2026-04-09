@@ -3,6 +3,7 @@ import { router } from "@/plugins/router";
 import { Notify } from "quasar";
 import { supabase } from "@/lib/supabase";
 import apiAuth from "@/apis/auth/apiAuth";
+import apiUsers from "@/apis/users/apiUsers";
 import { useCartStore } from "@/stores/cart/cartStore";
 
 export const useAuthStore = defineStore("authStore", {
@@ -56,6 +57,7 @@ export const useAuthStore = defineStore("authStore", {
                     fullName: meta.fullname || '',
                     email: session.user.email,
                     isSeller: meta.is_seller || false,
+                    avatarUrl: null,
                 };
                 if (this.viewMode === 'buyer' && meta.is_seller) {
                     this.viewMode = 'seller'
@@ -72,6 +74,15 @@ export const useAuthStore = defineStore("authStore", {
                 const res = await apiAuth.authGetSession();
                 if (res?.session) {
                     this._setFromSession(res.session);
+
+                    try {
+                        const profile = await apiUsers.getProfile()
+                        if (profile?.user?.avatar_url && this.user) {
+                            this.user.avatarUrl = profile.user.avatar_url
+                        }
+                    } catch (e) {
+                        console.error(`authStore - bootstrap - profile fetch failed: ${e}`);
+                    }
 
                     try {
                         const cartStore = useCartStore();

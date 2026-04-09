@@ -39,7 +39,7 @@ def get_sellers(user=Depends(verify_token)):
 
 
 @router.get("/founding")
-def get_founding_sellers(user=Depends(verify_token)):
+def get_founding_sellers():
 
     dao_seller_profiles = DAOSellerProfiles()
     sellers = dao_seller_profiles.read_founding_sellers()
@@ -116,7 +116,7 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
 # ── Public Seller Endpoints (wildcard routes last) ──
 
 @router.get("/{slug_name}")
-def get_seller_by_slug_name(slug_name, user=Depends(verify_token)):
+def get_seller_by_slug_name(slug_name):
 
     dao_seller_profiles = DAOSellerProfiles()
     seller = dao_seller_profiles.read_seller_by_slug_name(slug=slug_name)
@@ -127,7 +127,7 @@ def get_seller_by_slug_name(slug_name, user=Depends(verify_token)):
 
 
 @router.get("/{slug_name}/menu")
-def get_seller_menu_food_items(slug_name: str, user=Depends(verify_token)):
+def get_seller_menu_food_items(slug_name: str):
 
     dao_seller_profiles = DAOSellerProfiles()
     seller = dao_seller_profiles.read_seller_by_slug_name(slug=slug_name)

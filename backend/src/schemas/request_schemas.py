@@ -25,6 +25,7 @@ class RequestUpdateCartItem(BaseModel):
 class RequestUpdateProfile(BaseModel):
     phone: Optional[str] = None
     preferred_language: Optional[str] = None
+    avatar_url: Optional[str] = None
     address: Optional[str] = None
     address_details: Optional[str] = None
     lat: Optional[float] = None

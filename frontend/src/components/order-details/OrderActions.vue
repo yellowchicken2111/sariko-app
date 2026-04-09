@@ -47,6 +47,7 @@ export default {
             try {
                 const res = await apiPayments.createVnpayPayment(this.order.id)
                 if (res?.data?.payment_url) {
+                    // window.open(res.data.payment_url, '_blank')
                     window.location.href = res.data.payment_url
                     return
                 }

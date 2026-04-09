@@ -39,18 +39,17 @@ export default {
                     const cartStore = useCartStore()
                     cartStore.$reset()
 
-                    // Redirect to VNPay payment
+                    // Open VNPay payment in new tab, navigate current tab to order detail
                     try {
                         const payRes = await apiPayments.createVnpayPayment(order.id)
                         if (payRes?.data?.payment_url) {
-                            window.location.href = payRes.data.payment_url
-                            return
+                            window.open(payRes.data.payment_url, '_blank')
                         }
                     } catch (payErr) {
-                        console.error('VNPay redirect failed, going to order confirmation:', payErr)
+                        console.error('VNPay payment URL failed:', payErr)
                     }
 
-                    // Fallback: go to order confirmation if VNPay fails
+                    // Always go to order detail — user can retry Pay Now if payment failed/pending
                     this.$router.push({ name: 'order-confirmation', params: { orderId: order.id } })
                 }
             } catch (e) {

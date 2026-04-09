@@ -43,6 +43,8 @@ class DAOUsers(DAOBase):
                 update_fields["phone"] = data["phone"]
             if "preferred_language" in data and data["preferred_language"] is not None:
                 update_fields["preferred_language"] = data["preferred_language"]
+            if "avatar_url" in data and data["avatar_url"] is not None:
+                update_fields["avatar_url"] = data["avatar_url"]
 
             if not update_fields:
                 return None
