@@ -13,8 +13,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
-from lifespan import lifespan
-
 from apis import (
     users, sellers, cart, orders, payments
 )

@@ -177,9 +177,10 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 
 ### Known Issues
 - `/dashboard` route only checks login, not seller role — any logged-in user can access
-- No logic to consume `redirect` query param after successful signin
 - `delivery_method` hardcoded to 'delivery' — no UI to choose pickup
 - `refreshCart()` causes brief flash of empty state before data loads
 - `lifespan.py` calls `get_redis_service()` which is not imported/implemented (latent bug — will crash if lifespan runs)
 - Backend CORS allows all origins (should restrict in production)
 - `DashboardStats` and `RecentOrders` both call `getOrders()` independently (duplicated API call — could share via store)
+- Account page "Terms & Privacy Policy" and "Help Center" not linked (no pages exist)
+- Notifications page is empty state placeholder only
