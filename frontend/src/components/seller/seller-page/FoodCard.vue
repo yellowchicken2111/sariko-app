@@ -1,44 +1,56 @@
 <script>
-import { mapActions, mapState } from 'pinia';
+import { mapState } from 'pinia';
 import { useSellerStore } from '@/stores/seller/sellerStore';
 import { useCartStore } from '@/stores/cart/cartStore';
 
 export default {
     props: {
-
         itemId: {
             required: true,
             type: String
         },
-
         name: {
             required: true,
             type: String
         },
-
         price: {
             required: true,
             type: String
         },
-
         imgSrc: {
             required: true,
             type: String
         }
     },
 
+    data() {
+        return {
+            loading: false
+        }
+    },
+
     computed: {
-        ...mapState(useSellerStore, [
-            "seller"
-        ])
+        ...mapState(useSellerStore, ['seller'])
     },
 
     methods: {
-        ...mapActions(useCartStore, [
-            "addItem"
-        ])
+        async handleAddToCart() {
+            if (this.loading) return
+            this.loading = true
+            const cartStore = useCartStore()
+            await cartStore.addItem(this.seller.id, this.itemId, this.seller.store_name)
+            this.loading = false
+            if (!cartStore.isShowModalCartConflict) {
+                this.$q.notify({
+                    classes: 'quasar-notify-positive',
+                    message: `✔️ ${this.name} added to cart`,
+                    progress: true,
+                    position: 'bottom',
+                    timeout: 1500,
+                })
+            }
+        }
     }
-
 }
 </script>
 
@@ -69,9 +81,13 @@ export default {
                 flat
                 dense
                 no-caps
-                @click="addItem(seller.id, itemId, seller.store_name)"
+                :loading="loading"
+                @click="handleAddToCart"
                 >
                     <q-icon name="fa-solid fa-circle-plus" style="color: #f5A623" />
+                    <template #loading>
+                        <q-spinner-dots color="orange" size="16px" />
+                    </template>
                 </q-btn>
             </div>
         </div>

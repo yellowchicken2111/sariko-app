@@ -23,6 +23,7 @@ class RequestUpdateCartItem(BaseModel):
 
 # User Profile API
 class RequestUpdateProfile(BaseModel):
+    name: Optional[str] = None
     phone: Optional[str] = None
     preferred_language: Optional[str] = None
     avatar_url: Optional[str] = None

@@ -5,20 +5,66 @@ import { useAuthStore } from '@/stores/auth/authStore';
 export default {
     components: { LogOut },
 
+    data() {
+        return {
+            showConfirm: false,
+            signingOut: false,
+        }
+    },
+
     methods: {
-        async signOut() {
-            await useAuthStore().onClickedSignout()
+        openConfirm() {
+            this.showConfirm = true
+        },
+
+        async confirmSignOut() {
+            this.signingOut = true
+            try {
+                await useAuthStore().onClickedSignout()
+            } finally {
+                this.signingOut = false
+                this.showConfirm = false
+            }
         }
     }
 }
 </script>
 
 <template>
-    <div class="menu-item signout" @click="signOut">
-        <div class="menu-icon signout-icon">
-            <LogOut size="18" />
+    <div>
+        <div class="menu-item signout" @click="openConfirm">
+            <div class="menu-icon signout-icon">
+                <LogOut size="18" />
+            </div>
+            <span class="menu-label">{{ $t('account_page.button_label_sign_out') }}</span>
         </div>
-        <span class="menu-label">Sign Out</span>
+
+        <q-dialog v-model="showConfirm">
+            <q-card class="signout-dialog">
+                <q-card-section class="dialog-content">
+                    <div class="dialog-title">{{ $t('account_page.signout_dialog_title') }}</div>
+                    <div class="dialog-message">{{ $t('account_page.signout_dialog_message') }}</div>
+                </q-card-section>
+                <q-card-actions align="right" class="dialog-actions">
+                    <q-btn
+                        flat
+                        no-caps
+                        :label="$t('common.button_label_cancel')"
+                        class="btn-cancel"
+                        :disable="signingOut"
+                        v-close-popup
+                    />
+                    <q-btn
+                        flat
+                        no-caps
+                        :label="$t('account_page.signout_dialog_confirm')"
+                        class="btn-confirm"
+                        :loading="signingOut"
+                        @click="confirmSignOut"
+                    />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -58,5 +104,42 @@ export default {
     color: #ef4444;
     font-size: 15px;
     font-weight: 500;
+}
+
+.signout-dialog {
+    background-color: #1f2940;
+    border-radius: 16px;
+    min-width: 300px;
+    color: var(--text-primary);
+}
+
+.dialog-content {
+    padding: 24px 20px 12px;
+}
+
+.dialog-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.dialog-message {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.dialog-actions {
+    padding: 8px 16px 16px;
+}
+
+.btn-cancel {
+    color: var(--text-secondary);
+}
+
+.btn-confirm {
+    color: #ef4444;
+    font-weight: 600;
 }
 </style>

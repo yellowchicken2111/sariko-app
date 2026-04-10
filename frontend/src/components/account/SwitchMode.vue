@@ -16,14 +16,18 @@ export default {
             return this.isSeller && this.authStore.viewMode === 'seller'
         },
         label() {
-            return this.isSellerMode ? 'Switch to Buyer' : 'Switch to Seller'
+            return this.isSellerMode
+                ? this.$t('account_page.menu_label_switch_to_buyer')
+                : this.$t('account_page.menu_label_switch_to_seller')
         }
     },
 
     methods: {
         switchMode() {
             this.authStore.switchViewMode()
-            this.$router.push('/home')
+            // Route to the appropriate landing for the new mode
+            const target = this.isSellerMode ? '/dashboard' : '/home'
+            this.$router.push(target)
         }
     }
 }

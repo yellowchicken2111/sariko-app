@@ -128,7 +128,7 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Border radius: 16px ($radius-base)
 - Quasar components + Lucide icons
 
-## Current Status (as of Apr 9, 2026)
+## Current Status (as of Apr 10, 2026)
 
 ### Done (Buyer-side)
 - Home page (browse sellers, founding sellers with skeleton, featured dishes with 6-item limit)
@@ -139,7 +139,9 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI + backend persist via PATCH /users/me/profile
 - Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled + awaiting payment state, cancel button with dialog, Pay Now retry button, VND formatting)
 - Order history page (filter tabs: All/Unpaid/Active/Completed/Cancelled, order cards with Unpaid badge, wired to real GET /orders API)
-- Account page (profile header, seller badge, buyer/seller mode switcher, settings links, sign out)
+- Account page (profile header, seller badge, buyer/seller mode switcher, settings links, sign out) — settings menu items visually grouped in unified surface
+- Bottom nav Account tab enabled, links to `/account` (previously disabled placeholder)
+- FoodCard add-to-cart UX: loading spinner state + toast notification on success (suppressed when cart-conflict modal opens)
 - Vietnamese localization (vi.json 100% in sync with en-PH.json, vue-i18n configured)
 - Route guards (beforeEach: requiresAuth for cart/orders/dashboard/account/onboarding, guestOnly for signin/signup, redirect preserved)
 - Bottom nav hidden on order detail pages, payment return, cart, auth, onboarding
@@ -179,7 +181,6 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - `/dashboard` route only checks login, not seller role — any logged-in user can access
 - `delivery_method` hardcoded to 'delivery' — no UI to choose pickup
 - `refreshCart()` causes brief flash of empty state before data loads
-- `lifespan.py` calls `get_redis_service()` which is not imported/implemented (latent bug — will crash if lifespan runs)
 - Backend CORS allows all origins (should restrict in production)
 - `DashboardStats` and `RecentOrders` both call `getOrders()` independently (duplicated API call — could share via store)
 - Account page "Terms & Privacy Policy" and "Help Center" not linked (no pages exist)

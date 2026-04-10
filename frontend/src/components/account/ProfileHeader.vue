@@ -1,18 +1,9 @@
 <script>
-import { User, Pencil, X, Check } from 'lucide-vue-next';
+import { Pencil } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth/authStore';
-import apiUsers from '@/apis/users/apiUsers';
 
 export default {
-    components: { User, Pencil, X, Check },
-
-    data() {
-        return {
-            editingAvatar: false,
-            avatarInput: '',
-            saving: false,
-        }
-    },
+    components: { Pencil },
 
     computed: {
         authStore() {
@@ -30,38 +21,28 @@ export default {
         initials() {
             if (!this.user?.fullName) return '?'
             return this.user.fullName.trim().charAt(0).toUpperCase()
+        },
+        secondaryLine() {
+            // Prefer phone (VN mental model), fall back to email
+            return this.user?.phone || this.user?.email
+        },
+        modeBadgeLabel() {
+            return this.isSellerMode
+                ? this.$t('account_page.badge_seller_mode')
+                : this.$t('account_page.badge_buyer_mode')
         }
     },
 
     methods: {
-        startEditAvatar() {
-            this.avatarInput = this.user?.avatarUrl || ''
-            this.editingAvatar = true
-        },
-        cancelEditAvatar() {
-            this.editingAvatar = false
-            this.avatarInput = ''
-        },
-        async saveAvatar() {
-            this.saving = true
-            try {
-                await apiUsers.updateProfile({ avatar_url: this.avatarInput || null })
-                if (this.user) {
-                    this.user.avatarUrl = this.avatarInput || null
-                }
-                this.editingAvatar = false
-            } catch (e) {
-                this.$q.notify({ type: 'negative', message: 'Failed to update avatar', position: 'top' })
-            } finally {
-                this.saving = false
-            }
+        goToEditProfile() {
+            this.$router.push('/account/profile')
         }
     }
 }
 </script>
 
 <template>
-    <div class="profile-header">
+    <div class="profile-header" @click="goToEditProfile">
         <div class="avatar-wrap">
             <q-avatar v-if="user?.avatarUrl" size="56px">
                 <img :src="user.avatarUrl" :alt="user.fullName">
@@ -69,40 +50,19 @@ export default {
             <div v-else class="avatar-initials">
                 {{ initials }}
             </div>
-            <button class="edit-avatar-btn" @click="startEditAvatar">
-                <Pencil :size="12" />
-            </button>
         </div>
 
         <div class="profile-info">
             <h2 class="profile-name">{{ user?.fullName || 'Guest' }}</h2>
-            <p class="profile-email">{{ user?.email }}</p>
+            <p class="profile-secondary">{{ secondaryLine }}</p>
             <span v-if="isSeller" class="seller-badge">
-                {{ isSellerMode ? 'Seller Mode' : 'Buyer Mode' }}
+                {{ modeBadgeLabel }}
             </span>
         </div>
 
-        <!-- Edit avatar URL dialog -->
-        <q-dialog v-model="editingAvatar">
-            <q-card class="avatar-dialog">
-                <q-card-section>
-                    <div class="dialog-title">Update Avatar</div>
-                    <q-input
-                        v-model="avatarInput"
-                        dense
-                        outlined
-                        placeholder="Paste image URL..."
-                        class="avatar-input"
-                        dark
-                        autofocus
-                    />
-                </q-card-section>
-                <q-card-actions align="right">
-                    <q-btn flat no-caps label="Cancel" @click="cancelEditAvatar" />
-                    <q-btn flat no-caps label="Save" color="positive" :loading="saving" @click="saveAvatar" />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
+        <button class="edit-btn" aria-label="Edit profile">
+            <Pencil :size="16" />
+        </button>
     </div>
 </template>
 
@@ -114,10 +74,15 @@ export default {
     padding: 20px;
     background: var(--bg-surface);
     border-radius: 16px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.profile-header:hover {
+    background: var(--bg-card-hover);
 }
 
 .avatar-wrap {
-    position: relative;
     flex-shrink: 0;
 }
 
@@ -134,39 +99,6 @@ export default {
     font-weight: 700;
 }
 
-.edit-avatar-btn {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #1f2940;
-    border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-}
-
-.avatar-dialog {
-    background-color: #1f2940;
-    border-radius: 16px;
-    min-width: 300px;
-}
-
-.dialog-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.avatar-input {
-    margin-top: 4px;
-}
-
 .profile-info {
     flex: 1;
     min-width: 0;
@@ -179,7 +111,7 @@ export default {
     margin: 0;
 }
 
-.profile-email {
+.profile-secondary {
     font-size: 13px;
     color: var(--text-secondary);
     margin: 2px 0 0;
@@ -197,5 +129,25 @@ export default {
     border-radius: 12px;
     background: rgba(245, 166, 35, 0.15);
     color: var(--color-accent);
+}
+
+.edit-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.edit-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
 }
 </style>

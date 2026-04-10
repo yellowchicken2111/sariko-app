@@ -1,10 +1,19 @@
 {
     "breadcrumbs": {
         "cart_page": "Giỏ hàng",
-        "checkout_page": "Thanh toán"
+        "checkout_page": "Thanh toán",
+        "edit_profile_page": "Chỉnh sửa hồ sơ",
+        "language_page": "Ngôn ngữ",
+        "delivery_address_page": "Địa chỉ giao hàng",
+        "terms_page": "Điều khoản dịch vụ",
+        "privacy_page": "Chính sách bảo mật"
     },
     "common": {
-        "button_label_cancel": "Hủy"
+        "button_label_cancel": "Hủy",
+        "button_label_save": "Lưu",
+        "button_label_saving": "Đang lưu...",
+        "toast_update_success": "Cập nhật thành công",
+        "toast_update_failed": "Cập nhật thất bại, vui lòng thử lại"
     },
     "bottom_nav": {
         "button_label_home": "Trang chủ",
@@ -121,5 +130,61 @@
         "section_cart_review": {
             "text_item": "sản phẩm"
         }
+    },
+    "account_page": {
+        "section_title_settings": "Cài đặt",
+        "section_title_support": "Hỗ trợ",
+        "menu_label_edit_profile": "Chỉnh sửa hồ sơ",
+        "menu_label_delivery_address": "Địa chỉ giao hàng",
+        "menu_label_language": "Ngôn ngữ",
+        "menu_label_terms": "Điều khoản dịch vụ",
+        "menu_label_privacy": "Chính sách bảo mật",
+        "menu_label_contact_support": "Liên hệ hỗ trợ",
+        "menu_label_switch_to_buyer": "Chuyển sang chế độ Người mua",
+        "menu_label_switch_to_seller": "Chuyển sang chế độ Người bán",
+        "badge_buyer_mode": "Chế độ Người mua",
+        "badge_seller_mode": "Chế độ Người bán",
+        "button_label_sign_out": "Đăng xuất",
+        "signout_dialog_title": "Đăng xuất khỏi Sariko?",
+        "signout_dialog_message": "Bạn sẽ cần đăng nhập lại để tiếp tục đặt hàng.",
+        "signout_dialog_confirm": "Đăng xuất",
+        "app_version": "Sariko v0.1.0 · MVP"
+    },
+    "edit_profile_page": {
+        "label_name": "Họ và tên",
+        "placeholder_name": "Tên đầy đủ của bạn",
+        "label_phone": "Số điện thoại",
+        "placeholder_phone": "VD: 0912345678",
+        "label_avatar": "URL ảnh đại diện",
+        "placeholder_avatar": "Dán link ảnh",
+        "helper_avatar": "Bạn có thể tải ảnh trực tiếp trong bản cập nhật sắp tới",
+        "validation_name_required": "Vui lòng nhập tên",
+        "validation_phone_invalid": "Số điện thoại không hợp lệ"
+    },
+    "language_page": {
+        "title": "Chọn ngôn ngữ",
+        "subtitle": "Thay đổi sẽ áp dụng trên toàn bộ ứng dụng",
+        "option_en": "English",
+        "option_vi": "Tiếng Việt"
+    },
+    "delivery_address_page": {
+        "title": "Địa chỉ giao hàng",
+        "subtitle": "Thả ghim tại vị trí của bạn, sau đó nhập chi tiết bên dưới",
+        "label_address_details": "Chi tiết địa chỉ",
+        "placeholder_address_details": "Tòa nhà, tầng, mốc...",
+        "button_use_current_location": "Dùng vị trí hiện tại",
+        "button_locating": "Đang xác định vị trí...",
+        "button_save": "Lưu địa chỉ",
+        "empty_address": "Chưa có địa chỉ. Hãy thả ghim trên bản đồ phía trên."
+    },
+    "terms_page": {
+        "title": "Điều khoản dịch vụ",
+        "last_updated": "Cập nhật lần cuối: Tháng 4, 2026",
+        "placeholder_body": "Điều khoản dịch vụ của chúng tôi đang được hoàn thiện. Khi sử dụng Sariko, bạn đồng ý hoạt động thiện chí trong cộng đồng chợ Filipino tại TP.HCM. Điều khoản đầy đủ sẽ được công bố trước ngày ra mắt chính thức."
+    },
+    "privacy_page": {
+        "title": "Chính sách bảo mật",
+        "last_updated": "Cập nhật lần cuối: Tháng 4, 2026",
+        "placeholder_body": "Chính sách bảo mật của chúng tôi đang được hoàn thiện. Sariko chỉ thu thập thông tin cần thiết để giao đơn hàng (tên, số điện thoại, địa chỉ) và không bao giờ bán dữ liệu cho bên thứ ba. Chính sách đầy đủ sẽ được công bố trước ngày ra mắt chính thức."
     }
 }

@@ -8,25 +8,26 @@ export default {
 
 <template>
     <div>
-        <h3 class="section-title">Settings</h3>
+        <h3 class="section-title">{{ $t('account_page.section_title_settings') }}</h3>
+        <div class="menu-group">
+            <router-link to="/account/profile" class="menu-item">
+                <div class="menu-icon"><User size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_edit_profile') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
 
-        <router-link to="/onboarding" class="menu-item">
-            <div class="menu-icon"><User size="18" /></div>
-            <span class="menu-label">Edit Profile</span>
-            <ChevronRight size="16" class="menu-arrow" />
-        </router-link>
+            <router-link to="/account/address" class="menu-item">
+                <div class="menu-icon"><MapPin size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_delivery_address') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
 
-        <router-link to="/onboarding" class="menu-item">
-            <div class="menu-icon"><MapPin size="18" /></div>
-            <span class="menu-label">Delivery Address</span>
-            <ChevronRight size="16" class="menu-arrow" />
-        </router-link>
-
-        <router-link to="/onboarding" class="menu-item">
-            <div class="menu-icon"><Globe size="18" /></div>
-            <span class="menu-label">Language</span>
-            <ChevronRight size="16" class="menu-arrow" />
-        </router-link>
+            <router-link to="/account/language" class="menu-item">
+                <div class="menu-icon"><Globe size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_language') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
+        </div>
     </div>
 </template>
 
@@ -41,18 +42,26 @@ export default {
     padding-left: 4px;
 }
 
+.menu-group {
+    background: rgb(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin-bottom: 4px;
+    overflow: hidden;
+}
+
 .menu-item {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    background: var(--bg-surface);
-    border-radius: 12px;
-    margin-bottom: 4px;
     cursor: pointer;
     text-decoration: none;
     color: var(--text-primary);
     transition: background 0.15s ease;
+}
+
+.menu-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .menu-item:hover {

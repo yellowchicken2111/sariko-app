@@ -56,6 +56,7 @@ export const useAuthStore = defineStore("authStore", {
                 this.user = {
                     fullName: meta.fullname || '',
                     email: session.user.email,
+                    phone: null,
                     isSeller: meta.is_seller || false,
                     avatarUrl: null,
                 };
@@ -77,8 +78,10 @@ export const useAuthStore = defineStore("authStore", {
 
                     try {
                         const profile = await apiUsers.getProfile()
-                        if (profile?.user?.avatar_url && this.user) {
-                            this.user.avatarUrl = profile.user.avatar_url
+                        if (profile?.user && this.user) {
+                            if (profile.user.avatar_url) this.user.avatarUrl = profile.user.avatar_url
+                            if (profile.user.name) this.user.fullName = profile.user.name
+                            if (profile.user.phone) this.user.phone = profile.user.phone
                         }
                     } catch (e) {
                         console.error(`authStore - bootstrap - profile fetch failed: ${e}`);

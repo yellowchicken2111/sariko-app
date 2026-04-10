@@ -90,6 +90,36 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/account/profile',
+        name: 'account-profile',
+        component: () => import('@/pages/EditProfilePage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/address',
+        name: 'account-address',
+        component: () => import('@/pages/DeliveryAddressPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/language',
+        name: 'account-language',
+        component: () => import('@/pages/LanguagePage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/terms',
+        name: 'account-terms',
+        component: () => import('@/pages/TermsPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/privacy',
+        name: 'account-privacy',
+        component: () => import('@/pages/PrivacyPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/notifications',
         name: 'notifications',
         component: () => import('@/pages/NotificationsPage.vue'),
