@@ -107,6 +107,18 @@
             "banner_text_line_2": "∞ sản phẩm · Hoa hồng 15% · Người bán sáng lập"
         }
     },
+    "food_detail_page": {
+        "label_price": "Giá",
+        "label_total_price": "Tổng tiền",
+        "label_quantity": "Số lượng",
+        "button_add_to_cart": "Thêm vào giỏ",
+        "button_back": "Quay lại",
+        "button_favorite": "Thêm vào yêu thích",
+        "button_unfavorite": "Bỏ khỏi yêu thích",
+        "button_decrease": "Giảm số lượng",
+        "button_increase": "Tăng số lượng",
+        "toast_added_to_cart": "Đã thêm {name} vào giỏ"
+    },
     "cart_page": {
         "section_delivery_address": {
             "title": "GIAO ĐẾN {name}",
@@ -148,7 +160,12 @@
         "signout_dialog_title": "Đăng xuất khỏi Sariko?",
         "signout_dialog_message": "Bạn sẽ cần đăng nhập lại để tiếp tục đặt hàng.",
         "signout_dialog_confirm": "Đăng xuất",
-        "app_version": "Sariko v0.1.0 · MVP"
+        "app_version": "Sariko v0.1.0 · MVP",
+        "edit_profile": "Chỉnh sửa hồ sơ",
+        "seller_badge": "Người bán",
+        "info_email": "Email",
+        "info_phone": "Số điện thoại",
+        "info_language": "Ngôn ngữ"
     },
     "edit_profile_page": {
         "label_name": "Họ và tên",
@@ -175,7 +192,8 @@
         "button_use_current_location": "Dùng vị trí hiện tại",
         "button_locating": "Đang xác định vị trí...",
         "button_save": "Lưu địa chỉ",
-        "empty_address": "Chưa có địa chỉ. Hãy thả ghim trên bản đồ phía trên."
+        "empty_address": "Chưa có địa chỉ. Hãy thả ghim trên bản đồ phía trên.",
+        "search_placeholder": "Tìm địa chỉ..."
     },
     "terms_page": {
         "title": "Điều khoản dịch vụ",

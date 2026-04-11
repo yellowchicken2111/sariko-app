@@ -107,6 +107,18 @@
             "banner_text_line_2": "∞ listings · 15% commission · Founding Seller"
         }
     },
+    "food_detail_page": {
+        "label_price": "Price",
+        "label_total_price": "Total price",
+        "label_quantity": "Quantity",
+        "button_add_to_cart": "Add to Cart",
+        "button_back": "Go back",
+        "button_favorite": "Add to favorites",
+        "button_unfavorite": "Remove from favorites",
+        "button_decrease": "Decrease quantity",
+        "button_increase": "Increase quantity",
+        "toast_added_to_cart": "{name} added to cart"
+    },
     "cart_page": {
         "section_delivery_address": {
             "title": "DELIVERY TO {name}",
@@ -148,7 +160,12 @@
         "signout_dialog_title": "Sign out of Sariko?",
         "signout_dialog_message": "You will need to sign in again to continue ordering.",
         "signout_dialog_confirm": "Sign Out",
-        "app_version": "Sariko v0.1.0 · MVP"
+        "app_version": "Sariko v0.1.0 · MVP",
+        "edit_profile": "Edit Profile",
+        "seller_badge": "Seller",
+        "info_email": "Email",
+        "info_phone": "Phone",
+        "info_language": "Language"
     },
     "edit_profile_page": {
         "label_name": "Full name",
@@ -175,7 +192,8 @@
         "button_use_current_location": "Use current location",
         "button_locating": "Getting location...",
         "button_save": "Save address",
-        "empty_address": "No address set yet. Drop a pin on the map above."
+        "empty_address": "No address set yet. Drop a pin on the map above.",
+        "search_placeholder": "Search address..."
     },
     "terms_page": {
         "title": "Terms of Service",

@@ -74,7 +74,8 @@ export default {
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    background: var(--bg-surface);
+    /* background: var(--bg-surface); */
+    background-color: rgb(255, 255, 255, 0.05);
     border-radius: 12px;
     cursor: pointer;
     color: var(--text-primary);
@@ -86,8 +87,8 @@ export default {
 }
 
 .menu-icon {
-    width: 36px;
-    height: 36px;
+    width: 24px;
+    height: 24px;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -102,7 +103,7 @@ export default {
 
 .signout .menu-label {
     color: #ef4444;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
 }
 

@@ -5,55 +5,66 @@
             <slot name="HeroImage" />
         </div>
 
-        <div class="food-info-section">
-            <slot name="FoodInfo" />
+        <div class="content-card">
+            <div class="food-info">
+                <slot name="FoodInfo"/>
+            </div>
         </div>
 
-        <div class="quantity-section">
-            <slot name="QuantitySelector" />
-        </div>
-
-        <div class="add-to-cart-section">
-            <slot name="AddToCartBar" />
+        <div class="action-zone">
+            <slot name="BottomActionBar" />
         </div>
 
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .food-detail-page {
-    min-height: 100vh;
-    background: var(--bg-main);
-    padding-bottom: 120px;
+    width: 100vw;
+    height: 100vh;
+    // background: var(--bg-surface);
+    // background-color: rgba(255, 255, 255, 0.05);
+    font-family: $sariko-font-family-secondary;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
 }
 
 .hero-section {
     position: relative;
-    height: 300px;
+    height: 320px;
+    margin-bottom: -28px;
 }
 
-.food-info-section {
-    background: var(--bg-surface);
-    margin-top: -24px;
-    border-radius: 24px 24px 0 0;
-    padding: 24px 20px;
+.content-card {
+    overflow: hidden;
+    height: 100%;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    background-color: var(--bg-main);
     position: relative;
+    z-index: 2;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
+    padding-bottom: calc(150px + env(safe-area-inset-bottom, 0));
 }
 
-.quantity-section {
-    background: var(--bg-surface);
-    padding: 20px;
-    margin-top: 8px;
+.food-info {
+    height: 100%;
+    padding: 28px 20px 24px;
+    background-color: rgba(255, 255, 255, 0.06);
 }
 
-.add-to-cart-section {
+.action-zone {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 16px;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
-    background: var(--bg-surface);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 16px 16px 18px;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0));
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 -12px 24px rgba(0, 0, 0, 0.35);
+    z-index: 20;
 }
 </style>

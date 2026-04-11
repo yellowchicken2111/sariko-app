@@ -84,6 +84,7 @@ export default {
     height: 64px;
     border-radius: 50%;
     background: rgba(245, 166, 35, 0.2);
+    border: 1px solid rgba(245, 166, 35, 0.3);
     color: #f5a623;
     display: flex;
     align-items: center;

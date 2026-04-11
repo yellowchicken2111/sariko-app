@@ -34,7 +34,14 @@ export default {
     },
 
     methods: {
-        async handleAddToCart() {
+        goToDetail() {
+            if (this.seller?.slug) {
+                this.$router.push(`/food/${this.seller.slug}/${this.itemId}`)
+            }
+        },
+
+        async handleAddToCart(e) {
+            e.stopPropagation()
             if (this.loading) return
             this.loading = true
             const cartStore = useCartStore()
@@ -55,7 +62,7 @@ export default {
 </script>
 
 <template>
-    <div class="card">
+    <div class="card" @click="goToDetail">
 
         <div class="food-image">
             <q-img

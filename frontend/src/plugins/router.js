@@ -37,13 +37,18 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/sellers',
+        name: 'all-sellers',
+        component: () => import('@/pages/AllSellersPage.vue'),
+    },
+    {
         path: '/seller/:slugName',
         name: 'seller',
         component: () => import('@/pages/SellerPage.vue'),
         props: true
     },
     {
-        path: '/food/:sellerId/:foodId',
+        path: '/food/:sellerSlug/:foodId',
         name: 'food-detail',
         component: () => import('@/pages/FoodDetailPage.vue'),
         props: true

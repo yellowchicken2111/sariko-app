@@ -128,7 +128,7 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Border radius: 16px ($radius-base)
 - Quasar components + Lucide icons
 
-## Current Status (as of Apr 10, 2026)
+## Current Status (as of Apr 11, 2026)
 
 ### Done (Buyer-side)
 - Home page (browse sellers, founding sellers with skeleton, featured dishes with 6-item limit)
@@ -139,8 +139,11 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI + backend persist via PATCH /users/me/profile
 - Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled + awaiting payment state, cancel button with dialog, Pay Now retry button, VND formatting)
 - Order history page (filter tabs: All/Unpaid/Active/Completed/Cancelled, order cards with Unpaid badge, wired to real GET /orders API)
-- Account page (profile header, seller badge, buyer/seller mode switcher, settings links, sign out) — settings menu items visually grouped in unified surface
-- Bottom nav Account tab enabled, links to `/account` (previously disabled placeholder)
+- Account page — full settings hub: profile header (avatar/initials/guest-icon), edit profile, delivery address, language, terms, privacy, sign out, seller mode switcher
+- Avatar logic: guest → User icon; logged in no URL → initials; logged in with URL → image. Consistent across HomePage header + AccountPage
+- Account sub-pages: `/account/profile` (EditProfilePage), `/account/address` (DeliveryAddressPage), `/account/language` (LanguagePage), `/account/terms` (TermsPage), `/account/privacy` (PrivacyPage) — all wired with real APIs
+- New layout: `LayoutBaseSettings.vue` used by all account sub-pages (breadcrumb + content slot)
+- New components: `ProfileForm.vue`, `AddressForm.vue`, `LanguageOptions.vue`
 - FoodCard add-to-cart UX: loading spinner state + toast notification on success (suppressed when cart-conflict modal opens)
 - Vietnamese localization (vi.json 100% in sync with en-PH.json, vue-i18n configured)
 - Route guards (beforeEach: requiresAuth for cart/orders/dashboard/account/onboarding, guestOnly for signin/signup, redirect preserved)
@@ -172,9 +175,9 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Account page — UI done, but "Terms & Privacy Policy" menu item is not linked (no policy page exists)
 
 ### TODO (MVP required)
-- Wire FoodDetailPage to real sellerStore (currently broken after refactor — needs store methods)
-- Policy pages (Terms & Privacy)
-- Production deployment
+- Policy pages done as placeholder (Terms + Privacy at `/account/terms`, `/account/privacy`) — legal fills content Apr 14
+- FoodDetailPage: no dedicated detail page — users add to cart directly from FoodCard (+) button on SellerPage
+- Production deployment to AWS EC2, nginx + certbot SSL, backend live at https://api.sariko.store
 - Restrict CORS origins for production
 
 ### Known Issues
@@ -183,5 +186,6 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - `refreshCart()` causes brief flash of empty state before data loads
 - Backend CORS allows all origins (should restrict in production)
 - `DashboardStats` and `RecentOrders` both call `getOrders()` independently (duplicated API call — could share via store)
-- Account page "Terms & Privacy Policy" and "Help Center" not linked (no pages exist)
+- "Help Center" in SupportMenu not linked (no page exists)
+- Terms + Privacy pages exist but content is placeholder text (waiting on legal)
 - Notifications page is empty state placeholder only

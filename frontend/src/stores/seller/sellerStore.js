@@ -33,7 +33,12 @@ export const useSellerStore = defineStore('sellerStore', {
             selectedCategoryMenu: 'Lutong Bahay',
 
             // menu
-            menus: menus
+            menus: menus,
+
+            // food detail
+            currentFood: null,
+            currentSeller: null,
+            foodQuantity: 1,
         }
     },
 
@@ -103,6 +108,31 @@ export const useSellerStore = defineStore('sellerStore', {
                 this.menus = []
                 this.menuCategories = []
                 this.selectedCategoryMenu = null
+            }
+        },
+
+        async loadFoodDetail(sellerSlug, foodId) {
+            this.currentFood = null
+            this.currentSeller = null
+            this.foodQuantity = 1
+
+            // Load seller if not already loaded for this slug
+            if (this.seller?.slug !== sellerSlug) {
+                await this.getSellerbySlugName(sellerSlug)
+                await this.getSellerFullMenu(sellerSlug)
+            } else if (!this.menus.length || !this.menus[0]?.food_items) {
+                await this.getSellerFullMenu(sellerSlug)
+            }
+
+            this.currentSeller = this.seller
+
+            // Find food item across all menu categories
+            for (const category of this.menus) {
+                const found = category.food_items?.find(f => f.id === foodId)
+                if (found) {
+                    this.currentFood = found
+                    break
+                }
             }
         }
     }

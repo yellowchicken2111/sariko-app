@@ -33,6 +33,7 @@ export default {
                 && path != '/payment/return'
                 && !path.match(/^\/orders\/[^/]+$/)
                 && !path.match(/^\/account\/.+$/)
+                && !path.match(/^\/food\/.+$/)
         }
     },
     methods: {

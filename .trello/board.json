@@ -1,0 +1,244 @@
+{
+    "board": {
+        "name": "Sariko MVP — Apr 18, 2026",
+        "desc": "Community marketplace for Filipino homemade food in HCMC. Deadline: April 18, 2026.\n\nTags: [FE] Frontend · [BE] Backend · [Infra] Infrastructure · [Svc] Third-party Service"
+    },
+    "labels": {
+        "fe":    { "name": "[FE] Frontend",      "color": "green"  },
+        "be":    { "name": "[BE] Backend",        "color": "blue"   },
+        "infra": { "name": "[Infra] Infra",        "color": "orange" },
+        "svc":   { "name": "[Svc] Service",        "color": "yellow" }
+    },
+    "lists": [
+        {
+            "name": "🔴 Blocked",
+            "cards": [
+                {
+                    "name": "[Svc] Lalamove Integration",
+                    "desc": "Waiting for sandbox credentials from CEO.\n\nNeeds:\n- [BE] Quotation API (delivery fee)\n- [BE] Place Order (auto-book on seller 'Ready')\n- [BE] Webhook handler (driver status)\n- [FE] Dynamic delivery fee on cart page (currently shows '--')\n- [FE] Delivery status on order detail",
+                    "labels": ["svc"]
+                },
+                {
+                    "name": "[Svc] VNPay Sandbox Testing",
+                    "desc": "Error: 'Ngân hàng thanh toán không được hỗ trợ'\nSuspected: merchant account not configured on VNPay sandbox portal.\n\nTo fix:\n- Check sandbox portal: sandbox.vnpayment.vn/merchantv2\n- Verify TMN Code matches .env.local\n- Confirm NCB payment method is enabled\n- Verify merchant is Active",
+                    "labels": ["svc"]
+                },
+                {
+                    "name": "[Svc] Goong Maps API Key",
+                    "desc": "Account activation process changed at maps.goong.io — pending activation.\n\nNeeded for: address search autocomplete (currently using Nominatim as fallback).\nSwap is 1 function in AddressForm.vue when key arrives.",
+                    "labels": ["svc"]
+                }
+            ]
+        },
+        {
+            "name": "📋 To-do",
+            "cards": [
+                {
+                    "name": "[BE] CORS — Restrict to production domain",
+                    "desc": "backend/src/main.py line 81\nChange: allow_origins='*'\nTo: allow_origins=['https://sariko.store', 'https://www.sariko.store']\n\nWait until frontend domain is confirmed before doing this.",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[FE] Dashboard — Seller role guard",
+                    "desc": "frontend/src/plugins/router.js\n/dashboard route only checks requiresAuth, not seller role.\nAny logged-in user can access the seller dashboard.\n\nFix: check user.isSeller in beforeEach, redirect to /home if not seller.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Policy pages — Legal content",
+                    "desc": "Pages exist as placeholder:\n- /account/terms (TermsPage.vue)\n- /account/privacy (PrivacyPage.vue)\n\nWaiting: legal team delivers content April 14, 2026.\nAction: paste content into i18n/locales/vi.json + en-PH.json",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[Infra] Production smoke test",
+                    "desc": "Full E2E test on live:\n- Browse sellers (public, no auth)\n- Sign up / Sign in\n- Add to cart\n- Place order\n- VNPay payment flow\n- Seller dashboard receives order\n- Order status update\n- Cancel order",
+                    "labels": ["infra"]
+                },
+                {
+                    "name": "[Infra] Seed demo data",
+                    "desc": "3-5 seller profiles + menus for launch demo.\nTo be done by CEO/Ops by Apr 16.",
+                    "labels": ["infra"]
+                }
+            ]
+        },
+        {
+            "name": "🔄 In Progress",
+            "cards": [
+                {
+                    "name": "[FE] Address Autocomplete (Nominatim → Goong)",
+                    "desc": "AddressForm.vue rewritten:\n✅ Search input with debounce 350ms\n✅ Nominatim autocomplete (Vietnam)\n✅ Dropdown suggestions\n✅ GPS fallback button\n✅ Static map preview after selection (Leaflet)\n\nPending: swap Nominatim → Goong when API key arrives (1 function swap in searchAddress())",
+                    "labels": ["fe"]
+                }
+            ]
+        },
+        {
+            "name": "✅ Done",
+            "cards": [
+                {
+                    "name": "[FE] Home page",
+                    "desc": "Browse sellers, founding sellers 2-col grid (cap 4 + See All → /sellers), featured dishes (6-item limit), skeleton loading, public (no auth required).",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] All Sellers page",
+                    "desc": "Full founding sellers list in 2-col grid. Uses LayoutBaseSettings. Reuses sellerStore data from home — no extra API call if already loaded.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Seller page",
+                    "desc": "Seller info, full menu grouped by category, category filter, section-level skeleton, empty menu state. Public (no auth required).",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Cart page (merged with Checkout)",
+                    "desc": "Add/remove items, qty +/-, single-seller conflict modal, delivery address, order note, place order. Cart = Checkout (ShopeeFood style). No separate checkout route.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Auth — Sign in / Sign up",
+                    "desc": "Email/password auth via Supabase. Enter key support, loading states, session restore on refresh, cart preload on login, cart clear on signout.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Onboarding",
+                    "desc": "Phone, delivery address (Leaflet map + GPS), language preference. Persisted via PATCH /users/me/profile.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Order confirmation / detail page",
+                    "desc": "Status-aware: pending/confirmed/ready/done/cancelled + awaiting payment state. Cancel button with dialog. Pay Now retry button. VND formatting.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Order history (My Orders)",
+                    "desc": "Filter tabs: All / Unpaid / Active / Completed / Cancelled. Order cards with Unpaid badge. Wired to GET /orders API.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Account page + sub-pages",
+                    "desc": "Profile header (centered layout, 88px avatar, camera badge, edit profile pill).\nInfo section: email, phone, language rows.\nSub-pages: Edit Profile, Delivery Address (autocomplete + static map), Language, Terms, Privacy.\nLayout: LayoutBaseSettings for all sub-pages.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] VNPay payment flow",
+                    "desc": "Opens VNPay in new tab, navigates to order confirmation after return.\nPay Now retry on order detail.\nPayment return page: success/failed states.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Route guards + i18n",
+                    "desc": "requiresAuth: cart, orders, dashboard, account, onboarding.\nguestOnly: signin, signup.\nVietnamese localization: vi.json 100% in sync with en-PH.json.\nBottom nav hidden on: cart, order detail, payment return, auth, onboarding.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Seller Dashboard",
+                    "desc": "Wired to real APIs. Shows only paid orders (payment_status='paid'). Order list, order detail, status update (pending→confirmed→ready→done + cancel).",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[BE] Sellers APIs",
+                    "desc": "GET /sellers/founding — public\nGET /sellers/{slug} — public\nGET /sellers/{slug}/menu — public\nAll auth removed for public browsing.",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[BE] Cart APIs",
+                    "desc": "POST /cart/add (single-seller constraint, duplicate merge)\nPATCH /cart/update (qty > 0)\nDELETE /cart/remove/{food_item_id}\nDELETE /cart/clear",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[BE] Order APIs (buyer)",
+                    "desc": "POST /orders (snapshot items, clear cart, rollback on failure)\nGET /orders (list)\nGET /orders/{id} (detail)\nPATCH /orders/{id}/cancel (pending only)",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[BE] Seller Dashboard APIs",
+                    "desc": "GET /sellers/me/orders (paid only)\nGET /sellers/me/orders/{id}\nPATCH /sellers/me/orders/{id}/status (state machine: pending→confirmed→ready→done + cancel)",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[BE] VNPay payment flow",
+                    "desc": "POST /payments/vnpay/create — payment URL (HMAC-SHA512 signed)\nGET /payments/vnpay/ipn — server-to-server IPN (idempotency check, updates payment_status)\nGET /payments/vnpay/return — browser return (hash validation, display only, no DB writes)",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[BE] Users API",
+                    "desc": "GET /users/info/me — profile\nPATCH /users/me/profile — update profile + upsert delivery address + avatar_url",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[Infra] AWS EC2 Deployment",
+                    "desc": "Backend deployed to AWS EC2.\nnginx configured.\nSSL via certbot.\nDNS: api.sariko.store → backend.",
+                    "labels": ["infra"]
+                }
+            ]
+        },
+        {
+            "name": "📦 Backlog",
+            "cards": [
+                {
+                    "name": "[FE] Referral Program — UI",
+                    "desc": "Referral link sharing, invite friends flow, reward status tracker.\nDepends on: [BE] Referral Program — Backend.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[BE] Referral Program — Backend",
+                    "desc": "Referral code generation, tracking table, reward credit logic.\nDB tables: referrals, referral_rewards.",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[FE] Multi-tier Subscription — UI",
+                    "desc": "Subscription plan picker (Free / Pro / Premium), plan comparison, upgrade/downgrade flow.\nDepends on: [BE] Multi-tier Subscription — Backend.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[BE] Multi-tier Subscription — Backend",
+                    "desc": "Subscription plans table, per-user plan tracking, feature gating by plan.\nConsider: VNPay recurring or manual renewal.",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[BE] Store Slug Auto Generator",
+                    "desc": "Auto-generate seller slug from store name on registration (e.g. 'Bánh Mì Hoa' → 'banh-mi-hoa').\nHandle collisions with numeric suffix (e.g. 'banh-mi-hoa-2').\nExpose slug preview in seller onboarding UI.",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[FE] Reviews & Ratings",
+                    "desc": "Star rating + comment on completed orders.\nReview display on seller page + dish cards.\nDepends on: [BE] Reviews API.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[BE] Reviews API",
+                    "desc": "POST /reviews — create after order complete\nGET /sellers/{slug}/reviews — list reviews\nAverage rating computed on read or stored field.",
+                    "labels": ["be"]
+                },
+                {
+                    "name": "[FE] Push Notifications",
+                    "desc": "In-app notification list (NotificationsPage.vue — currently empty placeholder).\nPush: order status updates for buyer, new order alert for seller.\nDepends on: [BE] notifications API or Supabase Realtime.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Pickup vs Delivery toggle",
+                    "desc": "Cart page: let buyer choose delivery or self-pickup.\nPickup removes address + delivery fee fields.\nCurrently hardcoded to 'delivery'.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[FE] Food Detail Page",
+                    "desc": "Dedicated /food/:sellerId/:foodId route exists in router but page is stub.\nShow dish image, description, allergens, add-to-cart with qty selector.",
+                    "labels": ["fe"]
+                },
+                {
+                    "name": "[Svc] Lalamove — Full Integration",
+                    "desc": "Full delivery booking after [Svc] Lalamove credentials are unblocked.\n- Quotation API (show fee on cart)\n- Place Order (auto-book when seller marks Ready)\n- Webhook (driver status → order detail page)",
+                    "labels": ["svc"]
+                },
+                {
+                    "name": "[Infra] MOIT Business Registration",
+                    "desc": "Register business entity for MOIT e-commerce notification.\nRequired before public launch.\nDepends on: legal/ops team.",
+                    "labels": ["infra"]
+                },
+                {
+                    "name": "[BE] GET /sellers/ listing",
+                    "desc": "Public endpoint to list all sellers (currently stub with just `pass`).\nNot used by any frontend page yet.",
+                    "labels": ["be"]
+                }
+            ]
+        }
+    ]
+}

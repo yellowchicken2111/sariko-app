@@ -34,7 +34,7 @@
 }
 
 .profile-section {
-    margin-bottom: 28px;
+    margin-bottom: 20px;
 }
 
 .switch-mode-section {
