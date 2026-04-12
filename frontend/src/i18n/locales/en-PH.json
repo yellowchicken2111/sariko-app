@@ -204,5 +204,49 @@
         "title": "Privacy Policy",
         "last_updated": "Last updated: April 2026",
         "placeholder_body": "Our Privacy Policy is being finalized. Sariko collects only the information needed to deliver your orders (name, phone, address) and never sells your data to third parties. Full policy will be published before the official launch."
+    },
+    "orders_page": {
+        "tab_all": "All",
+        "tab_unpaid": "Unpaid",
+        "tab_active": "Active",
+        "tab_completed": "Completed",
+        "tab_cancelled": "Cancelled",
+        "status_unpaid": "Unpaid",
+        "status_pending": "Pending",
+        "status_confirmed": "Confirmed",
+        "status_ready": "Ready",
+        "status_done": "Completed",
+        "status_cancelled": "Cancelled"
+    },
+    "order_detail": {
+        "cancelled_reason": "Reason"
+    },
+    "seller_dashboard": {
+        "section_recent_orders": "Recent Orders",
+        "empty_orders": "No orders yet",
+        "action_accept": "Accept",
+        "action_mark_ready": "Mark Ready",
+        "action_mark_done": "Mark Done",
+        "action_reject": "Reject",
+        "action_confirm_reject": "Confirm Reject",
+        "reject_dialog_title": "Reject this order?",
+        "reject_dialog_subtitle": "Please select a reason. The customer will be notified.",
+        "reject_reason_out_of_ingredients": "Out of ingredients",
+        "reject_reason_too_busy": "Too busy right now",
+        "reject_reason_store_closing": "Store is closing",
+        "reject_reason_other": "Other reason",
+        "reject_reason_placeholder": "Enter your reason...",
+        "toast_order_rejected": "Order rejected"
+    },
+    "delivery_tracker": {
+        "title": "Delivery Status",
+        "status_ASSIGNING_DRIVER": "Finding rider",
+        "status_ON_GOING": "On the way",
+        "status_PICKED_UP": "Picked up",
+        "status_COMPLETED": "Delivered",
+        "status_CANCELLED": "Cancelled",
+        "status_subtext_ready": "A rider is being assigned to deliver your order.",
+        "driver_label": "Your Rider",
+        "track_rider": "Track Rider"
     }
 }

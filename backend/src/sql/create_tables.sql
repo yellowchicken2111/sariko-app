@@ -130,32 +130,45 @@ create table public.orders (
   payment_status text null default 'pending'::text,
   delivery_method text null,
   delivery_address text null,
-  delivery_lat double precision null,
-  delivery_lon double precision null,
   note text null,
   created_at timestamp without time zone null default now(),
+  delivery_lat double precision null,
+  delivery_lon double precision null,
+  quotation_id text null,
+  cancellation_reason text null,
   constraint orders_pkey primary key (id),
-  constraint orders_seller_id_fkey foreign key (seller_id) references seller_profiles (id),
-  constraint orders_user_id_fkey foreign key (user_id) references users (id),
+  constraint orders_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
+  constraint orders_user_id_fkey foreign KEY (user_id) references users (id),
   constraint orders_delivery_method_check check (
-    (delivery_method = any (array['pickup'::text, 'delivery'::text]))
+    (
+      delivery_method = any (array['pickup'::text, 'delivery'::text])
+    )
   ),
   constraint orders_payment_status_check check (
-    (payment_status = any (array['pending'::text, 'paid'::text, 'failed'::text]))
+    (
+      payment_status = any (
+        array['pending'::text, 'paid'::text, 'failed'::text]
+      )
+    )
   ),
   constraint orders_status_check check (
-    (status = any (array[
-      'pending'::text,
-      'confirmed'::text,
-      'ready'::text,
-      'done'::text,
-      'cancelled'::text
-    ]))
+    (
+      status = any (
+        array[
+          'pending'::text,
+          'confirmed'::text,
+          'ready'::text,
+          'done'::text,
+          'cancelled'::text
+        ]
+      )
+    )
   )
 ) TABLESPACE pg_default;
 
-create index if not exists idx_orders_user on public.orders using btree (user_id) TABLESPACE pg_default;
-create index if not exists idx_orders_seller on public.orders using btree (seller_id) TABLESPACE pg_default;
+create index IF not exists idx_orders_user on public.orders using btree (user_id) TABLESPACE pg_default;
+
+create index IF not exists idx_orders_seller on public.orders using btree (seller_id) TABLESPACE pg_default;
 
 -- 9. ORDER ITEMS (SNAPSHOT)
 create table public.order_items (
@@ -211,6 +224,9 @@ create table public.deliveries (
   driver_phone text null,
   created_at timestamp without time zone null default now(),
   estimated_pickup_time timestamp without time zone null,
+  share_link text null,
+  driver_plate text null,
+  lalamove_order_id text null,
   constraint deliveries_pkey primary key (id),
-  constraint deliveries_order_id_fkey foreign key (order_id) references orders (id) on delete cascade
+  constraint deliveries_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;

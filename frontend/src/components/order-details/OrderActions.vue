@@ -30,7 +30,7 @@ export default {
             return this.order?.status === 'cancelled'
         },
         isPaymentPending() {
-            return this.order?.payment_status === 'pending' && !this.isCancelled
+            return this.order?.payment_status === 'pending' && this.order?.status === 'pending'
         },
         totalText() {
             if (!this.order) return ''

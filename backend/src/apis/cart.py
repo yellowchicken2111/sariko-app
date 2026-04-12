@@ -64,9 +64,9 @@ def add_item_to_cart(request: RequestAddCartItem, user=Depends(verify_token)):
     existing_item = dao_cart_items.find_item(cart_id=cart_id, food_item_id=request.food_item_id)
 
     if existing_item:
-        dao_cart_items.update_quantity(cart_id=cart_id, food_item_id=request.food_item_id, quantity=existing_item["quantity"] + 1)
+        dao_cart_items.update_quantity(cart_id=cart_id, food_item_id=request.food_item_id, quantity=existing_item["quantity"] + request.quantity)
     else:
-        dao_cart_items.update_food_item_by_cart_id(cart_id=cart_id, food_item_id=request.food_item_id)
+        dao_cart_items.update_food_item_by_cart_id(cart_id=cart_id, food_item_id=request.food_item_id, quantity=request.quantity)
 
     return {"success": True}
 

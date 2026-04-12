@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from apis import (
-    users, sellers, cart, orders, payments
+    users, sellers, cart, orders, payments, deliveries
 )
 
 
@@ -73,6 +73,7 @@ app.include_router(sellers.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(cart.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(orders.router, prefix="/rest/v1", tags=["v1"])
 app.include_router(payments.router, prefix="/rest/v1", tags=["v1"])
+app.include_router(deliveries.router, prefix="/rest/v1", tags=["v1"])
 
 app.add_middleware(
     CORSMiddleware,

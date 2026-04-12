@@ -95,12 +95,12 @@ class DAOCartItems(DAOBase):
             raise Exception(f"error remove_item with cart_id {cart_id} and food_item_id {food_item_id}: {e}")
 
 
-    def update_food_item_by_cart_id(self, cart_id: str, food_item_id: str):
-        
+    def update_food_item_by_cart_id(self, cart_id: str, food_item_id: str, quantity: int = 1):
+
         try:
-        
+
             query = self._supabase_client.table(self._table_name)
-            query = query.insert({"cart_id": cart_id, "food_item_id": food_item_id, "quantity": 1})
+            query = query.insert({"cart_id": cart_id, "food_item_id": food_item_id, "quantity": quantity})
     
             result = query.execute()
             

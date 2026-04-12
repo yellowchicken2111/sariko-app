@@ -104,7 +104,44 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                 detail=f"Cannot transition from '{order['status']}' to '{body.status}'"
             )
 
-        updated = dao_orders.update_order_status(order_id, body.status)
+        # Pass cancellation_reason when rejecting
+        cancellation_reason = body.cancellation_reason if body.status == "cancelled" else None
+        updated = dao_orders.update_order_status(order_id, body.status, cancellation_reason)
+
+        # Auto-book Lalamove delivery when seller marks order "ready"
+        if body.status == "ready" and order.get("delivery_method") == "delivery":
+            try:
+                from services.lalamove_service import get_lalamove_service
+                from dao.dao_deliveries import DAODeliveries
+
+                full_order = dao_orders.read_order_with_seller_coords(order_id)
+                if full_order:
+                    seller_profile = full_order.get("seller_profiles") or {}
+                    buyer = full_order.get("users") or {}
+                    quotation_id = full_order.get("quotation_id", "")
+
+                    service = get_lalamove_service()
+                    result = service.place_order(
+                        quotation_id=quotation_id,
+                        sender_name=seller_profile.get("store_name", "Seller"),
+                        sender_phone="0900000000",
+                        recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
+                        recipient_phone=buyer.get("phone") or "0900000000",
+                        recipient_remarks=full_order.get("delivery_address") or "",
+                    )
+
+                    dao_deliveries = DAODeliveries()
+                    dao_deliveries.create_delivery(
+                        order_id=order_id,
+                        provider="lalamove",
+                        status=result.status,
+                        lalamove_order_id=result.lalamove_order_id,
+                        share_link=result.share_link,
+                    )
+                    logger.info(f"Auto-booked delivery for order {order_id}: {result.lalamove_order_id}")
+            except Exception as delivery_err:
+                logger.error(f"Failed to auto-book delivery for order {order_id}: {delivery_err}")
+
         return {"success": True, "order": updated}
     except HTTPException:
         raise

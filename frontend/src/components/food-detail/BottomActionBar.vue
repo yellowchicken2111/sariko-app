@@ -29,6 +29,10 @@ export default {
         canAdd() {
             return !!this.food && !!this.seller && !this.loading
         },
+        singlePriceText() {
+            if (!this.food) return '—'
+            return new Intl.NumberFormat('vi-VN').format(this.food.price) + ' ₫'
+        },
         totalPriceText() {
             if (!this.food) return '—'
             const total = this.food.price * this.quantity
@@ -50,13 +54,10 @@ export default {
             this.loading = true
             const cartStore = useCartStore()
             try {
-                await cartStore.addItem(this.seller.id, this.food.id, this.seller.store_name)
+                await cartStore.addItem(this.seller.id, this.food.id, this.seller.store_name, this.quantity)
                 if (cartStore.isShowModalCartConflict) {
                     this.loading = false
                     return
-                }
-                if (this.quantity > 1) {
-                    await cartStore.updateQuantity(this.food.id, this.quantity)
                 }
                 this.$q.notify({
                     classes: 'quasar-notify-positive',
@@ -75,67 +76,82 @@ export default {
 
 <template>
     <div class="action-bar">
-        <!-- Total price row -->
-        <div class="total-row">
-            <span class="total-row__label">{{ $t('food_detail_page.label_total_price') }}</span>
-            <span class="total-row__value">{{ totalPriceText }}</span>
-        </div>
 
-        <!-- Controls row: quantity pill + CTA -->
         <div class="controls-row">
             <div class="qty-pill" role="group" :aria-label="$t('food_detail_page.label_quantity')">
-                <button
-                    class="qty-pill__btn"
+                <div class="btn-qty-pill-sub">
+                    <q-btn
+                    dense
+                    flat
                     :disabled="!canDecrease"
                     :aria-label="$t('food_detail_page.button_decrease') || 'Decrease quantity'"
                     @click="decrease"
-                >
-                    <Minus :size="16" />
-                </button>
+                    >
+                        <Minus style="color: white; background-color: black; border-radius: 50%;"/>
+                    </q-btn>
+                </div>
                 <span class="qty-pill__value" aria-live="polite">{{ quantity }}</span>
-                <button
-                    class="qty-pill__btn"
+                <div class="btn-qty-pill-sub">
+                    <q-btn
+                    dense
+                    flat
                     :disabled="!food"
                     :aria-label="$t('food_detail_page.button_increase') || 'Increase quantity'"
                     @click="increase"
-                >
-                    <Plus :size="16" />
-                </button>
+                    >
+                        <Plus style="color: black; background-color: #f5A623; border-radius: 50%;" />
+                    </q-btn>
+                </div>
             </div>
 
-            <button
-                class="cta"
-                :disabled="!canAdd"
-                :aria-busy="loading"
-                :aria-label="food
-                    ? `${$t('food_detail_page.button_add_to_cart')} — ${food.name}`
-                    : $t('food_detail_page.button_add_to_cart')"
-                @click="addToCart"
-            >
-                <span v-if="loading" class="cta__spinner" aria-hidden="true"></span>
-                <ShoppingBasket v-else :size="20" />
-                <span class="cta__label">{{ $t('food_detail_page.button_add_to_cart') }}</span>
-            </button>
+            <div class="total-row">
+                <div class="total-row__label">{{ $t('food_detail_page.label_total_price') }}</div>
+                <div class="price">
+                    <div v-if="quantity > 1" class="total-row__price-per-item">{{ singlePriceText }}</div>
+                    <div class="total-row__value">{{ totalPriceText }}</div> 
+                </div>
+            </div>
         </div>
+
+
+        <button
+            class="cta"
+            :disabled="!canAdd"
+            :aria-busy="loading"
+            :aria-label="food
+                ? `${$t('food_detail_page.button_add_to_cart')} — ${food.name}`
+                : $t('food_detail_page.button_add_to_cart')"
+            @click="addToCart"
+        >
+            <span v-if="loading" class="cta__spinner" aria-hidden="true"></span>
+            <ShoppingBasket v-else :size="20" />
+            <span class="cta__label">{{ $t('food_detail_page.button_add_to_cart') }}</span>
+        </button>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .action-bar {
     display: flex;
     flex-direction: column;
     gap: 14px;
     width: 100%;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: $sariko-font-family-secondary;
 }
 
 /* Total price row */
 .total-row {
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: flex-end;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 12px;  
     padding: 0 4px;
+}
+
+.price {
+    display: flex;
+    align-items: baseline;
 }
 
 .total-row__label {
@@ -145,7 +161,14 @@ export default {
     letter-spacing: 0.2px;
 }
 
+.total-row__price-per-item {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
 .total-row__value {
+    margin-left: 10px;
     font-size: 22px;
     font-weight: 800;
     color: var(--text-primary);
@@ -157,7 +180,8 @@ export default {
 /* Controls row */
 .controls-row {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: space-between;
     gap: 12px;
     width: 100%;
 }
@@ -167,23 +191,20 @@ export default {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    height: 56px;
-    padding: 0 8px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
     flex: 0 0 auto;
+    background-color: rgb(255, 255, 255, 0.05);
 }
 
-.qty-pill__btn {
-    width: 38px;
-    height: 38px;
+.btn-qty-pill-sub {
     border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #ffffff;
+    cursor: pointer;
+    transition: transform 100ms ease, background 160ms ease, opacity 160ms ease;
+}
+
+.btn-qty-pill-add {
+    border-radius: 50%;
     cursor: pointer;
     transition: transform 100ms ease, background 160ms ease, opacity 160ms ease;
 }
@@ -228,7 +249,6 @@ export default {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.01em;

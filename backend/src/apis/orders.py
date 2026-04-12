@@ -49,7 +49,7 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
         for item in cart_items
     )
 
-    # 3. Create order
+    # 3. Create order (include delivery fields if present)
     order = dao_orders.create_order(
         user_id=user_id,
         seller_id=cart["seller_id"],
@@ -57,6 +57,10 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
         delivery_method=request.delivery_method,
         delivery_address=request.delivery_address,
         note=request.note,
+        delivery_lat=request.delivery_lat,
+        delivery_lon=request.delivery_lon,
+        delivery_fee=request.delivery_fee,
+        quotation_id=request.quotation_id,
     )
 
     if not order:

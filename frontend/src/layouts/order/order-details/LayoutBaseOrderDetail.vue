@@ -9,6 +9,10 @@
             <slot name="StatusHeader" />
         </div>
 
+        <div class="delivery-tracking-section">
+            <slot name="DeliveryTracking" />
+        </div>
+
         <div class="order-info-section">
             <slot name="OrderInfo" />
         </div>
@@ -36,6 +40,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.delivery-tracking-section {
+    padding: 0 16px;
 }
 
 .order-info-section {

@@ -12,7 +12,7 @@ export default {
             return useOrderStore().currentOrder
         },
         isPaymentPending() {
-            return this.order?.payment_status === 'pending' && this.order?.status !== 'cancelled'
+            return this.order?.payment_status === 'pending' && this.order?.status === 'pending'
         },
         isPending() {
             return this.order?.status === 'pending'
@@ -31,13 +31,19 @@ export default {
             }
             return map[this.order?.status] || 'Order'
         },
+        cancellationReason() {
+            return this.order?.cancellation_reason || null
+        },
         statusSubtext() {
             if (this.isPaymentPending) return 'Complete your payment to send this order to the seller.'
+            if (this.isCancelled && this.cancellationReason) {
+                return `${this.$t('order_detail.cancelled_reason')}: ${this.cancellationReason}`
+            }
             const map = {
                 pending: 'Your order has been sent. The seller will confirm shortly.',
                 confirmed: 'The seller is preparing your order.',
                 ready: this.order?.delivery_method === 'delivery'
-                    ? 'Your order is ready for pickup by rider.'
+                    ? this.$t('delivery_tracker.status_subtext_ready')
                     : 'Your order is ready! Head to the store.',
                 done: 'Enjoy your meal!',
                 cancelled: 'This order has been cancelled.',

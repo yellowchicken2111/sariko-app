@@ -86,7 +86,7 @@ const routes = [
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('@/pages/SellerDashboard.vue'),
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, requiresSeller: true }
     },
     {
         path: '/account',
@@ -159,6 +159,10 @@ router.beforeEach(async (to) => {
     }
 
     if (to.meta.guestOnly && isLoggedIn) {
+        return { name: 'home' }
+    }
+
+    if (to.meta.requiresSeller && (!authStore.user?.isSeller)) {
         return { name: 'home' }
     }
 })

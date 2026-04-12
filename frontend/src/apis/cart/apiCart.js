@@ -2,11 +2,12 @@ import { apiClient } from "@/lib/axiosPolicy.js"
 
 export const apiCarts = {
 
-    addItem: async(sellerId, foodItemId) => {
+    addItem: async(sellerId, foodItemId, quantity = 1) => {
         try {
             const payload = {
                 "seller_id": sellerId,
-                "food_item_id": foodItemId
+                "food_item_id": foodItemId,
+                "quantity": quantity
             }
             const response = await apiClient.post('/v1/cart/add', payload, { _silent: true })
             return response

@@ -36,8 +36,13 @@ class RequestUpdateProfile(BaseModel):
 class RequestCreateOrder(BaseModel):
     delivery_method: Literal["pickup", "delivery"]
     delivery_address: Optional[str] = None
+    delivery_lat: Optional[float] = None
+    delivery_lon: Optional[float] = None
+    delivery_fee: Optional[float] = None
+    quotation_id: Optional[str] = None
     note: Optional[str] = None
 
 # Seller Order API
 class RequestUpdateOrderStatus(BaseModel):
     status: Literal["confirmed", "ready", "done", "cancelled"]
+    cancellation_reason: Optional[str] = None

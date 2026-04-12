@@ -5,11 +5,11 @@
             <slot name="HeroImage" />
         </div>
 
-        <div class="content-card">
+        <q-scroll-area class="scroll-area">
             <div class="food-info">
                 <slot name="FoodInfo"/>
             </div>
-        </div>
+        </q-scroll-area>
 
         <div class="action-zone">
             <slot name="BottomActionBar" />
@@ -22,12 +22,12 @@
 .food-detail-page {
     width: 100vw;
     height: 100vh;
-    // background: var(--bg-surface);
-    // background-color: rgba(255, 255, 255, 0.05);
     font-family: $sariko-font-family-secondary;
     max-width: 430px;
     margin: 0 auto;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .hero-section {
@@ -36,35 +36,25 @@
     margin-bottom: -28px;
 }
 
-.content-card {
-    overflow: hidden;
-    height: 100%;
+.scroll-area {
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
-    background-color: var(--bg-main);
-    position: relative;
-    z-index: 2;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
-    padding-bottom: calc(150px + env(safe-area-inset-bottom, 0));
+    flex: 1;
+    background-color: var(--bg-surface-2);
 }
+
 
 .food-info {
     height: 100%;
     padding: 28px 20px 24px;
-    background-color: rgba(255, 255, 255, 0.06);
 }
 
 .action-zone {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 430px;
-    margin: 0 auto;
-    padding: 16px 16px 18px;
-    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0));
+    padding: 20px 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 0 -12px 24px rgba(0, 0, 0, 0.35);
-    z-index: 20;
+    background-color: rgba(59, 59, 59, 0.5);
+    background-color: var(--bg-surface);
 }
 </style>

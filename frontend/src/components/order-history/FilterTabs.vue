@@ -10,17 +10,17 @@ export default {
         tabs() {
             const source = this.orders
             const all = source.length
-            const unpaid = source.filter(o => o.payment_status === 'pending' && o.status !== 'cancelled').length
-            const active = source.filter(o => o.payment_status === 'paid' && ['pending', 'confirmed', 'ready'].includes(o.status)).length
+            const unpaid = source.filter(o => o.payment_status === 'pending' && o.status === 'pending').length
+            const active = source.filter(o => ['pending', 'confirmed', 'ready'].includes(o.status) && !(o.payment_status === 'pending' && o.status === 'pending')).length
             const completed = source.filter(o => o.status === 'done').length
             const cancelled = source.filter(o => o.status === 'cancelled').length
 
             return [
-                { key: 'all', label: 'All', count: all },
-                { key: 'unpaid', label: 'Unpaid', count: unpaid },
-                { key: 'active', label: 'Active', count: active },
-                { key: 'completed', label: 'Completed', count: completed },
-                { key: 'cancelled', label: 'Cancelled', count: cancelled },
+                { key: 'all', label: this.$t('orders_page.tab_all'), count: all },
+                { key: 'unpaid', label: this.$t('orders_page.tab_unpaid'), count: unpaid },
+                { key: 'active', label: this.$t('orders_page.tab_active'), count: active },
+                { key: 'completed', label: this.$t('orders_page.tab_completed'), count: completed },
+                { key: 'cancelled', label: this.$t('orders_page.tab_cancelled'), count: cancelled },
             ]
         }
     },

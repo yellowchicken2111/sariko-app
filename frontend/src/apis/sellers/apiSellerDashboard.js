@@ -12,10 +12,10 @@ export const apiSellerDashboard = {
         return response.data
     },
 
-    updateOrderStatus: async (orderId, newStatus) => {
-        const response = await apiClient.patch(`/v1/sellers/me/orders/${orderId}/status`, {
-            status: newStatus,
-        })
+    updateOrderStatus: async (orderId, newStatus, cancellationReason = null) => {
+        const payload = { status: newStatus }
+        if (cancellationReason) payload.cancellation_reason = cancellationReason
+        const response = await apiClient.patch(`/v1/sellers/me/orders/${orderId}/status`, payload)
         return response.data
     },
 

@@ -1,40 +1,25 @@
 <script>
 import { FileText, DollarSign, Clock } from 'lucide-vue-next';
-import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
+import { mapState } from 'pinia';
+import { useDashboardStore } from '@/stores/seller/dashboardStore';
 
 export default {
     components: { FileText, DollarSign, Clock },
 
-    data() {
-        return {
-            orders: []
-        }
-    },
-
     computed: {
-        totalOrders() {
-            return this.orders.length
-        },
-        revenue() {
-            return this.orders
-                .filter(o => o.status !== 'cancelled')
-                .reduce((sum, o) => sum + (o.total_amount || 0), 0)
-        },
+        ...mapState(useDashboardStore, [
+            'totalOrders',
+            'revenue',
+            'pendingOrders',
+            'isLoading',
+        ]),
         formattedRevenue() {
-            return this.revenue.toLocaleString()
+            return this.revenue
         },
-        pendingOrders() {
-            return this.orders.filter(o => o.status === 'pending').length
-        }
     },
 
-    async created() {
-        try {
-            const res = await apiSellerDashboard.getOrders()
-            this.orders = res.orders || []
-        } catch (e) {
-            console.error('Failed to fetch stats:', e)
-        }
+    mounted() {
+        useDashboardStore().fetchOrders()
     }
 }
 </script>
@@ -43,31 +28,31 @@ export default {
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon orders">
-                <FileText :size="24" />
+                <FileText :size="18"/>
+                <div class="stat-label">Total Orders</div>
             </div>
             <div class="stat-content">
                 <span class="stat-value">{{ totalOrders }}</span>
-                <span class="stat-label">Total Orders</span>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon revenue">
                 <DollarSign :size="24" />
+                <div class="stat-label">Revenue</div>
             </div>
             <div class="stat-content">
-                <span class="stat-value">₱{{ formattedRevenue }}</span>
-                <span class="stat-label">Revenue</span>
+                <span class="stat-value">{{ formattedRevenue }}</span>
             </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon pending">
                 <Clock :size="24" />
+                <div class="stat-label">Pending Orders</div>
             </div>
             <div class="stat-content">
                 <span class="stat-value">{{ pendingOrders }}</span>
-                <span class="stat-label">Pending Orders</span>
             </div>
         </div>
     </div>
@@ -90,26 +75,29 @@ export default {
 }
 
 .stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    border-radius: 12px;
+}
+
+.stat-label {
+    margin-left: 5px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .stat-icon.orders {
-    background: rgba(37, 99, 235, 0.1);
+    /* background: rgba(37, 99, 235, 0.1); */
     color: var(--color-info);
 }
 
 .stat-icon.revenue {
-    background: rgba(34, 197, 94, 0.1);
+    /* background: rgba(34, 197, 94, 0.1); */
     color: var(--color-success);
 }
 
 .stat-icon.pending {
-    background: rgba(245, 158, 11, 0.1);
+    /* background: rgba(245, 158, 11, 0.1); */
     color: var(--color-warning);
 }
 
@@ -122,11 +110,5 @@ export default {
     font-size: 22px;
     font-weight: 700;
     color: var(--text-primary);
-}
-
-.stat-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 2px;
 }
 </style>
