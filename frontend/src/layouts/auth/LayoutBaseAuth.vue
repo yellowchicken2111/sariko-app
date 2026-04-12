@@ -28,12 +28,9 @@
 .background {
     min-height: 100vh;
     height: fit-content;
-    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* background-color: #1a2843; */
-    /* background: var(--bg-main); */
     background-color: #121b2f;
     padding: 50px 0px 100px 0px;
 }

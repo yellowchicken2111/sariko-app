@@ -74,6 +74,20 @@ def update_current_user_profile(body: RequestUpdateProfile, user=Depends(verify_
         )
 
 
+@router.get("/me/address")
+def get_default_address(user=Depends(verify_token)):
+    try:
+        dao_addresses = DAOUserAddresses()
+        address = dao_addresses.read_default_address(user["id"])
+        return {"success": True, "address": address}
+    except Exception as e:
+        logger.exception(f"Exception in GET /users/me/address: {repr(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"{repr(e)}",
+        )
+
+
 @router.get("/info/{user_id}")
 def get_user_profile(user_id: str, user=Depends(verify_token)):
     pass

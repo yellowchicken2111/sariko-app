@@ -6,6 +6,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
         return {
             orders: [],
             isLoading: false,
+            selectedFilter: 'new',
         }
     },
 
@@ -26,6 +27,16 @@ export const useDashboardStore = defineStore("dashboardStore", {
         },
         recentOrders(state) {
             return state.orders.slice(0, 20)
+        },
+        filteredOrders(state) {
+            const filter = state.selectedFilter
+            if (filter === 'all') return state.orders
+            if (filter === 'new') return state.orders.filter(o => o.status === 'pending')
+            if (filter === 'preparing') return state.orders.filter(o => o.status === 'confirmed')
+            if (filter === 'ready') return state.orders.filter(o => o.status === 'ready')
+            if (filter === 'completed') return state.orders.filter(o => o.status === 'done')
+            if (filter === 'cancelled') return state.orders.filter(o => o.status === 'cancelled')
+            return state.orders
         },
     },
 

@@ -4,25 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapPin, LocateFixed, Search, X } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth/authStore';
 import apiUsers from '@/apis/users/apiUsers';
-
-// Swap this function when Goong key is ready
-async function searchAddress(query) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=6&countrycodes=vn`
-    const res = await fetch(url, { headers: { 'Accept-Language': 'vi,en' } })
-    const data = await res.json()
-    return data.map(item => ({
-        label: item.display_name,
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-    }))
-}
-
-async function reverseGeocode(lat, lon) {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=vi,en`
-    const res = await fetch(url)
-    const data = await res.json()
-    return data?.display_name || null
-}
+import { apiClient } from '@/lib/axiosPolicy.js';
 
 export default {
     components: { MapPin, LocateFixed, Search, X },
@@ -83,8 +65,11 @@ export default {
         async fetchSuggestions() {
             this.isSearching = true
             try {
-                this.suggestions = await searchAddress(this.query)
-                this.showDropdown = this.suggestions.length > 0
+                const res = await apiClient.get('/v1/address/search', { params: { q: this.query } })
+                if (res.data?.success) {
+                    this.suggestions = res.data.results || []
+                    this.showDropdown = this.suggestions.length > 0
+                }
             } catch (e) {
                 console.error('Address search failed:', e)
             } finally {
@@ -92,14 +77,25 @@ export default {
             }
         },
 
-        selectSuggestion(item) {
-            this.address = item.label
-            this.lat = item.lat
-            this.lon = item.lon
+        async selectSuggestion(item) {
             this.query = item.label
             this.showDropdown = false
             this.suggestions = []
-            this.$nextTick(() => this.showMapAt(item.lat, item.lon))
+
+            // Fetch lat/lon from place detail
+            try {
+                const res = await apiClient.get('/v1/address/detail', { params: { place_id: item.place_id } })
+                if (res.data?.success) {
+                    this.address = res.data.address || item.label
+                    this.lat = res.data.lat
+                    this.lon = res.data.lon
+                    this.$nextTick(() => this.showMapAt(res.data.lat, res.data.lon))
+                }
+            } catch (e) {
+                console.error('Place detail failed:', e)
+                // Fallback: use label without coords
+                this.address = item.label
+            }
         },
 
         clearSearch() {
@@ -150,10 +146,14 @@ export default {
                     const lon = pos.coords.longitude
                     this.lat = lat
                     this.lon = lon
-                    const found = await reverseGeocode(lat, lon)
-                    if (found) {
-                        this.address = found
-                        this.query = found
+                    try {
+                        const res = await apiClient.get('/v1/address/reverse', { params: { lat, lon } })
+                        if (res.data?.success && res.data.address) {
+                            this.address = res.data.address
+                            this.query = res.data.address
+                        }
+                    } catch (e) {
+                        console.error('Reverse geocode failed:', e)
                     }
                     this.$nextTick(() => this.showMapAt(lat, lon))
                     this.isLocating = false
@@ -232,7 +232,10 @@ export default {
                     @click="selectSuggestion(item)"
                 >
                     <MapPin :size="14" class="icon-pin-sm" />
-                    <span class="suggestion-text">{{ item.label }}</span>
+                    <div class="suggestion-content">
+                        <span class="suggestion-main">{{ item.main_text || item.label }}</span>
+                        <span v-if="item.secondary_text" class="suggestion-sub">{{ item.secondary_text }}</span>
+                    </div>
                 </button>
             </div>
         </div>
@@ -374,10 +377,27 @@ export default {
     margin-top: 2px;
 }
 
-.suggestion-text {
-    font-size: 13px;
+.suggestion-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.suggestion-main {
+    font-size: 14px;
+    font-weight: 500;
     color: var(--text-primary);
-    line-height: 1.4;
+    line-height: 1.3;
+}
+
+.suggestion-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Map preview */

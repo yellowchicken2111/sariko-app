@@ -13,6 +13,24 @@ class DAOUserAddresses(DAOBase):
         super().__init__()
         self._table_name = "user_addresses"
 
+    def read_default_address(self, user_id: str):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .select("id, label, address, lat, lon, is_default")
+                .eq("user_id", user_id)
+                .eq("is_default", True)
+                .maybe_single()
+                .execute()
+            )
+            return result.data if result else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_default_address: {e}")
+        except Exception as e:
+            raise Exception(f"error read_default_address: {e}")
+
     def upsert_default_address(self, user_id: str, address: str, address_details: str = None, lat: float = None, lon: float = None):
         try:
             existing = (

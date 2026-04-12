@@ -88,6 +88,18 @@ export const useAuthStore = defineStore("authStore", {
                     }
 
                     try {
+                        const addrRes = await apiUsers.getDefaultAddress()
+                        if (addrRes?.address) {
+                            this.inputAddress = addrRes.address.address || null
+                            this.inputAddressDetails = addrRes.address.label || null
+                            this.inputLat = addrRes.address.lat || null
+                            this.inputLon = addrRes.address.lon || null
+                        }
+                    } catch (e) {
+                        console.error(`authStore - bootstrap - address fetch failed: ${e}`);
+                    }
+
+                    try {
                         const cartStore = useCartStore();
                         await cartStore.getCurrentCart();
                     } catch (e) {

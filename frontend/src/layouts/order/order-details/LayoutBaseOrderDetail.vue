@@ -27,7 +27,6 @@
 <style lang="scss" scoped>
 .order-detail-page {
     min-height: 100vh;
-    width: 100vw;
     font-family: $sariko-font-family-secondary;
 }
 

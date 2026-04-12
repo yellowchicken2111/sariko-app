@@ -24,7 +24,6 @@ export default {
 @import '@/assets/variables.scss';
 
 .skeleton-page {
-    width: 100vw;
     padding: 10px;
     display: flex;
     flex-direction: column;

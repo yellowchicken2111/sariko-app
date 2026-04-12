@@ -122,7 +122,8 @@
     "cart_page": {
         "section_delivery_address": {
             "title": "DELIVERY TO {name}",
-            "button_label_text_edit": "Change"
+            "button_label_text_edit": "Change",
+            "no_address": "Tap to add delivery address"
         },
         "section_total_amount": {
             "title_subtotal": "Subtotal",
@@ -226,6 +227,7 @@
         "empty_orders": "No orders yet",
         "action_accept": "Accept",
         "action_mark_ready": "Mark Ready",
+        "action_ready_to_deliver": "Ready to Deliver",
         "action_mark_done": "Mark Done",
         "action_reject": "Reject",
         "action_confirm_reject": "Confirm Reject",
@@ -236,7 +238,13 @@
         "reject_reason_store_closing": "Store is closing",
         "reject_reason_other": "Other reason",
         "reject_reason_placeholder": "Enter your reason...",
-        "toast_order_rejected": "Order rejected"
+        "toast_order_rejected": "Order rejected",
+        "tab_all": "All",
+        "tab_new": "New",
+        "tab_preparing": "Preparing",
+        "tab_ready": "Ready",
+        "tab_completed": "Done",
+        "tab_cancelled": "Cancelled"
     },
     "delivery_tracker": {
         "title": "Delivery Status",

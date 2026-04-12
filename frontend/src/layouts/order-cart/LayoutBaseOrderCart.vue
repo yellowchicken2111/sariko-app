@@ -62,7 +62,6 @@ export default {
 <style lang="scss" scoped>
 
 .background {
-    width: 100vw;
     height: 100vh;
 }
 

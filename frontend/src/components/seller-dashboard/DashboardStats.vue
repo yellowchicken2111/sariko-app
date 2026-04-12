@@ -66,7 +66,7 @@ export default {
 }
 
 .stat-card {
-    background: var(--bg-surface);
+    background-color: rgba(255, 255, 255, 0.07);
     border-radius: 16px;
     padding: 16px;
     display: flex;

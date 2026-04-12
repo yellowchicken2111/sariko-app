@@ -1,11 +1,13 @@
 <script>
 import BottomNavigation from '@/components/nav/BottomNavigation.vue'
+import HackerPanel from '@/components/dev/HackerPanel.vue'
 import { setUpAxiosPolicy } from "@/lib/axiosPolicy.js";
 
 export default {
     name: 'App',
     components: {
-        BottomNavigation
+        BottomNavigation,
+        HackerPanel,
     },
 
     setup() {        
@@ -36,6 +38,7 @@ export default {
             <!-- </router-view> -->
         </div>
         <BottomNavigation v-if="showNavigation" />
+        <HackerPanel />
     </div>    
 </template>
 
@@ -44,7 +47,6 @@ export default {
 .app-container {
     min-height: 100vh;
     max-width: 800px;
-    width: 100%;
     display: flex;
     flex-direction: column;
     margin: auto;

@@ -12,6 +12,11 @@ export const apiUsers = {
         return response.data
     },
 
+    getDefaultAddress: async () => {
+        const response = await apiClient.get('/v1/users/me/address')
+        return response.data
+    },
+
 }
 
 export default apiUsers

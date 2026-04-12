@@ -122,7 +122,8 @@
     "cart_page": {
         "section_delivery_address": {
             "title": "GIAO ĐẾN {name}",
-            "button_label_text_edit": "Thay đổi"
+            "button_label_text_edit": "Thay đổi",
+            "no_address": "Nhấn để thêm địa chỉ giao hàng"
         },
         "section_total_amount": {
             "title_subtotal": "Tạm tính",
@@ -226,6 +227,7 @@
         "empty_orders": "Chưa có đơn hàng",
         "action_accept": "Nhận đơn",
         "action_mark_ready": "Đã sẵn sàng",
+        "action_ready_to_deliver": "Sẵn sàng giao",
         "action_mark_done": "Hoàn thành",
         "action_reject": "Từ chối",
         "action_confirm_reject": "Xác nhận từ chối",
@@ -236,7 +238,13 @@
         "reject_reason_store_closing": "Quán sắp đóng cửa",
         "reject_reason_other": "Lý do khác",
         "reject_reason_placeholder": "Nhập lý do...",
-        "toast_order_rejected": "Đã từ chối đơn hàng"
+        "toast_order_rejected": "Đã từ chối đơn hàng",
+        "tab_all": "Tất cả",
+        "tab_new": "Mới",
+        "tab_preparing": "Đang nấu",
+        "tab_ready": "Sẵn sàng",
+        "tab_completed": "Xong",
+        "tab_cancelled": "Đã huỷ"
     },
     "delivery_tracker": {
         "title": "Trạng thái giao hàng",
