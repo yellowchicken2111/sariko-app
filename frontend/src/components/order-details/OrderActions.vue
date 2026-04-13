@@ -30,7 +30,7 @@ export default {
             return this.order?.status === 'cancelled'
         },
         isPaymentPending() {
-            return this.order?.payment_status === 'pending' && !this.isCancelled
+            return this.order?.payment_status === 'pending' && this.order?.status === 'pending'
         },
         totalText() {
             if (!this.order) return ''
@@ -47,6 +47,7 @@ export default {
             try {
                 const res = await apiPayments.createVnpayPayment(this.order.id)
                 if (res?.data?.payment_url) {
+                    // window.open(res.data.payment_url, '_blank')
                     window.location.href = res.data.payment_url
                     return
                 }

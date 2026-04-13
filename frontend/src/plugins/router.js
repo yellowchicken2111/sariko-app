@@ -37,13 +37,18 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/sellers',
+        name: 'all-sellers',
+        component: () => import('@/pages/AllSellersPage.vue'),
+    },
+    {
         path: '/seller/:slugName',
         name: 'seller',
         component: () => import('@/pages/SellerPage.vue'),
         props: true
     },
     {
-        path: '/food/:sellerId/:foodId',
+        path: '/food/:sellerSlug/:foodId',
         name: 'food-detail',
         component: () => import('@/pages/FoodDetailPage.vue'),
         props: true
@@ -81,12 +86,42 @@ const routes = [
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('@/pages/SellerDashboard.vue'),
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, requiresSeller: true }
     },
     {
         path: '/account',
         name: 'account',
         component: () => import('@/pages/AccountPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/profile',
+        name: 'account-profile',
+        component: () => import('@/pages/EditProfilePage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/address',
+        name: 'account-address',
+        component: () => import('@/pages/DeliveryAddressPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/language',
+        name: 'account-language',
+        component: () => import('@/pages/LanguagePage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/terms',
+        name: 'account-terms',
+        component: () => import('@/pages/TermsPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/privacy',
+        name: 'account-privacy',
+        component: () => import('@/pages/PrivacyPage.vue'),
         meta: { requiresAuth: true }
     },
     {
@@ -124,6 +159,10 @@ router.beforeEach(async (to) => {
     }
 
     if (to.meta.guestOnly && isLoggedIn) {
+        return { name: 'home' }
+    }
+
+    if (to.meta.requiresSeller && (!authStore.user?.isSeller)) {
         return { name: 'home' }
     }
 })

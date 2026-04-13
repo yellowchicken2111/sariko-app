@@ -1,10 +1,19 @@
 {
     "breadcrumbs": {
         "cart_page": "Cart",
-        "checkout_page": "Checkout"
-    },   
+        "checkout_page": "Checkout",
+        "edit_profile_page": "Edit Profile",
+        "language_page": "Language",
+        "delivery_address_page": "Delivery Address",
+        "terms_page": "Terms of Service",
+        "privacy_page": "Privacy Policy"
+    },
     "common": {
-        "button_label_cancel": "Cancel"
+        "button_label_cancel": "Cancel",
+        "button_label_save": "Save",
+        "button_label_saving": "Saving...",
+        "toast_update_success": "Updated successfully",
+        "toast_update_failed": "Update failed, please try again"
     },
     "bottom_nav": {
         "button_label_home": "Home",
@@ -98,10 +107,23 @@
             "banner_text_line_2": "∞ listings · 15% commission · Founding Seller"
         }
     },
+    "food_detail_page": {
+        "label_price": "Price",
+        "label_total_price": "Total price",
+        "label_quantity": "Quantity",
+        "button_add_to_cart": "Add to Cart",
+        "button_back": "Go back",
+        "button_favorite": "Add to favorites",
+        "button_unfavorite": "Remove from favorites",
+        "button_decrease": "Decrease quantity",
+        "button_increase": "Increase quantity",
+        "toast_added_to_cart": "{name} added to cart"
+    },
     "cart_page": {
         "section_delivery_address": {
             "title": "DELIVERY TO {name}",
-            "button_label_text_edit": "Change"
+            "button_label_text_edit": "Change",
+            "no_address": "Tap to add delivery address"
         },
         "section_total_amount": {
             "title_subtotal": "Subtotal",
@@ -121,5 +143,118 @@
         "section_cart_review": {
             "text_item": "item(s)"
         }
+    },
+    "account_page": {
+        "section_title_settings": "Settings",
+        "section_title_support": "Support",
+        "menu_label_edit_profile": "Edit Profile",
+        "menu_label_delivery_address": "Delivery Address",
+        "menu_label_language": "Language",
+        "menu_label_terms": "Terms of Service",
+        "menu_label_privacy": "Privacy Policy",
+        "menu_label_contact_support": "Contact Support",
+        "menu_label_switch_to_buyer": "Switch to Buyer Mode",
+        "menu_label_switch_to_seller": "Switch to Seller Mode",
+        "badge_buyer_mode": "Buyer Mode",
+        "badge_seller_mode": "Seller Mode",
+        "button_label_sign_out": "Sign Out",
+        "signout_dialog_title": "Sign out of Sariko?",
+        "signout_dialog_message": "You will need to sign in again to continue ordering.",
+        "signout_dialog_confirm": "Sign Out",
+        "app_version": "Sariko v0.1.0 · MVP",
+        "edit_profile": "Edit Profile",
+        "seller_badge": "Seller",
+        "info_email": "Email",
+        "info_phone": "Phone",
+        "info_language": "Language"
+    },
+    "edit_profile_page": {
+        "label_name": "Full name",
+        "placeholder_name": "Your full name",
+        "label_phone": "Phone number",
+        "placeholder_phone": "e.g. 0912345678",
+        "label_avatar": "Avatar URL",
+        "placeholder_avatar": "Paste an image URL",
+        "helper_avatar": "You can upload a photo in a future update",
+        "validation_name_required": "Please enter your name",
+        "validation_phone_invalid": "Invalid phone number format"
+    },
+    "language_page": {
+        "title": "Choose your language",
+        "subtitle": "This will change the language across the app",
+        "option_en": "English",
+        "option_vi": "Tiếng Việt"
+    },
+    "delivery_address_page": {
+        "title": "Delivery Address",
+        "subtitle": "Drop the pin at your location, then add building details below",
+        "label_address_details": "Address details",
+        "placeholder_address_details": "Building, floor, landmark...",
+        "button_use_current_location": "Use current location",
+        "button_locating": "Getting location...",
+        "button_save": "Save address",
+        "empty_address": "No address set yet. Drop a pin on the map above.",
+        "search_placeholder": "Search address..."
+    },
+    "terms_page": {
+        "title": "Terms of Service",
+        "last_updated": "Last updated: April 2026",
+        "placeholder_body": "Our Terms of Service are being finalized. By using Sariko, you agree to act in good faith as a member of the Filipino community marketplace in HCMC. Full terms will be published before the official launch."
+    },
+    "privacy_page": {
+        "title": "Privacy Policy",
+        "last_updated": "Last updated: April 2026",
+        "placeholder_body": "Our Privacy Policy is being finalized. Sariko collects only the information needed to deliver your orders (name, phone, address) and never sells your data to third parties. Full policy will be published before the official launch."
+    },
+    "orders_page": {
+        "tab_all": "All",
+        "tab_unpaid": "Unpaid",
+        "tab_active": "Active",
+        "tab_completed": "Completed",
+        "tab_cancelled": "Cancelled",
+        "status_unpaid": "Unpaid",
+        "status_pending": "Pending",
+        "status_confirmed": "Confirmed",
+        "status_ready": "Ready",
+        "status_done": "Completed",
+        "status_cancelled": "Cancelled"
+    },
+    "order_detail": {
+        "cancelled_reason": "Reason"
+    },
+    "seller_dashboard": {
+        "section_recent_orders": "Recent Orders",
+        "empty_orders": "No orders yet",
+        "action_accept": "Accept",
+        "action_mark_ready": "Mark Ready",
+        "action_ready_to_deliver": "Ready to Deliver",
+        "action_mark_done": "Mark Done",
+        "action_reject": "Reject",
+        "action_confirm_reject": "Confirm Reject",
+        "reject_dialog_title": "Reject this order?",
+        "reject_dialog_subtitle": "Please select a reason. The customer will be notified.",
+        "reject_reason_out_of_ingredients": "Out of ingredients",
+        "reject_reason_too_busy": "Too busy right now",
+        "reject_reason_store_closing": "Store is closing",
+        "reject_reason_other": "Other reason",
+        "reject_reason_placeholder": "Enter your reason...",
+        "toast_order_rejected": "Order rejected",
+        "tab_all": "All",
+        "tab_new": "New",
+        "tab_preparing": "Preparing",
+        "tab_ready": "Ready",
+        "tab_completed": "Done",
+        "tab_cancelled": "Cancelled"
+    },
+    "delivery_tracker": {
+        "title": "Delivery Status",
+        "status_ASSIGNING_DRIVER": "Finding rider",
+        "status_ON_GOING": "On the way",
+        "status_PICKED_UP": "Picked up",
+        "status_COMPLETED": "Delivered",
+        "status_CANCELLED": "Cancelled",
+        "status_subtext_ready": "A rider is being assigned to deliver your order.",
+        "driver_label": "Your Rider",
+        "track_rider": "Track Rider"
     }
 }

@@ -23,8 +23,10 @@ class RequestUpdateCartItem(BaseModel):
 
 # User Profile API
 class RequestUpdateProfile(BaseModel):
+    name: Optional[str] = None
     phone: Optional[str] = None
     preferred_language: Optional[str] = None
+    avatar_url: Optional[str] = None
     address: Optional[str] = None
     address_details: Optional[str] = None
     lat: Optional[float] = None
@@ -34,8 +36,13 @@ class RequestUpdateProfile(BaseModel):
 class RequestCreateOrder(BaseModel):
     delivery_method: Literal["pickup", "delivery"]
     delivery_address: Optional[str] = None
+    delivery_lat: Optional[float] = None
+    delivery_lon: Optional[float] = None
+    delivery_fee: Optional[float] = None
+    quotation_id: Optional[str] = None
     note: Optional[str] = None
 
 # Seller Order API
 class RequestUpdateOrderStatus(BaseModel):
     status: Literal["confirmed", "ready", "done", "cancelled"]
+    cancellation_reason: Optional[str] = None

@@ -7,56 +7,72 @@ export default {
     components: {
         MapPin, Phone, Pen
     },
+
     computed: {
-        ...mapState(useAuthStore, [
-            "user"
-        ])
+        ...mapState(useAuthStore, ['user']),
+
+        authStore() {
+            return useAuthStore()
+        },
+        displayName() {
+            return this.user?.fullName || 'Guest'
+        },
+        displayAddress() {
+            return this.authStore.inputAddress || null
+        },
+        displayPhone() {
+            return this.user?.phone || null
+        },
+        hasAddress() {
+            return !!this.displayAddress
+        },
     },
-    mounted() {        
-        const height= this.$refs.deliverySectionRef.offsetHeight || 0
+
+    methods: {
+        goEditAddress() {
+            this.$router.push('/account/address')
+        }
+    },
+
+    mounted() {
+        const height = this.$refs.deliverySectionRef?.offsetHeight || 0
         document.documentElement.style.setProperty('--delivery-adress-height', `${height}px`)
     }
 }
 </script>
 
 <template>
-
     <div ref="deliverySectionRef" class="container-delivery-address">
-        <div class="header"> 
+        <div class="header">
             <div class="title">
                 <div class="title-text">
-                    {{ $t('cart_page.section_delivery_address.title') }} 
-                </div>
-                <div class="name">
-                    {{ user?.fullName || 'jack'}}
+                    {{ $t('cart_page.section_delivery_address.title', { name: displayName }) }}
                 </div>
             </div>
-            <q-btn  class="button" no-caps flat dense>
+            <q-btn class="button" no-caps flat dense @click="goEditAddress">
                 <Pen size="14px" />
-                <!-- {{ $t('cart_page.section_delivery_address.button_label_text_edit') }} -->
             </q-btn>
         </div>
-        <div class="user-details">
-            <div class="icon">
-                <MapPin size="16px"/>
+
+        <template v-if="hasAddress">
+            <div class="user-details">
+                <div class="icon"><MapPin size="16px"/></div>
+                <div class="text">{{ displayAddress }}</div>
             </div>
-            <div class="text">
-                {{  user?.address || '7b/99/11, Thành Thái, Phường 14, Quận 10, TP. Hồ Chí Minh' }}
+            <div v-if="displayPhone" class="user-details">
+                <div class="icon"><Phone size="16px"/></div>
+                <div class="text">{{ displayPhone }}</div>
             </div>
-        </div>
-        <div class="user-details">
-            <div class="icon">
-                <Phone size="16px"/>
-            </div>
-            <div class="text">
-                {{  user?.phone || '(+84) 903 059 990' }}
-            </div>
+        </template>
+
+        <div v-else class="no-address" @click="goEditAddress">
+            <MapPin size="16px" class="icon-empty" />
+            <span>{{ $t('cart_page.section_delivery_address.no_address') }}</span>
         </div>
     </div>
-
 </template>
 
-<style lang="scss" scoped> 
+<style lang="scss" scoped>
 
 .container-delivery-address {
     padding: 10px 15px 0px 15px;
@@ -89,29 +105,34 @@ export default {
     border-radius: 50%;
 }
 
-.name {
-    margin-left: 5px;
-    padding: 0px 10px;
-    border-radius: .75rem;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--text-active);
-    color: var(--text-active);
-    font-size: 12px;
-    font-weight: 600px;
-}
-
 .user-details {
     display: flex;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .icon {
     margin-right: 8px;
-    // color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 1px;
 }
 
 .text {
     font-size: 14px;
-    // color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.no-address {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    color: var(--color-accent);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.icon-empty {
+    color: var(--color-accent);
 }
 </style>

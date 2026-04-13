@@ -12,6 +12,10 @@ export default {
             required: true,
             type: String,
         },
+        itemPrice: {
+            required: true,
+            type: Number,
+        },
         itemPriceText: {
             required: true,
             type: String,
@@ -45,6 +49,19 @@ export default {
     setup() {
         const cartStore = useCartStore()
         return { cartStore }
+    },
+
+    computed: {
+        singlePriceText() {
+            if (!this.itemPrice) return '—'
+            return new Intl.NumberFormat('vi-VN').format(this.itemPrice) + ' ₫'
+        },
+
+        totalPriceText() {
+            if (!this.itemPrice) return '—'
+            const total = this.itemPrice * this.itemQuantity
+            return new Intl.NumberFormat('vi-VN').format(total) + ' ₫'
+        }
     },
 
     methods: {
@@ -90,7 +107,8 @@ export default {
                         </div>
                         <div class="group-2">
                             <div class="item-price">
-                                {{ itemPriceText }}
+                                <div class="item_price__total">{{ totalPriceText }}</div>
+                                <div v-if="itemQuantity > 1" class="item_price__single">{{ singlePriceText }}</div>
                             </div>
                             <div class="item-quantity">
                                 <div class="button-sub-quantity">
@@ -100,7 +118,7 @@ export default {
                                 </div>
 
                                 <div class="item-price-text">
-                                    {{ itemQuantity }}
+                                    <div>{{ itemQuantity }}</div>
                                 </div>
                                 <div class="button-add-quantity">
                                     <q-btn flat round dense size="10px" @click="onClickPlus">
@@ -176,8 +194,16 @@ export default {
 }
 
 .item-price {
+    display: flex;
+    align-items: baseline;
     font-size: 14px;
     font-weight: 600;
+}
+
+.item_price__single {
+    margin-left: 10px;
+    font-size: 10px;
+    color: var(--text-muted);
 }
 
 .item-quantity {

@@ -1,0 +1,27 @@
+import { apiClient } from "@/lib/axiosPolicy.js"
+
+export const apiDeliveries = {
+
+    getQuotation: async (sellerId, deliveryLat, deliveryLon) => {
+        const payload = {
+            seller_id: sellerId,
+            delivery_lat: deliveryLat,
+            delivery_lon: deliveryLon,
+        }
+        const response = await apiClient.post('/v1/deliveries/quotation', payload)
+        return response.data
+    },
+
+    getDeliveryStatus: async (orderId) => {
+        const response = await apiClient.get(`/v1/deliveries/${orderId}/status`)
+        return response.data
+    },
+
+    cancelDelivery: async (orderId) => {
+        const response = await apiClient.delete(`/v1/deliveries/${orderId}/cancel`)
+        return response.data
+    },
+
+}
+
+export default apiDeliveries

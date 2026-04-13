@@ -32,6 +32,8 @@ export default {
                 && path != '/onboarding'
                 && path != '/payment/return'
                 && !path.match(/^\/orders\/[^/]+$/)
+                && !path.match(/^\/account\/.+$/)
+                && !path.match(/^\/food\/.+$/)
         }
     },
     methods: {
@@ -88,10 +90,14 @@ export default {
         </div>
 
         <!-- Tab 5: Account (both modes) — disabled, UI not designed yet -->
-        <div class="nav-item disabled">
+        <router-link to="/account" class="nav-item">
             <CircleUserRound size="18px" />
             <div class="nav-label">{{ $t('bottom_nav.button_label_account') }}</div>
-        </div>
+        </router-link>
+        <!-- <div class="nav-item disabled">
+            <CircleUserRound size="18px" />
+            <div class="nav-label">{{ $t('bottom_nav.button_label_account') }}</div>
+        </div> -->
     </nav>
 </template>
 

@@ -69,6 +69,21 @@ class DAOSellerProfiles(DAOBase):
         except Exception as e:
             raise Exception(f"error read_seller_profile_by_user_id: {e}")
     
+    def read_seller_coords_by_id(self, seller_id: str):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .select("id, store_name, address, lat, lon")
+                .eq("id", seller_id)
+                .maybe_single()
+                .execute()
+            )
+            return result.data if result and result.data else None
+
+        except Exception as e:
+            raise Exception(f"error read_seller_coords_by_id: {e}")
+
     def read_store_slug_name_by_seller_id(self, seller_id):
         
         try:

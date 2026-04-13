@@ -1,6 +1,6 @@
 <script>
 import LayoutBaseSellerDashboard from '@/layouts/seller-dashboard/LayoutBaseSellerDashboard.vue';
-import DashboardHeader from '@/components/seller-dashboard/DashboardHeader.vue';
+import PageBreadcrumbs from '@/components/shared/PageBreadcrumbs.vue';
 import DashboardStats from '@/components/seller-dashboard/DashboardStats.vue';
 import RecentOrders from '@/components/seller-dashboard/RecentOrders.vue';
 
@@ -8,7 +8,7 @@ export default {
     name: 'SellerDashboard',
     components: {
         LayoutBaseSellerDashboard,
-        DashboardHeader,
+        PageBreadcrumbs,
         DashboardStats,
         RecentOrders,
     }
@@ -19,7 +19,7 @@ export default {
     <LayoutBaseSellerDashboard>
 
         <template #Header>
-            <DashboardHeader />
+            <PageBreadcrumbs title="Dashboard" back-to="/home" />
         </template>
 
         <template #Stats>

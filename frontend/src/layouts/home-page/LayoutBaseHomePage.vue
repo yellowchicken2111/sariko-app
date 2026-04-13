@@ -50,7 +50,6 @@ export default {
 .background {
     max-width: 1200px;
     height: 100vh;
-    width: 100vw;
 }
 
 .container {

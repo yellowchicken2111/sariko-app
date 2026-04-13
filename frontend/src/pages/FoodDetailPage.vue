@@ -2,8 +2,7 @@
 import LayoutBaseFoodDetail from '@/layouts/food-detail/LayoutBaseFoodDetail.vue';
 import HeroImage from '@/components/food-detail/HeroImage.vue';
 import FoodInfo from '@/components/food-detail/FoodInfo.vue';
-import QuantitySelector from '@/components/food-detail/QuantitySelector.vue';
-import AddToCartBar from '@/components/food-detail/AddToCartBar.vue';
+import BottomActionBar from '@/components/food-detail/BottomActionBar.vue';
 import { useSellerStore } from '@/stores/seller/sellerStore';
 
 export default {
@@ -13,18 +12,17 @@ export default {
         LayoutBaseFoodDetail,
         HeroImage,
         FoodInfo,
-        QuantitySelector,
-        AddToCartBar,
+        BottomActionBar,
     },
 
     props: {
-        sellerId: { type: String, required: true },
+        sellerSlug: { type: String, required: true },
         foodId: { type: String, required: true },
     },
 
     mounted() {
         const sellerStore = useSellerStore()
-        sellerStore.loadFoodDetail(this.sellerId, this.foodId)
+        sellerStore.loadFoodDetail(this.sellerSlug, this.foodId)
     }
 }
 </script>
@@ -40,12 +38,8 @@ export default {
             <FoodInfo />
         </template>
 
-        <template #QuantitySelector>
-            <QuantitySelector />
-        </template>
-
-        <template #AddToCartBar>
-            <AddToCartBar />
+        <template #BottomActionBar>
+            <BottomActionBar />
         </template>
 
     </LayoutBaseFoodDetail>

@@ -5,55 +5,56 @@
             <slot name="HeroImage" />
         </div>
 
-        <div class="food-info-section">
-            <slot name="FoodInfo" />
-        </div>
+        <q-scroll-area class="scroll-area">
+            <div class="food-info">
+                <slot name="FoodInfo"/>
+            </div>
+        </q-scroll-area>
 
-        <div class="quantity-section">
-            <slot name="QuantitySelector" />
-        </div>
-
-        <div class="add-to-cart-section">
-            <slot name="AddToCartBar" />
+        <div class="action-zone">
+            <slot name="BottomActionBar" />
         </div>
 
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .food-detail-page {
-    min-height: 100vh;
-    background: var(--bg-main);
-    padding-bottom: 120px;
+    width: 100vw;
+    height: 100vh;
+    font-family: $sariko-font-family-secondary;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .hero-section {
     position: relative;
-    height: 300px;
+    height: 320px;
+    margin-bottom: -28px;
 }
 
-.food-info-section {
-    background: var(--bg-surface);
-    margin-top: -24px;
-    border-radius: 24px 24px 0 0;
-    padding: 24px 20px;
-    position: relative;
+.scroll-area {
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
+    flex: 1;
+    background-color: var(--bg-surface-2);
 }
 
-.quantity-section {
-    background: var(--bg-surface);
-    padding: 20px;
-    margin-top: 8px;
+
+.food-info {
+    height: 100%;
+    padding: 28px 20px 24px;
 }
 
-.add-to-cart-section {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 16px;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
-    background: var(--bg-surface);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+.action-zone {
+    padding: 20px 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 -12px 24px rgba(0, 0, 0, 0.35);
+    background-color: rgba(59, 59, 59, 0.5);
+    background-color: var(--bg-surface);
 }
 </style>

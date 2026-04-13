@@ -55,6 +55,7 @@ export default {
                 <ItemCard  v-for="item in cartItems"
                 :item-id="item.id"
                 :item-name="item.name"
+                :item-price="item.price"
                 :item-price-text="item.priceText"
                 :item-category="item.category"
                 :item-img-src="item.imgSrc"

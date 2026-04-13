@@ -39,10 +39,14 @@ class DAOUsers(DAOBase):
     def update_user_profile(self, user_id: str, data: dict):
         try:
             update_fields = {}
+            if "name" in data and data["name"] is not None:
+                update_fields["name"] = data["name"]
             if "phone" in data and data["phone"] is not None:
                 update_fields["phone"] = data["phone"]
             if "preferred_language" in data and data["preferred_language"] is not None:
                 update_fields["preferred_language"] = data["preferred_language"]
+            if "avatar_url" in data and data["avatar_url"] is not None:
+                update_fields["avatar_url"] = data["avatar_url"]
 
             if not update_fields:
                 return None

@@ -1,0 +1,88 @@
+import logging
+from postgrest.exceptions import APIError as PostgrestExceptionAPIError
+from dao.dao_base import DAOBase
+
+logger = logging.getLogger(__name__)
+
+
+class DAODeliveries(DAOBase):
+
+    def __init__(self):
+        super().__init__()
+        self._table_name = "deliveries"
+
+    def create_delivery(self, order_id: str, provider: str, status: str,
+                        lalamove_order_id: str = None, share_link: str = None):
+        try:
+            data = {
+                "order_id": order_id,
+                "provider": provider,
+                "status": status,
+            }
+            if lalamove_order_id:
+                data["lalamove_order_id"] = lalamove_order_id
+            if share_link:
+                data["share_link"] = share_link
+
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .insert(data)
+                .execute()
+            )
+            return result.data[0] if result and result.data else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - create_delivery: {e}")
+        except Exception as e:
+            raise Exception(f"error create_delivery: {e}")
+
+    def read_delivery_by_order_id(self, order_id: str):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .select("*")
+                .eq("order_id", order_id)
+                .maybe_single()
+                .execute()
+            )
+            return result.data if result else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_delivery_by_order_id: {e}")
+        except Exception as e:
+            raise Exception(f"error read_delivery_by_order_id: {e}")
+
+    def read_delivery_by_lalamove_order_id(self, lalamove_order_id: str):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .select("*")
+                .eq("lalamove_order_id", lalamove_order_id)
+                .maybe_single()
+                .execute()
+            )
+            return result.data if result else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_delivery_by_lalamove_order_id: {e}")
+        except Exception as e:
+            raise Exception(f"error read_delivery_by_lalamove_order_id: {e}")
+
+    def update_delivery(self, delivery_id: str, data: dict):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .update(data)
+                .eq("id", delivery_id)
+                .execute()
+            )
+            return result.data[0] if result and result.data else None
+
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - update_delivery: {e}")
+        except Exception as e:
+            raise Exception(f"error update_delivery: {e}")

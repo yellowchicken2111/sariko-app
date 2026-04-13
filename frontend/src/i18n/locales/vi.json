@@ -1,10 +1,19 @@
 {
     "breadcrumbs": {
         "cart_page": "Giỏ hàng",
-        "checkout_page": "Thanh toán"
+        "checkout_page": "Thanh toán",
+        "edit_profile_page": "Chỉnh sửa hồ sơ",
+        "language_page": "Ngôn ngữ",
+        "delivery_address_page": "Địa chỉ giao hàng",
+        "terms_page": "Điều khoản dịch vụ",
+        "privacy_page": "Chính sách bảo mật"
     },
     "common": {
-        "button_label_cancel": "Hủy"
+        "button_label_cancel": "Hủy",
+        "button_label_save": "Lưu",
+        "button_label_saving": "Đang lưu...",
+        "toast_update_success": "Cập nhật thành công",
+        "toast_update_failed": "Cập nhật thất bại, vui lòng thử lại"
     },
     "bottom_nav": {
         "button_label_home": "Trang chủ",
@@ -98,10 +107,23 @@
             "banner_text_line_2": "∞ sản phẩm · Hoa hồng 15% · Người bán sáng lập"
         }
     },
+    "food_detail_page": {
+        "label_price": "Giá",
+        "label_total_price": "Tổng tiền",
+        "label_quantity": "Số lượng",
+        "button_add_to_cart": "Thêm vào giỏ",
+        "button_back": "Quay lại",
+        "button_favorite": "Thêm vào yêu thích",
+        "button_unfavorite": "Bỏ khỏi yêu thích",
+        "button_decrease": "Giảm số lượng",
+        "button_increase": "Tăng số lượng",
+        "toast_added_to_cart": "Đã thêm {name} vào giỏ"
+    },
     "cart_page": {
         "section_delivery_address": {
             "title": "GIAO ĐẾN {name}",
-            "button_label_text_edit": "Thay đổi"
+            "button_label_text_edit": "Thay đổi",
+            "no_address": "Nhấn để thêm địa chỉ giao hàng"
         },
         "section_total_amount": {
             "title_subtotal": "Tạm tính",
@@ -121,5 +143,118 @@
         "section_cart_review": {
             "text_item": "sản phẩm"
         }
+    },
+    "account_page": {
+        "section_title_settings": "Cài đặt",
+        "section_title_support": "Hỗ trợ",
+        "menu_label_edit_profile": "Chỉnh sửa hồ sơ",
+        "menu_label_delivery_address": "Địa chỉ giao hàng",
+        "menu_label_language": "Ngôn ngữ",
+        "menu_label_terms": "Điều khoản dịch vụ",
+        "menu_label_privacy": "Chính sách bảo mật",
+        "menu_label_contact_support": "Liên hệ hỗ trợ",
+        "menu_label_switch_to_buyer": "Chuyển sang chế độ Người mua",
+        "menu_label_switch_to_seller": "Chuyển sang chế độ Người bán",
+        "badge_buyer_mode": "Chế độ Người mua",
+        "badge_seller_mode": "Chế độ Người bán",
+        "button_label_sign_out": "Đăng xuất",
+        "signout_dialog_title": "Đăng xuất khỏi Sariko?",
+        "signout_dialog_message": "Bạn sẽ cần đăng nhập lại để tiếp tục đặt hàng.",
+        "signout_dialog_confirm": "Đăng xuất",
+        "app_version": "Sariko v0.1.0 · MVP",
+        "edit_profile": "Chỉnh sửa hồ sơ",
+        "seller_badge": "Người bán",
+        "info_email": "Email",
+        "info_phone": "Số điện thoại",
+        "info_language": "Ngôn ngữ"
+    },
+    "edit_profile_page": {
+        "label_name": "Họ và tên",
+        "placeholder_name": "Tên đầy đủ của bạn",
+        "label_phone": "Số điện thoại",
+        "placeholder_phone": "VD: 0912345678",
+        "label_avatar": "URL ảnh đại diện",
+        "placeholder_avatar": "Dán link ảnh",
+        "helper_avatar": "Bạn có thể tải ảnh trực tiếp trong bản cập nhật sắp tới",
+        "validation_name_required": "Vui lòng nhập tên",
+        "validation_phone_invalid": "Số điện thoại không hợp lệ"
+    },
+    "language_page": {
+        "title": "Chọn ngôn ngữ",
+        "subtitle": "Thay đổi sẽ áp dụng trên toàn bộ ứng dụng",
+        "option_en": "English",
+        "option_vi": "Tiếng Việt"
+    },
+    "delivery_address_page": {
+        "title": "Địa chỉ giao hàng",
+        "subtitle": "Thả ghim tại vị trí của bạn, sau đó nhập chi tiết bên dưới",
+        "label_address_details": "Chi tiết địa chỉ",
+        "placeholder_address_details": "Tòa nhà, tầng, mốc...",
+        "button_use_current_location": "Dùng vị trí hiện tại",
+        "button_locating": "Đang xác định vị trí...",
+        "button_save": "Lưu địa chỉ",
+        "empty_address": "Chưa có địa chỉ. Hãy thả ghim trên bản đồ phía trên.",
+        "search_placeholder": "Tìm địa chỉ..."
+    },
+    "terms_page": {
+        "title": "Điều khoản dịch vụ",
+        "last_updated": "Cập nhật lần cuối: Tháng 4, 2026",
+        "placeholder_body": "Điều khoản dịch vụ của chúng tôi đang được hoàn thiện. Khi sử dụng Sariko, bạn đồng ý hoạt động thiện chí trong cộng đồng chợ Filipino tại TP.HCM. Điều khoản đầy đủ sẽ được công bố trước ngày ra mắt chính thức."
+    },
+    "privacy_page": {
+        "title": "Chính sách bảo mật",
+        "last_updated": "Cập nhật lần cuối: Tháng 4, 2026",
+        "placeholder_body": "Chính sách bảo mật của chúng tôi đang được hoàn thiện. Sariko chỉ thu thập thông tin cần thiết để giao đơn hàng (tên, số điện thoại, địa chỉ) và không bao giờ bán dữ liệu cho bên thứ ba. Chính sách đầy đủ sẽ được công bố trước ngày ra mắt chính thức."
+    },
+    "orders_page": {
+        "tab_all": "Tất cả",
+        "tab_unpaid": "Chưa thanh toán",
+        "tab_active": "Đang xử lý",
+        "tab_completed": "Hoàn thành",
+        "tab_cancelled": "Đã huỷ",
+        "status_unpaid": "Chưa TT",
+        "status_pending": "Chờ xác nhận",
+        "status_confirmed": "Đã xác nhận",
+        "status_ready": "Sẵn sàng",
+        "status_done": "Hoàn thành",
+        "status_cancelled": "Đã huỷ"
+    },
+    "order_detail": {
+        "cancelled_reason": "Lý do"
+    },
+    "seller_dashboard": {
+        "section_recent_orders": "Đơn hàng gần đây",
+        "empty_orders": "Chưa có đơn hàng",
+        "action_accept": "Nhận đơn",
+        "action_mark_ready": "Đã sẵn sàng",
+        "action_ready_to_deliver": "Sẵn sàng giao",
+        "action_mark_done": "Hoàn thành",
+        "action_reject": "Từ chối",
+        "action_confirm_reject": "Xác nhận từ chối",
+        "reject_dialog_title": "Từ chối đơn hàng này?",
+        "reject_dialog_subtitle": "Vui lòng chọn lý do. Khách hàng sẽ được thông báo.",
+        "reject_reason_out_of_ingredients": "Hết nguyên liệu",
+        "reject_reason_too_busy": "Quán đang quá đông",
+        "reject_reason_store_closing": "Quán sắp đóng cửa",
+        "reject_reason_other": "Lý do khác",
+        "reject_reason_placeholder": "Nhập lý do...",
+        "toast_order_rejected": "Đã từ chối đơn hàng",
+        "tab_all": "Tất cả",
+        "tab_new": "Mới",
+        "tab_preparing": "Đang nấu",
+        "tab_ready": "Sẵn sàng",
+        "tab_completed": "Xong",
+        "tab_cancelled": "Đã huỷ"
+    },
+    "delivery_tracker": {
+        "title": "Trạng thái giao hàng",
+        "status_ASSIGNING_DRIVER": "Tìm tài xế",
+        "status_ON_GOING": "Đang đến",
+        "status_PICKED_UP": "Đã lấy hàng",
+        "status_COMPLETED": "Đã giao",
+        "status_CANCELLED": "Đã huỷ",
+        "status_subtext_ready": "Đang tìm tài xế để giao đơn hàng của bạn.",
+        "driver_label": "Tài xế của bạn",
+        "track_rider": "Theo dõi tài xế"
     }
 }

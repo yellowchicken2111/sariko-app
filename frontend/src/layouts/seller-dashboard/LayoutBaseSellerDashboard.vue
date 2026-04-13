@@ -23,6 +23,7 @@
     padding: 16px;
     padding-top: calc(16px + env(safe-area-inset-top, 0));
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0));
+    font-family: $sariko-font-family-secondary;
 }
 
 .header-section {

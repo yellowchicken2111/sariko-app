@@ -9,6 +9,10 @@
             <slot name="StatusHeader" />
         </div>
 
+        <div class="delivery-tracking-section">
+            <slot name="DeliveryTracking" />
+        </div>
+
         <div class="order-info-section">
             <slot name="OrderInfo" />
         </div>
@@ -23,7 +27,6 @@
 <style lang="scss" scoped>
 .order-detail-page {
     min-height: 100vh;
-    width: 100vw;
     font-family: $sariko-font-family-secondary;
 }
 
@@ -36,6 +39,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.delivery-tracking-section {
+    padding: 0 16px;
 }
 
 .order-info-section {

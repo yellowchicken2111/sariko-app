@@ -14,6 +14,9 @@ export default {
         if (!cartStore.cartItems.length) {
             cartStore.getCurrentCart()
         }
+
+        const height = this.$refs.breadcrumbsRef?.offsetHeight || 0
+        document.documentElement.style.setProperty("--cart-page-breadcrumbs-height", `${height}px`)
     }
 }
 
@@ -59,7 +62,6 @@ export default {
 <style lang="scss" scoped>
 
 .background {
-    width: 100vw;
     height: 100vh;
 }
 
@@ -68,10 +70,11 @@ export default {
 }
 
 .container {
-    height: calc(100vh - var(--breadcrumbs-height));
+    height: calc(100vh - var(--cart-page-breadcrumbs-height));
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
 }
 

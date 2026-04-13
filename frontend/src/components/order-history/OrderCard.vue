@@ -25,20 +25,20 @@ export default {
             return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
         },
         isUnpaid() {
-            return this.order.payment_status === 'pending' && this.order.status !== 'cancelled'
+            return this.order.payment_status === 'pending' && this.order.status === 'pending'
         },
         statusClass() {
             if (this.isUnpaid) return 'status-unpaid'
             return `status-${this.order.status}`
         },
         statusLabel() {
-            if (this.isUnpaid) return 'Unpaid'
+            if (this.isUnpaid) return this.$t('orders_page.status_unpaid')
             const map = {
-                pending: 'Pending',
-                confirmed: 'Confirmed',
-                ready: 'Ready',
-                done: 'Completed',
-                cancelled: 'Cancelled'
+                pending: this.$t('orders_page.status_pending'),
+                confirmed: this.$t('orders_page.status_confirmed'),
+                ready: this.$t('orders_page.status_ready'),
+                done: this.$t('orders_page.status_done'),
+                cancelled: this.$t('orders_page.status_cancelled'),
             }
             return map[this.order.status] || this.order.status
         }

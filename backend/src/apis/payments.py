@@ -94,11 +94,12 @@ def create_vnpay_payment(order_id: str, request: Request, user=Depends(verify_to
         "vnp_CreateDate": create_date,
         "vnp_ExpireDate": expire_date,
         "vnp_CurrCode": "VND",
+        "vnp_BankCode": "NCB",
     }
 
     if VNPAY_IPN_URL:
         params["vnp_IpnUrl"] = VNPAY_IPN_URL
-
+        
     payment_url = _build_vnpay_url(params)
 
     return {"success": True, "payment_url": payment_url}

@@ -66,21 +66,21 @@ export default {
 .container-1st {
     display: flex;
     align-items: center;
-    margin-right: 15px;
     border: 1px solid $accent;
     border-radius: .75rem;
     background-color: #2c261f;
-    padding: 10px 20px;
+    padding: 10px 14px;
+    cursor: pointer;
 }
 
 .container {
     display: flex;
     align-items: center;
-    margin-right: 15px;
     border: 1.5px solid rgb(255, 255, 255, 0.3);
     border-radius: .75rem;
     background-color: rgb(255, 255, 255, 0.15);
-    padding: 10px 20px;
+    padding: 10px 14px;
+    cursor: pointer;
 }
 
 .seller-avatar {

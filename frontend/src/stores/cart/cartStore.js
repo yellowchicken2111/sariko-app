@@ -63,9 +63,9 @@ export const useCartStore = defineStore("cartStore", {
             }
         },
 
-        async addItem(sellerId, foodItemId, newSellerName) {
+        async addItem(sellerId, foodItemId, newSellerName, quantity = 1) {
             try {
-                await apiCarts.addItem(sellerId, foodItemId)
+                await apiCarts.addItem(sellerId, foodItemId, quantity)
                 await this.refreshCart()
             } catch (e) {
                 if (e.message === 'another seller') {

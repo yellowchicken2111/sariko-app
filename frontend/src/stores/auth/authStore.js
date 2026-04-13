@@ -3,6 +3,7 @@ import { router } from "@/plugins/router";
 import { Notify } from "quasar";
 import { supabase } from "@/lib/supabase";
 import apiAuth from "@/apis/auth/apiAuth";
+import apiUsers from "@/apis/users/apiUsers";
 import { useCartStore } from "@/stores/cart/cartStore";
 
 export const useAuthStore = defineStore("authStore", {
@@ -55,7 +56,9 @@ export const useAuthStore = defineStore("authStore", {
                 this.user = {
                     fullName: meta.fullname || '',
                     email: session.user.email,
+                    phone: null,
                     isSeller: meta.is_seller || false,
+                    avatarUrl: null,
                 };
                 if (this.viewMode === 'buyer' && meta.is_seller) {
                     this.viewMode = 'seller'
@@ -72,6 +75,29 @@ export const useAuthStore = defineStore("authStore", {
                 const res = await apiAuth.authGetSession();
                 if (res?.session) {
                     this._setFromSession(res.session);
+
+                    try {
+                        const profile = await apiUsers.getProfile()
+                        if (profile?.user && this.user) {
+                            if (profile.user.avatar_url) this.user.avatarUrl = profile.user.avatar_url
+                            if (profile.user.name) this.user.fullName = profile.user.name
+                            if (profile.user.phone) this.user.phone = profile.user.phone
+                        }
+                    } catch (e) {
+                        console.error(`authStore - bootstrap - profile fetch failed: ${e}`);
+                    }
+
+                    try {
+                        const addrRes = await apiUsers.getDefaultAddress()
+                        if (addrRes?.address) {
+                            this.inputAddress = addrRes.address.address || null
+                            this.inputAddressDetails = addrRes.address.label || null
+                            this.inputLat = addrRes.address.lat || null
+                            this.inputLon = addrRes.address.lon || null
+                        }
+                    } catch (e) {
+                        console.error(`authStore - bootstrap - address fetch failed: ${e}`);
+                    }
 
                     try {
                         const cartStore = useCartStore();

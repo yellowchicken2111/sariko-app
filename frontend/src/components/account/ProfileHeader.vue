@@ -1,93 +1,222 @@
 <script>
-import { User } from 'lucide-vue-next';
+import { Camera, ChevronRight, Mail, Phone, Globe } from 'lucide-vue-next';
+import { mapState } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
+import apiUsers from '@/apis/users/apiUsers';
 
 export default {
-    components: { User },
+    components: { Camera, ChevronRight, Mail, Phone, Globe },
+
+    data() {
+        return {
+            profile: null,
+        }
+    },
 
     computed: {
-        authStore() {
-            return useAuthStore()
-        },
-        user() {
-            return this.authStore.user
+        ...mapState(useAuthStore, ['user']),
+        initials() {
+            if (!this.user?.fullName) return '?'
+            return this.user.fullName.trim().charAt(0).toUpperCase()
         },
         isSeller() {
             return this.user?.isSeller || false
         },
-        isSellerMode() {
-            return this.isSeller && this.authStore.viewMode === 'seller'
+        phone() {
+            return this.profile?.phone || null
+        },
+        language() {
+            return this.profile?.preferred_language || null
+        },
+    },
+
+    async mounted() {
+        try {
+            const res = await apiUsers.getProfile()
+            this.profile = res?.user || null
+        } catch (e) {
+            // non-critical
         }
+    },
+
+    methods: {
+        goEditProfile() {
+            this.$router.push('/account/profile')
+        },
     }
 }
 </script>
 
 <template>
     <div class="profile-header">
-        <div class="avatar">
-            <User size="32" />
+
+        <!-- Avatar -->
+        <div class="avatar-wrap" @click="goEditProfile">
+            <q-avatar v-if="user?.avatarUrl" size="88px" class="avatar-img">
+                <img :src="user.avatarUrl" :alt="user.fullName">
+            </q-avatar>
+            <div v-else class="avatar-initials">
+                {{ initials }}
+            </div>
+            <div class="avatar-edit-badge">
+                <Camera :size="12" />
+            </div>
         </div>
-        <div class="profile-info">
-            <h2 class="profile-name">{{ user?.fullName || 'Guest' }}</h2>
-            <p class="profile-email">{{ user?.email }}</p>
-            <span v-if="isSeller" class="seller-badge">
-                {{ isSellerMode ? 'Seller Mode' : 'Buyer Mode' }}
-            </span>
+
+        <!-- Name + badge -->
+        <div class="profile-name">{{ user?.fullName || 'Guest' }}</div>
+        <div class="profile-email-line">{{ user?.email }}</div>
+
+        <span v-if="isSeller" class="seller-badge">
+            {{ $t('account_page.seller_badge') }}
+        </span>
+
+        <!-- Edit profile button -->
+        <button class="edit-profile-btn" @click="goEditProfile">
+            {{ $t('account_page.edit_profile') }}
+        </button>
+
+        <!-- Info section -->
+        <div class="info-section">
+            <div class="info-row">
+                <Mail :size="16" class="info-icon" />
+                <span class="info-label">{{ $t('account_page.info_email') }}</span>
+                <span class="info-value">{{ user?.email }}</span>
+            </div>
+            <div v-if="phone" class="info-row">
+                <Phone :size="16" class="info-icon" />
+                <span class="info-label">{{ $t('account_page.info_phone') }}</span>
+                <span class="info-value">{{ phone }}</span>
+            </div>
+            <div v-if="language" class="info-row">
+                <Globe :size="16" class="info-icon" />
+                <span class="info-label">{{ $t('account_page.info_language') }}</span>
+                <span class="info-value">{{ language }}</span>
+            </div>
         </div>
+
     </div>
 </template>
 
 <style scoped>
 .profile-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: var(--bg-surface);
-    border-radius: 16px;
+    padding: 8px 0 4px;
 }
 
-.avatar {
-    width: 56px;
-    height: 56px;
+/* Avatar */
+.avatar-wrap {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 14px;
+}
+
+.avatar-initials {
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     background: rgba(245, 166, 35, 0.15);
     color: var(--color-accent);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    font-size: 32px;
+    font-weight: 700;
+    border: 1px solid rgba(245, 166, 35, 0.3);
 }
 
-.profile-info {
-    flex: 1;
-    min-width: 0;
+.avatar-edit-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-main);
 }
 
+/* Text */
 .profile-name {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0;
+    margin-bottom: 4px;
 }
 
-.profile-email {
+.profile-email-line {
     font-size: 13px;
     color: var(--text-secondary);
-    margin: 2px 0 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin-bottom: 10px;
 }
 
 .seller-badge {
-    display: inline-block;
-    margin-top: 6px;
     font-size: 11px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 12px;
     background: rgba(245, 166, 35, 0.15);
     color: var(--color-accent);
+    margin-bottom: 14px;
+}
+
+/* Edit button */
+.edit-profile-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-accent);
+    background: rgba(245, 166, 35, 0.1);
+    border: 1px solid rgba(245, 166, 35, 0.3);
+    border-radius: 20px;
+    padding: 6px 20px;
+    cursor: pointer;
+    margin-bottom: 24px;
+}
+
+/* Info section */
+.info-section {
+    width: 100%;
+    background: rgb(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-icon {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.info-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.info-value {
+    font-size: 13px;
+    color: var(--text-primary);
+    text-align: right;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>
