@@ -133,11 +133,11 @@ export default {
             </q-input>
         </div>
 
-        <div class="input-label">
+        <!-- <div class="input-label">
             {{ $t('auth_page.auth_input_fields.common.input_label_role_selection') }}
-        </div>
+        </div> -->
 
-        <div class="input-role-selection">
+        <!-- <div class="input-role-selection">
             <div @click="isSelectedSignUpRoleSeller=false" 
             :class="{'container-role': true, 'container-role-active': !isSelectedSignUpRoleSeller}">
                 <div class="icon-role">
@@ -168,7 +168,7 @@ export default {
                     </span>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="button-signup">
             <ButtonSignup />
