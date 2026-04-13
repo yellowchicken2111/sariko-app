@@ -80,8 +80,9 @@ export default {
                     }
                 }
             )
-            .subscribe((status) => {
-                console.log('Subscribe status:', status)
+            .subscribe((status, err) => {
+                console.log('Status:', status)
+                console.log('Error:', err)
             })
         },
 

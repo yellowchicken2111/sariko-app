@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from postgrest.exceptions import APIError as PostgrestExceptionAPIError
 
@@ -14,9 +15,10 @@ class DAOOrders(DAOBase):
         self._table_name = "orders"
 
     def create_order(self, user_id: str, seller_id: str, total_amount: float,
-                     delivery_method: str, delivery_address: str = None, note: str = None,
-                     delivery_lat: float = None, delivery_lon: float = None,
-                     delivery_fee: float = None, quotation_id: str = None):
+        delivery_method: str, delivery_address: Optional[str] = None, note: Optional[str] = None,
+        delivery_lat: Optional[float] = None, delivery_lon: Optional[float] = None,
+        delivery_fee: Optional[float] = None, quotation_id: Optional[str] = None
+    ):
         try:
             data = {
                 "user_id": user_id,
@@ -120,7 +122,7 @@ class DAOOrders(DAOBase):
         except Exception as e:
             raise Exception(f"error read_order_by_id_for_seller: {e}")
 
-    def update_order_status(self, order_id: str, status: str, cancellation_reason: str = None):
+    def update_order_status(self, order_id: str, status: str, cancellation_reason: Optional[str] = None):
         try:
             update_data = {"status": status}
             if cancellation_reason:
@@ -173,17 +175,16 @@ class DAOOrders(DAOBase):
         except Exception as e:
             raise Exception(f"error read_order_with_seller_coords: {e}")
 
-    def update_payment_status(self, order_id: str, payment_status: str, transaction_ref: str = None):
+    def update_payment_status(self, order_id: str, payment_status: str, transaction_ref: Optional[str] = None):
         try:
-            update_data = {"payment_status": payment_status}
-            if transaction_ref:
-                update_data["transaction_ref"] = transaction_ref
-
-            self._supabase_client.table(self._table_name) \
-                .update(update_data) \
-                .eq("id", order_id) \
-                .execute()
-
+            self._supabase_client.rpc(
+                'update_order_payment_status',
+                {
+                    'p_order_id': order_id,
+                    'p_status': payment_status,
+                    'p_transaction_ref': transaction_ref
+                }
+            ).execute()
             return True
 
         except PostgrestExceptionAPIError as e:

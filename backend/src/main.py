@@ -3,20 +3,22 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import sys
 import time
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=f"envs/.env.{os.environ.get('ENV', 'local')}")
-
+import asyncio
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
+
 from apis import (
     users, sellers, cart, orders, payments, deliveries, address, dev
 )
-
+from services.supabase_realtime import keep_realtime_alive
 
 log_level = logging.WARNING
 formatter = logging.Formatter(
@@ -42,7 +44,17 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+
+# lifespan
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(keep_realtime_alive())
+    
+    yield
+    task.cancel()
+
+
+app = FastAPI(lifespan=lifespan)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
