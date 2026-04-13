@@ -157,7 +157,7 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Cart delivery fee: fetches quotation from Lalamove mock on mount, shows real fee, passes `quotation_id` + `delivery_fee` to order creation
 - Auth (signin, signup with Enter key support, loading states, session restore, cart preload on login, cart clear on signout)
 - Auth bootstrap: fetches profile (name, phone, avatar), default address, and cart on session restore
-- Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI + backend persist via PATCH /users/me/profile
+- Buyer onboarding (phone, delivery address with Goong autocomplete search + reverse geocode + map visualize, language preference) — UI + backend persist via PATCH /users/me/profile
 - Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled; correct `isPaymentPending` logic — only shows for status=pending; cancel button with dialog, Pay Now retry button, VND formatting)
 - Order detail shows `cancellation_reason` when seller rejects
 - Order detail shows DeliveryTracker component (status timeline + driver card + tracking link) when order is ready/done with delivery method
@@ -168,7 +168,8 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - New layout: `LayoutBaseSettings.vue` used by all account sub-pages (breadcrumb + content slot)
 - New components: `ProfileForm.vue`, `AddressForm.vue` (Goong Maps autocomplete), `LanguageOptions.vue`
 - Address autocomplete uses Goong Maps via backend proxy — two-step: autocomplete → place_id → `/detail` for lat/lon
-- FoodCard add-to-cart UX: loading spinner state + toast notification on success (suppressed when cart-conflict modal opens)
+- FoodCard add-to-cart UX: loading spinner state + toast notification on success (suppressed when cart-conflict modal opens); auth guard redirects to `/signin` if not logged in
+- BottomActionBar (food detail) add-to-cart: auth guard redirects to `/signin` if not logged in
 - FoodCard quantity bug fixed: full chain from BottomActionBar → cartStore → apiCart → backend DAO now passes correct quantity
 - Vietnamese localization (vi.json 100% in sync with en-PH.json, vue-i18n configured)
 - Route guards (beforeEach: requiresAuth for cart/orders/dashboard/account/onboarding, guestOnly for signin/signup, redirect preserved)

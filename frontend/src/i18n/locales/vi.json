@@ -246,6 +246,17 @@
         "tab_completed": "Xong",
         "tab_cancelled": "Đã huỷ"
     },
+    "payment": {
+        "verifying": "Đang xác minh thanh toán...",
+        "confirming": "Đang xác nhận thanh toán...",
+        "doNotClose": "Vui lòng không tắt trang. Chúng tôi đang xác nhận thanh toán của bạn.",
+        "success": "Thanh toán thành công!",
+        "successMessage": "Thanh toán của bạn đã được xác nhận. Cảm ơn bạn!",
+        "failed": "Thanh toán thất bại",
+        "failedMessage": "Đã xảy ra lỗi với thanh toán. Vui lòng thử lại hoặc sử dụng phương thức thanh toán khác.",
+        "viewOrders": "Xem đơn hàng",
+        "backHome": "Về trang chủ"
+    },
     "delivery_tracker": {
         "title": "Trạng thái giao hàng",
         "status_ASSIGNING_DRIVER": "Tìm tài xế",

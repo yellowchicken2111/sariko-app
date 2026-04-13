@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@quasar/extras": "^1.17.0",
-        "@supabase/supabase-js": "^2.100.0",
+        "@supabase/supabase-js": "^2.103.0",
         "axios": "1.9.0",
         "highcharts": "^12.4.0",
         "highcharts-vue": "^2.0.1",

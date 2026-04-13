@@ -143,20 +143,28 @@ def vnpay_ipn(request: Request):
         logger.warning(f"VNPay IPN: Could not extract order_id from txn_ref={txn_ref}")
         return JSONResponse(content={"RspCode": "01", "Message": "Order not found"})
 
+    # Look up order in DB
+    dao_orders = DAOOrders()
+    order = dao_orders.read_order_by_id_raw(order_id=order_id)
+    if not order:
+        logger.warning(f"VNPay IPN: Order not found for id={order_id}")
+        return JSONResponse(content={"RspCode": "01", "Message": "Order not found"})
+
+    # Validate amount: vnp_Amount is in VND × 100, order total_amount is in VND
+    vnp_amount = int(params.get("vnp_Amount", "0"))
+    expected_amount = int(float(order["total_amount"])) * 100
+    if vnp_amount != expected_amount:
+        logger.warning(f"VNPay IPN: Amount mismatch for order {order_id}. vnp_Amount={vnp_amount}, expected={expected_amount}")
+        return JSONResponse(content={"RspCode": "04", "Message": "Invalid Amount"})
+
+    # Idempotency: skip if already paid
+    if order.get("payment_status") == "paid":
+        logger.info(f"VNPay IPN: Order {order_id} already paid, skipping")
+        return JSONResponse(content={"RspCode": "02", "Message": "Order already confirmed"})
+
     if response_code == "00" and transaction_status == "00":
-        # Payment successful — find order and update
+        # Payment successful — update status
         try:
-            dao_orders = DAOOrders()
-
-            # Idempotency: skip if already paid
-            order = dao_orders.read_order_by_id_raw(order_id=order_id)
-            if not order:
-                logger.warning(f"VNPay IPN: Order not found for id={order_id}")
-                return JSONResponse(content={"RspCode": "01", "Message": "Order not found"})
-            if order.get("payment_status") == "paid":
-                logger.info(f"VNPay IPN: Order {order_id} already paid, skipping")
-                return JSONResponse(content={"RspCode": "00", "Message": "Confirm Success"})
-
             dao_orders.update_payment_status(order_id=order_id, payment_status="paid", transaction_ref=txn_ref)
             logger.info(f"VNPay IPN: Payment success for order_id={order_id}, txn_ref={txn_ref}")
             return JSONResponse(content={"RspCode": "00", "Message": "Confirm Success"})
@@ -189,9 +197,28 @@ def vnpay_return(request: Request):
     response_code = params.get("vnp_ResponseCode", "")
     txn_ref = params.get("vnp_TxnRef", "")
 
+    # Extract order_id from txn_ref for frontend polling
+    order_id_nodash = txn_ref.split("_")[0] if txn_ref else ""
+    order_id = f"{order_id_nodash[:8]}-{order_id_nodash[8:12]}-{order_id_nodash[12:16]}-{order_id_nodash[16:20]}-{order_id_nodash[20:]}" if len(order_id_nodash) == 32 else ""
+
     return {
         "success": is_valid and response_code == "00",
         "response_code": response_code,
         "txn_ref": txn_ref,
+        "order_id": order_id,
         "is_valid": is_valid
+    }
+
+
+@router.get("/payment-status/{order_id}")
+def get_payment_status(order_id: str):
+    """Poll payment status from DB. Public endpoint (no auth) — used by payment return page."""
+    dao_orders = DAOOrders()
+    order = dao_orders.read_order_by_id_raw(order_id=order_id)
+
+    if not order:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+
+    return {
+        "payment_status": order["payment_status"],
     }

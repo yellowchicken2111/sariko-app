@@ -3,6 +3,9 @@
 -- Source of truth: Supabase production (v2)
 -- ============================================================
 
+
+--- Nếu sau này cần giữ lại order history cho audit/accounting, thì đổi orders.user_id từ CASCADE sang SET NULL. Nhưng MVP thì CASCADE OK.
+
 -- 1. USERS
 create table public.users (
   id uuid not null default gen_random_uuid (),

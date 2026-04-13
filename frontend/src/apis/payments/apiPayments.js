@@ -16,11 +16,19 @@ export const apiPayments = {
 
     checkVnpayReturn: async(queryParams) => {
         try {
-            // Plain axios (no auth token) — return URL must work even if session expired
             const response = await axios.get(`${baseURL}/v1/payments/vnpay/return?${queryParams}`)
             return response
         } catch (error) {
             throw new Error(error.response?.data?.detail || 'Failed to check payment status')
+        }
+    },
+
+    pollPaymentStatus: async(orderId) => {
+        try {
+            const response = await axios.get(`${baseURL}/v1/payments/payment-status/${orderId}`)
+            return response
+        } catch (error) {
+            throw new Error(error.response?.data?.detail || 'Failed to poll payment status')
         }
     }
 }
