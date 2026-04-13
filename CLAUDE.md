@@ -34,7 +34,7 @@ Both must run simultaneously for local development. No test runner or linter is 
 - **Full guide**: See `FRONTEND_GUIDE.md` for complete file inventory, pattern rules with examples, routes table, styling conventions, and shared components.
 - **API layer**: Axios with interceptors in `lib/axiosPolicy.js` — auto-injects Supabase access token, handles 401 refresh
 - **Auth**: Supabase JS client (`lib/supabase.js`), session managed in `stores/auth/authStore.js`
-- **Stores**: Domain-split Pinia stores — `authStore`, `cartStore`, `orderStore`, `homeStore`, `sellerStore`
+- **Stores**: Domain-split Pinia stores — `authStore`, `cartStore`, `orderStore`, `homeStore`, `sellerStore`, `dashboardStore`, `deliveryStore`
 - **Components read/write stores directly** (not via props/events). This is a deliberate decision for this project.
 - **i18n**: vue-i18n with Filipino/English + Vietnamese (`en-PH`, `vi`), locale persisted in localStorage
 - **Icons**: Lucide Vue Next
@@ -62,9 +62,9 @@ Both must run simultaneously for local development. No test runner or linter is 
 - `DELETE /cart/clear` — Clear entire cart
 
 #### Orders (`/orders`)
-- `POST /orders` — Create order from cart (snapshot items, clear cart)
+- `POST /orders` — Create order from cart (snapshot items, clear cart); accepts `delivery_lat`, `delivery_lon`, `delivery_fee`, `quotation_id`
 - `GET /orders` — List orders for buyer
-- `GET /orders/{order_id}` — Order detail with items
+- `GET /orders/{order_id}` — Order detail with items (includes `cancellation_reason`)
 - `PATCH /orders/{order_id}/cancel` — Cancel order (pending only)
 
 #### Sellers (`/sellers`)
@@ -75,16 +75,32 @@ Both must run simultaneously for local development. No test runner or linter is 
 #### Seller Dashboard (`/sellers/me`)
 - `GET /sellers/me/orders` — List orders for authenticated seller
 - `GET /sellers/me/orders/{order_id}` — Seller order detail with items
-- `PATCH /sellers/me/orders/{order_id}/status` — Update order status (pending→confirmed→ready→done, with cancellation)
+- `PATCH /sellers/me/orders/{order_id}/status` — Update order status (pending→confirmed→ready→done + cancellation with reason); auto-books Lalamove when transitioning to "ready" with delivery_method=delivery
 
 #### Users (`/users`)
 - `GET /users/info/me` — Current user profile
+- `GET /users/me/address` — Get user's default delivery address
 - `PATCH /users/me/profile` — Update user profile + upsert delivery address
 
 #### Payments (`/payments`)
 - `POST /payments/vnpay/create` — Create VNPay payment URL (HMAC-SHA512 signed)
 - `GET /payments/vnpay/ipn` — VNPay server-to-server IPN callback (verifies hash, updates payment status)
 - `GET /payments/vnpay/return` — VNPay browser return URL (read-only hash validation)
+
+#### Deliveries (`/deliveries`)
+- `POST /deliveries/quotation` — Get delivery fee quote from Lalamove (mock or live via `LALAMOVE_MODE` env)
+- `GET /deliveries/{order_id}/status` — Poll delivery status for buyer (driver info, tracking link)
+- `POST /deliveries/webhook` — Lalamove status callback (HMAC-verified in live mode)
+- `DELETE /deliveries/{order_id}/cancel` — Cancel delivery
+
+#### Address (`/address`) — Goong Maps proxy, keeps API key server-side
+- `GET /address/search?q=...` — Autocomplete suggestions
+- `GET /address/detail?place_id=...` — Place detail (lat/lon)
+- `GET /address/reverse?lat=...&lon=...` — Reverse geocode
+
+#### Dev (`/dev`) — DEV ONLY, remove before production
+- `PATCH /dev/orders/{id}/force-pay` — Force payment status to paid
+- `PATCH /dev/orders/{id}/force-status` — Force order status to any value
 
 ## Environment Setup
 
@@ -94,6 +110,8 @@ Backend env file: `backend/src/envs/.env.local` — loaded via python-dotenv
 Required env vars:
 - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (frontend)
 - `SUPABASE_URL`, `SUPABASE_API_KEY`, `SUPABASE_JWKS_URL` (backend)
+- `GOONG_API_KEY` (backend — Goong Maps, proxied to frontend)
+- `LALAMOVE_MODE` (`mock` or `live`), `LALAMOVE_API_KEY`, `LALAMOVE_API_SECRET`, `LALAMOVE_BASE_URL`, `LALAMOVE_MARKET` (backend)
 
 ## Git Conventions
 
@@ -128,64 +146,91 @@ Legacy files `create_tables_v1.sql` and `create_tables_v2.sql` are kept for refe
 - Border radius: 16px ($radius-base)
 - Quasar components + Lucide icons
 
-## Current Status (as of Apr 11, 2026)
+## Current Status (as of Apr 13, 2026)
 
 ### Done (Buyer-side)
 - Home page (browse sellers, founding sellers with skeleton, featured dishes with 6-item limit)
 - Seller page (info, menu, category filter, section-level skeleton loading, empty menu state)
 - Food detail page (product info, qty selector, add to cart with toast notification)
 - Cart page (add/remove, qty +/-, single-seller conflict modal, note, delivery address, place order — merged cart+checkout like ShopeeFood)
+- Cart address wired to user's saved address (not hardcoded); pen icon → `/account/address`; empty state prompt
+- Cart delivery fee: fetches quotation from Lalamove mock on mount, shows real fee, passes `quotation_id` + `delivery_fee` to order creation
 - Auth (signin, signup with Enter key support, loading states, session restore, cart preload on login, cart clear on signout)
+- Auth bootstrap: fetches profile (name, phone, avatar), default address, and cart on session restore
 - Buyer onboarding (phone, delivery address with Leaflet map + GPS, language preference) — UI + backend persist via PATCH /users/me/profile
-- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled + awaiting payment state, cancel button with dialog, Pay Now retry button, VND formatting)
-- Order history page (filter tabs: All/Unpaid/Active/Completed/Cancelled, order cards with Unpaid badge, wired to real GET /orders API)
-- Account page — full settings hub: profile header (avatar/initials/guest-icon), edit profile, delivery address, language, terms, privacy, sign out, seller mode switcher
+- Order confirmation/detail page (status-aware: pending/confirmed/ready/done/cancelled; correct `isPaymentPending` logic — only shows for status=pending; cancel button with dialog, Pay Now retry button, VND formatting)
+- Order detail shows `cancellation_reason` when seller rejects
+- Order detail shows DeliveryTracker component (status timeline + driver card + tracking link) when order is ready/done with delivery method
+- Order history page (filter tabs: All/Unpaid/Active/Completed/Cancelled; fixed `isUnpaid` logic; order cards with Unpaid badge; wired to real GET /orders API)
+- Account page — full settings hub: profile header (vertical layout with info rows), edit profile, delivery address, language, terms, privacy, sign out, seller mode switcher
 - Avatar logic: guest → User icon; logged in no URL → initials; logged in with URL → image. Consistent across HomePage header + AccountPage
 - Account sub-pages: `/account/profile` (EditProfilePage), `/account/address` (DeliveryAddressPage), `/account/language` (LanguagePage), `/account/terms` (TermsPage), `/account/privacy` (PrivacyPage) — all wired with real APIs
 - New layout: `LayoutBaseSettings.vue` used by all account sub-pages (breadcrumb + content slot)
-- New components: `ProfileForm.vue`, `AddressForm.vue`, `LanguageOptions.vue`
+- New components: `ProfileForm.vue`, `AddressForm.vue` (Goong Maps autocomplete), `LanguageOptions.vue`
+- Address autocomplete uses Goong Maps via backend proxy — two-step: autocomplete → place_id → `/detail` for lat/lon
 - FoodCard add-to-cart UX: loading spinner state + toast notification on success (suppressed when cart-conflict modal opens)
+- FoodCard quantity bug fixed: full chain from BottomActionBar → cartStore → apiCart → backend DAO now passes correct quantity
 - Vietnamese localization (vi.json 100% in sync with en-PH.json, vue-i18n configured)
 - Route guards (beforeEach: requiresAuth for cart/orders/dashboard/account/onboarding, guestOnly for signin/signup, redirect preserved)
-- Bottom nav hidden on order detail pages, payment return, cart, auth, onboarding
+- Bottom nav hidden on order detail pages, payment return, cart, auth, onboarding, account sub-pages
 - Backend: Sellers APIs (founding list, by slug, full menu by slug)
 - Backend: Cart APIs (add with duplicate check + single-seller constraint, update with qty>0 validation, remove, clear)
-- Backend: Order APIs (create with rollback + idempotency guard, list, detail, cancel — buyer-side)
+- Backend: Order APIs (create with rollback + idempotency guard + delivery fields, list, detail with cancellation_reason, cancel — buyer-side)
 - Backend: VNPay payment gateway (create payment URL with full UUID txn_ref, IPN webhook with idempotency check, return URL verification — return endpoint is public/no auth)
 - Frontend: VNPay redirect flow (place order → VNPay gateway → payment return page, Pay Now retry on order detail)
 - Frontend: Payment return page (success/failed states, filters vnp_* params only)
 
 ### Done (Seller-side)
-- Backend: Seller Dashboard APIs (GET /sellers/me/orders filtered to paid orders only, GET .../orders/{id}, PATCH .../status with state machine: pending→confirmed→ready→done + cancellation)
-- Frontend: SellerDashboard.vue wired to real APIs (no mock data)
+- Backend: Seller Dashboard APIs (GET /sellers/me/orders filtered to paid orders only, GET .../orders/{id}, PATCH .../status with state machine: pending→confirmed→ready→done + cancellation with `cancellation_reason`)
+- Backend: Auto-book Lalamove when seller marks order "ready" and delivery_method=delivery — creates `deliveries` row with ASSIGNING_DRIVER status
+- Frontend: SellerDashboard.vue wired to real APIs; uses PageBreadcrumbs
+- Frontend: RecentOrders — Accept/Reject buttons; reject dialog with reason input; q-btn-dropdown filter (All/New/Preparing/Ready/Done/Cancelled) inline with section header
+- Frontend: `dashboardStore.js` shared between DashboardStats + RecentOrders — eliminates duplicate API calls; `selectedFilter` getter for order filtering
+- Route guard: `/dashboard` requires `requiresSeller: true` — non-sellers redirected to home
 - Backend: core/sellers.py get_seller_full_menu() complete
 
+### Done (Delivery / Lalamove)
+- `backend/src/services/lalamove_service.py` — factory pattern, `LALAMOVE_MODE=mock` vs `live`
+- Mock service: time-based status progression from delivery `created_at` (0–60s: ASSIGNING_DRIVER → 60–120s: ON_GOING → 120–180s: PICKED_UP → 180s+: COMPLETED)
+- `backend/src/dao/dao_deliveries.py` — CRUD for deliveries table
+- `backend/src/apis/deliveries.py` — quotation, status poll, webhook, cancel
+- `frontend/src/stores/delivery/deliveryStore.js` — quotation fetch + 15s polling with auto-stop on COMPLETED
+- `frontend/src/components/order-details/DeliveryTracker.vue` — status timeline stepper + driver card + tracking link
+- SQL migrations needed in Supabase: `ALTER TABLE orders ADD COLUMN IF NOT EXISTS quotation_id text; ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancellation_reason text; ALTER TABLE deliveries ADD COLUMN IF NOT EXISTS share_link text; ALTER TABLE deliveries ADD COLUMN IF NOT EXISTS driver_plate text; ALTER TABLE deliveries ADD COLUMN IF NOT EXISTS lalamove_order_id text;`
+
+### Done (Address / Goong Maps)
+- `backend/src/apis/address.py` — proxy for Goong Maps (search, detail, reverse); keeps `GOONG_API_KEY` server-side
+- `frontend/src/components/account/AddressForm.vue` — uses backend proxy for autocomplete; displays `main_text` / `secondary_text` from Goong response
+- `GET /users/me/address` endpoint + `dao_user_addresses.read_default_address()` — fetch user's default address
+- `authStore.bootstrap()` fetches and sets `inputAddress`, `inputAddressDetails`, `inputLat`, `inputLon` from backend on session restore
+
+### Done (Dev Tools)
+- `backend/src/apis/dev.py` — `PATCH /dev/orders/{id}/force-pay`, `PATCH /dev/orders/{id}/force-status` (DEV ONLY — remove before production)
+- `frontend/src/components/dev/HackerPanel.vue` — Ctrl+Shift+Q toggles terminal-style dev panel (force-pay, force-status, env info); mounted via teleport in `App.vue`
+
 ### Done (Architecture / Code Quality)
-- All 12 pages follow Page + Layout + Components pattern (see memory for rules)
-- Shared `PageBreadcrumbs` component used across Cart, My Orders, Order Detail
-- App.vue flex-direction fixed (column) for proper child layout rendering
-- Padding responsibility moved to Layout layer (not Components)
-- HomePage dead mock-data code cleaned up
+- All pages follow Page + Layout + Components pattern
+- Shared `PageBreadcrumbs` component used across Cart, My Orders, Order Detail, Seller Dashboard
+- FoodDetailPage layout fixed: added `display: flex; flex-direction: column` to prevent scroll area collapse
+- `LayoutBaseOrderDetail.vue` added `#DeliveryTracking` slot between StatusHeader and OrderInfo
 
 ### Partial / Stub
 - `sellerStore.js` initializes with mock data from `data.js` for browse pages (overwritten by API calls at runtime — cosmetic issue)
-- `FoodDetailPage` refactored to pattern but needs `sellerStore.loadFoodDetail()`, `currentFood`, `currentSeller`, `foodQuantity` wired in store (old version used deprecated `_cartStore` + mock `data.js`)
 - Backend: `GET /sellers/` — stub (just `pass`, not used by any frontend page)
 - VNPay — backend endpoints done, sandbox testing in progress
-- Account page — UI done, but "Terms & Privacy Policy" menu item is not linked (no policy page exists)
+- Lalamove live mode: `LiveLalamoveService` methods stub with `NotImplementedError` — implement when credentials arrive
+- Notifications page is empty state placeholder only
 
 ### TODO (MVP required)
-- Policy pages done as placeholder (Terms + Privacy at `/account/terms`, `/account/privacy`) — legal fills content Apr 14
-- FoodDetailPage: no dedicated detail page — users add to cart directly from FoodCard (+) button on SellerPage
+- Run SQL migrations listed above in Supabase dashboard
+- Policy pages exist as placeholders (Terms + Privacy at `/account/terms`, `/account/privacy`) — legal fills content Apr 14
 - Production deployment to AWS EC2, nginx + certbot SSL, backend live at https://api.sariko.store
 - Restrict CORS origins for production
+- Remove `/dev` router from `main.py` before production
 
 ### Known Issues
-- `/dashboard` route only checks login, not seller role — any logged-in user can access
 - `delivery_method` hardcoded to 'delivery' — no UI to choose pickup
 - `refreshCart()` causes brief flash of empty state before data loads
 - Backend CORS allows all origins (should restrict in production)
-- `DashboardStats` and `RecentOrders` both call `getOrders()` independently (duplicated API call — could share via store)
 - "Help Center" in SupportMenu not linked (no page exists)
 - Terms + Privacy pages exist but content is placeholder text (waiting on legal)
-- Notifications page is empty state placeholder only

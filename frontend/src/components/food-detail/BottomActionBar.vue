@@ -2,6 +2,7 @@
 import { Minus, Plus, ShoppingBasket } from 'lucide-vue-next';
 import { useSellerStore } from '@/stores/seller/sellerStore';
 import { useCartStore } from '@/stores/cart/cartStore';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     components: { Minus, Plus, ShoppingBasket },
@@ -51,6 +52,11 @@ export default {
         },
         async addToCart() {
             if (!this.canAdd) return
+            const authStore = useAuthStore()
+            if (!authStore.user) {
+                this.$router.push('/signin')
+                return
+            }
             this.loading = true
             const cartStore = useCartStore()
             try {

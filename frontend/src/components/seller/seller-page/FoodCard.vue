@@ -2,6 +2,7 @@
 import { mapState } from 'pinia';
 import { useSellerStore } from '@/stores/seller/sellerStore';
 import { useCartStore } from '@/stores/cart/cartStore';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     props: {
@@ -42,6 +43,11 @@ export default {
 
         async handleAddToCart(e) {
             e.stopPropagation()
+            const authStore = useAuthStore()
+            if (!authStore.user) {
+                this.$router.push('/signin')
+                return
+            }
             if (this.loading) return
             this.loading = true
             const cartStore = useCartStore()
