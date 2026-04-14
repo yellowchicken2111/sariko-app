@@ -19,7 +19,8 @@ async def keep_realtime_alive():
     client = AsyncRealtimeClient(REALTIME_URL, SUPABASE_ANON_KEY)
     await client.connect()
 
-    channel = client.channel("keepalive")
+    channel = client.channel("backend-keepalive")    
+    channel.on_broadcast('ping', lambda payload: None)
 
     def _on_subscribe(status: RealtimeSubscribeStates, err: Optional[Exception]):
         if status == RealtimeSubscribeStates.SUBSCRIBED:
@@ -32,4 +33,5 @@ async def keep_realtime_alive():
     await channel.subscribe(_on_subscribe)
 
     while True:
+        await channel.send_broadcast('ping', {})
         await asyncio.sleep(30)
