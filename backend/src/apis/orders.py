@@ -12,6 +12,7 @@ from dao.dao_carts import DAOCarts
 from dao.dao_cart_items import DAOCartItems
 from dao.dao_orders import DAOOrders
 from dao.dao_order_items import DAOOrderItems
+from dao.dao_seller_profiles import DAOSellerProfiles
 from schemas.request_schemas import RequestCreateOrder
 
 router = APIRouter(prefix="/orders")
@@ -48,11 +49,17 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
         item["food_items"]["price"] * item["quantity"]
         for item in cart_items
     )
+    
+    # 3. Get user id of seller
+    dao_seller_profile = DAOSellerProfiles()
+    data = dao_seller_profile.read_seller_user_id_by_seller_id(cart["seller_id"])
+    seller_user_id = data["user_id"]
 
-    # 3. Create order (include delivery fields if present)
+    # 4. Create order (include delivery fields if present)
     order = dao_orders.create_order(
         user_id=user_id,
         seller_id=cart["seller_id"],
+        seller_user_id=seller_user_id,
         total_amount=total_amount,
         delivery_method=request.delivery_method,
         delivery_address=request.delivery_address,
@@ -66,7 +73,7 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
     if not order:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create order")
 
-    # 4. Copy cart items → order items (snapshot). Rollback order if fails.
+    # 5. Copy cart items → order items (snapshot). Rollback order if fails.
     try:
         dao_order_items = DAOOrderItems()
         dao_order_items.create_order_items_from_cart(order_id=order["id"], cart_items=cart_items)
@@ -74,7 +81,7 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
         dao_orders.update_order_status(order_id=order["id"], status="cancelled")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create order items")
 
-    # 5. Clear cart (best-effort — order already committed)
+    # 6. Clear cart (best-effort — order already committed)
     try:
         dao_cart = DAOCarts()
         dao_cart.delete_cart(cart_id=cart["id"])

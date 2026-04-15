@@ -2,6 +2,7 @@
 import { House, ShoppingCart, Clipboard, Bell, CircleUserRound, LayoutDashboard } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth/authStore';
 import { useCartStore } from '@/stores/cart/cartStore';
+import { useOrderStore } from '@/stores/order/orderStore';
 
 export default {
     name: 'BottomNavigation',
@@ -22,6 +23,12 @@ export default {
         },
         cartBadge() {
             return this.cartStore.itemCount
+        },
+        orderStore() {
+            return useOrderStore()
+        },
+        unpaidBadge() {
+            return this.orderStore.unpaidCount
         },
         isShow() {
             const path = this.$route.path
@@ -66,7 +73,10 @@ export default {
             <div class="nav-label">{{ $t('bottom_nav.button_label_dashboard') }}</div>
         </router-link>
         <router-link v-else to="/orders" class="nav-item" :class="{ active: isActive('/orders') }">
-            <Clipboard size="18px" />
+            <div class="icon-wrapper">
+                <Clipboard size="18px" />
+                <span v-if="unpaidBadge > 0" class="order-badge">{{ unpaidBadge }}</span>
+            </div>
             <div class="nav-label">{{ $t('bottom_nav.button_label_orders') }}</div>
         </router-link>
 
@@ -153,6 +163,31 @@ export default {
     position: absolute;
     top: -4px;
     right: -4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid var(--bg-main);
+}
+
+.icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
     background: #ef4444;
     color: #fff;
     font-size: 10px;

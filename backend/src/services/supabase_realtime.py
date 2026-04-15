@@ -41,6 +41,9 @@ async def keep_realtime_alive():
 
         while True:
             await channel.send_broadcast('ping', {})
+            await channel.send_broadcast('ping', {})
+            is_alive = client.is_connected  # hoặc channel.state == "joined"
+            logger.warning(f"Keepalive: ping sent, connected={is_alive}")
             await asyncio.sleep(30)
 
     except Exception as e:

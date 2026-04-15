@@ -102,5 +102,25 @@ class DAOSellerProfiles(DAOBase):
                 
         except Exception as e:
             raise Exception(f"error read_store_slug_name_by_seller_id with seller_id {seller_id}: {e}")
+        
+        
+    def read_seller_user_id_by_seller_id(self, seller_id):
+        
+        try:
+            query = self._supabase_client.table(self._table_name)
+            query = query.select("user_id").eq("id", seller_id)
+            
+            query = query.maybe_single()
+            result = query.execute()
+            if result and result.data:
+                return result.data
+                
+            return None
+        
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_seller_user_id_by_seller_id with seller_id {seller_id}: {e}")
+                
+        except Exception as e:
+            raise Exception(f"error read_seller_user_id_by_seller_id with seller_id {seller_id}: {e}")
             
         

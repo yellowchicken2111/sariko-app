@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import apiAuth from "@/apis/auth/apiAuth";
 import apiUsers from "@/apis/users/apiUsers";
 import { useCartStore } from "@/stores/cart/cartStore";
+import { useOrderStore } from "@/stores/order/orderStore";
 
 export const useAuthStore = defineStore("authStore", {
     state() {
@@ -55,6 +56,7 @@ export const useAuthStore = defineStore("authStore", {
             if (session?.user) {
                 const meta = session.user.user_metadata || {};
                 this.user = {
+                    id: session.user.id,
                     fullName: meta.fullname || '',
                     email: session.user.email,
                     phone: null,
@@ -107,6 +109,13 @@ export const useAuthStore = defineStore("authStore", {
                         await cartStore.getCurrentCart();
                     } catch (e) {
                         console.error(`authStore - bootstrap - cart preload failed: ${e}`);
+                    }
+
+                    try {
+                        const orderStore = useOrderStore();
+                        await orderStore.getOrders();
+                    } catch (e) {
+                        console.error(`authStore - bootstrap - orders preload failed: ${e}`);
                     }
                 }
 
@@ -198,6 +207,13 @@ export const useAuthStore = defineStore("authStore", {
                     await cartStore.getCurrentCart();
                 } catch (e) {
                     console.error(`authStore - onClickedSignin - cart preload failed: ${e}`);
+                }
+
+                try {
+                    const orderStore = useOrderStore();
+                    await orderStore.getOrders();
+                } catch (e) {
+                    console.error(`authStore - onClickedSignin - orders preload failed: ${e}`);
                 }
 
                 Notify.create({

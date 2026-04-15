@@ -139,6 +139,8 @@ create table public.orders (
   delivery_lon double precision null,
   quotation_id text null,
   cancellation_reason text null,
+  transaction_ref text null,
+  seller_user_id uuid null,
   constraint orders_pkey primary key (id),
   constraint orders_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
   constraint orders_user_id_fkey foreign KEY (user_id) references users (id),

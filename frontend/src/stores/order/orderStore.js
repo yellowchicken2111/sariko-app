@@ -11,6 +11,14 @@ export const useOrderStore = defineStore("orderStore", {
         }
     },
 
+    getters: {
+        unpaidCount(state) {
+            return state.orders.filter(
+                o => o.payment_status === 'pending' && o.status !== 'cancelled'
+            ).length
+        }
+    },
+
     actions: {
         async placeOrder(deliveryMethod, deliveryAddress, note, deliveryOpts = {}) {
             try {

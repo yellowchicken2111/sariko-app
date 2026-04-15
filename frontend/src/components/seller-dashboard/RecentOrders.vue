@@ -6,7 +6,7 @@ import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import { useOrderStore } from '@/stores/order/orderStore';
 import { useAuthStore } from '@/stores/auth/authStore';
 import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
-import { TouchSwipe } from 'quasar';
+import { useQuasar } from 'quasar';
 
 const STATUS_DISPLAY = {
     pending: 'New Order',
@@ -31,6 +31,10 @@ const REJECT_REASONS = [
 
 export default {
     components: { Check, X, Filter },
+
+    setup() {
+        const $q = useQuasar()
+    },
 
     data() {
         return {
@@ -190,6 +194,11 @@ export default {
             }
         },
 
+        playNotificationSound() {
+            const audio = new Audio('/sounds/new-order.mp3')
+            audio.play().catch(() => {})
+        },
+
         debouncedFetchOrders() {
             if (this.fetchDebounceTimer) return 
 
@@ -212,8 +221,15 @@ export default {
                     filter: `seller_id=eq.${this.sellerId}`
                 },
                 (payload) => {
+                    console.log(payload)
                     if (payload.new.payment_status === 'paid' && payload.old.payment_status !== 'paid') {
-                        console.log("NEW ORDER COMING...")
+                        this.playNotificationSound()
+                        this.$q.notify({
+                            classes: 'quasar-notify-positive',
+                            message: '🔔 New order received!',
+                            progress: true,
+                            position: "bottom",
+                        });
                     }
                     
                     this.debouncedFetchOrders()
@@ -230,9 +246,15 @@ export default {
         },
     },
 
-    mounted() {
+    async created() {
+        const authStore = useAuthStore()
+        if (!authStore.user) {
+            await authStore.bootstrap()
+        }
+    },
+
+    async mounted() {
         this.listenOrders()
-        console.log(this.orders)
     },
 
     beforeUnmount() {

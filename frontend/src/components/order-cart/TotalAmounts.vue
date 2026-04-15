@@ -75,7 +75,7 @@ export default {
                         const payRes = await apiPayments.createVnpayPayment(order.id)
                         if (payRes?.data?.payment_url) {
                             // window.open(payRes.data.payment_url, '_blank')
-                            window.location.href = res.data.payment_url
+                            window.location.href = payRes.data.payment_url
                         }
                     } catch (payErr) {
                         console.error('VNPay payment URL failed:', payErr)

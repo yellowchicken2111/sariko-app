@@ -19,8 +19,6 @@ from apis import (
     users, sellers, cart, orders, payments, deliveries, address, dev
 )
 
-from lifespan import lifespan
-
 log_level = logging.WARNING
 formatter = logging.Formatter(
     fmt="%(asctime)s - %(module)s - %(levelname)s - %(message)s",
@@ -45,7 +43,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
+from lifespan import lifespan
 app = FastAPI(lifespan=lifespan)
 
 @app.exception_handler(RequestValidationError)

@@ -1,15 +1,33 @@
 <script>
 import { mapState } from 'pinia';
+import { supabase } from '@/lib/supabase';
 import { useOrderStore } from '@/stores/order/orderStore';
+import { useAuthStore } from '@/stores/auth/authStore';
 import OrderCard from '@/components/order-history/OrderCard.vue';
+
+const STATUS_DISPLAY = {
+    pending: 'Waiting for seller',
+    confirmed: 'Seller is preparing your order',
+    ready: 'Your order is on the way',
+    done: 'Delivered',
+    cancelled: 'Cancelled by seller',
+}
 
 export default {
     components: {
         OrderCard
     },
 
+    data() {
+        return {
+            channel: null,
+            fetchDebounceTimer: null,
+        }
+    },
+
     computed: {
         ...mapState(useOrderStore, ['orders', 'selectedFilter']),
+        ...mapState(useAuthStore, { authUser: 'user' }),
 
         filteredOrders() {
             if (this.selectedFilter === 'all') return this.orders
@@ -29,9 +47,74 @@ export default {
         }
     },
 
+    methods: {
+        debouncedFetchOrders() {
+            if (this.fetchDebounceTimer) return
+            this.fetchDebounceTimer = setTimeout(async () => {
+                await useOrderStore().getOrders()
+                this.fetchDebounceTimer = null
+            }, 500)
+        },
+
+        notifyStatusChange(newStatus, oldStatus) {
+            if (newStatus === oldStatus) return
+            const message = STATUS_DISPLAY[newStatus]
+            if (!message) return
+
+            const isCancelled = newStatus === 'cancelled'
+            this.$q.notify({
+                classes: isCancelled ? 'quasar-notify-negative' : 'quasar-notify-positive',
+                message: `🔔 ${message}`,
+                progress: true,
+                position: 'bottom',
+                timeout: 2500,
+            })
+        },
+
+        listenOrders() {
+            const userId = this.authUser?.id || useAuthStore().session?.user?.id
+            if (!userId) return
+
+            this.channel = supabase
+                .channel(`buyer-orders-${userId}`)
+                .on('postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'orders',
+                        filter: `user_id=eq.${userId}`
+                    },
+                    (payload) => {
+                        console.log('[buyer realtime]', payload)
+                        const newStatus = payload.new?.status
+                        const oldStatus = payload.old?.status
+                        this.notifyStatusChange(newStatus, oldStatus)
+                        this.debouncedFetchOrders()
+                    }
+                )
+                .subscribe((status, err) => {
+                    console.log('Buyer realtime status:', status)
+                    if (err) console.error('Buyer realtime error:', err)
+                })
+        },
+
+        cleanup() {
+            if (this.channel) supabase.removeChannel(this.channel)
+            if (this.fetchDebounceTimer) {
+                clearTimeout(this.fetchDebounceTimer)
+                this.fetchDebounceTimer = null
+            }
+        },
+    },
+
     mounted() {
         const orderStore = useOrderStore()
         orderStore.getOrders()
+        this.listenOrders()
+    },
+
+    beforeUnmount() {
+        this.cleanup()
     }
 }
 </script>

@@ -84,8 +84,37 @@ const routes = [
     },
     {
         path: '/dashboard',
-        name: 'dashboard',
-        component: () => import('@/pages/SellerDashboard.vue'),
+        redirect: '/seller/home'
+    },
+    {
+        path: '/seller/home',
+        name: 'seller-home',
+        component: () => import('@/pages/seller/SellerHomePage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true }
+    },
+    {
+        path: '/seller/orders',
+        name: 'seller-orders',
+        component: () => import('@/pages/seller/SellerOrdersPage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true }
+    },
+    {
+        path: '/seller/orders/:orderId',
+        name: 'seller-order-detail',
+        component: () => import('@/pages/seller/SellerOrderDetailPage.vue'),
+        props: true,
+        meta: { requiresAuth: true, requiresSeller: true }
+    },
+    {
+        path: '/seller/menu',
+        name: 'seller-menu',
+        component: () => import('@/pages/seller/SellerMenuPage.vue'),
+        meta: { requiresAuth: true, requiresSeller: true }
+    },
+    {
+        path: '/seller/me',
+        name: 'seller-me',
+        component: () => import('@/pages/seller/SellerMePage.vue'),
         meta: { requiresAuth: true, requiresSeller: true }
     },
     {

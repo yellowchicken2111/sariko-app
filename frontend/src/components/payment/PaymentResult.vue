@@ -26,16 +26,11 @@ export default {
         startPolling() {
             this.pollTimer = setInterval(async () => {
                 try {
-                    // Timeout after 60s
-                    if (Date.now() - this.pollStartTime > POLL_TIMEOUT) {
-                        this.stopPolling()
-                        this.state = 'failed'
-                        return
-                    }
 
                     const res = await apiPayments.pollPaymentStatus(this.orderId)
                     const status = res?.data?.payment_status
-
+                    console.log({res})
+                    
                     if (status === 'paid') {
                         this.stopPolling()
                         this.state = 'success'
@@ -81,21 +76,20 @@ export default {
             )
             .subscribe((status, err) => {
                 console.log('Status:', status)
-                console.log('Error:', err)
+                if (err) console.error('Seller realtime error:', err)
             })
         },
 
         cleanup() {
             if (this.channel) supabase.removeChannel(this.channel)
             if (this.timeoutId) clearTimeout(this.timeoutId)
+            this.stopPolling()
         },
     },
 
     async created() {
         try {
             const params = new URLSearchParams(window.location.search)
-            const vnpParams = new URLSearchParams()
-
             const responseCode = params.get('vnp_ResponseCode')
             const txnRef = params.get('vnp_TxnRef')
 
@@ -104,15 +98,12 @@ export default {
                 ? `${orderIdNoDash.slice(0,8)}-${orderIdNoDash.slice(8,12)}-${orderIdNoDash.slice(12,16)}-${orderIdNoDash.slice(16,20)}-${orderIdNoDash.slice(20)}`
                 : ''
 
-            this.listenPaymentStatus()
-            this.state = 'polling'
-
+            const vnpParams = new URLSearchParams()
             for (const [key, value] of params) {
                 if (key.startsWith('vnp_')) vnpParams.append(key, value)
             }
             const queryString = vnpParams.toString()
             const res = await apiPayments.checkVnpayReturn(queryString)
-
             if (!res?.data) {
                 this.state = 'failed'
                 return
@@ -124,6 +115,10 @@ export default {
                 return
             }
 
+            this.state = 'polling'
+            this.listenPaymentStatus()
+            this.startPolling()
+                        
             this.timeoutId = setTimeout(async () => {
                 this.cleanup()
                 try {
