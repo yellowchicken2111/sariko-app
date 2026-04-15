@@ -1,8 +1,12 @@
 <script>
+import { supabase } from '@/lib/supabase';
 import { Check, X, Filter } from 'lucide-vue-next';
-import { mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
+import { useOrderStore } from '@/stores/order/orderStore';
+import { useAuthStore } from '@/stores/auth/authStore';
 import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
+import { TouchSwipe } from 'quasar';
 
 const STATUS_DISPLAY = {
     pending: 'New Order',
@@ -35,10 +39,15 @@ export default {
             selectedReason: '',
             customReason: '',
             rejecting: false,
+
+            // supabase realtime
+            channel: null,
+            fetchDebounceTimer: null,
         }
     },
 
     computed: {
+        ...mapState(useAuthStore, ["sellerId"]),
         ...mapState(useDashboardStore, ['isLoading', 'orders']),
         ...mapWritableState(useDashboardStore, ['selectedFilter']),
 
@@ -61,7 +70,6 @@ export default {
 
         recentOrders() {
             const store = useDashboardStore()
-            console.log(store.filteredOrders)
             return store.filteredOrders.map(order => ({
                 ...order,
                 displayStatus: STATUS_DISPLAY[order.status] || order.status,
@@ -97,6 +105,11 @@ export default {
     },
 
     methods: {
+
+        ...mapActions(useDashboardStore, [
+            "fetchSellerInfo",
+            "fetchOrderDetails"
+        ]),
 
         getLocaleNumberFormat(number) {
             return new Intl.NumberFormat('vi-VN').format(number || 0) + ' ₫'
@@ -176,7 +189,55 @@ export default {
                 this.rejecting = false
             }
         },
-    }
+
+        debouncedFetchOrders() {
+            if (this.fetchDebounceTimer) return 
+
+            this.fetchDebounceTimer = setTimeout(async () => {
+                await useDashboardStore().fetchOrders()
+                this.fetchDebounceTimer = null
+            }, 500)
+        },
+
+        listenOrders() {
+            if (!this.sellerId) return
+
+            this.channel = supabase
+            .channel(`seller-orders-${this.sellerId}`)
+            .on('postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'orders',
+                    filter: `seller_id=eq.${this.sellerId}`
+                },
+                (payload) => {
+                    if (payload.new.payment_status === 'paid' && payload.old.payment_status !== 'paid') {
+                        console.log("NEW ORDER COMING...")
+                    }
+                    
+                    this.debouncedFetchOrders()
+                }
+            )
+            .subscribe((status, err) => {
+                console.log('Status:', status)
+                if (err) console.error('Seller realtime error:', err)
+            })
+        },
+
+        cleanup() {
+            if (this.channel) supabase.removeChannel(this.channel)
+        },
+    },
+
+    mounted() {
+        this.listenOrders()
+        console.log(this.orders)
+    },
+
+    beforeUnmount() {
+        this.cleanup()
+    },
 }
 </script>
 

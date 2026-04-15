@@ -2,6 +2,11 @@ import { apiClient } from "@/lib/axiosPolicy.js"
 
 export const apiSellerDashboard = {
 
+    getSellerInfo: async () => {
+        const response = await apiClient.get('/v1/sellers/me')
+        return response.data
+    },
+
     getOrders: async () => {
         const response = await apiClient.get('/v1/sellers/me/orders')
         return response.data

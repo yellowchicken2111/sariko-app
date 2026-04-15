@@ -18,7 +18,8 @@ from fastapi.exceptions import RequestValidationError
 from apis import (
     users, sellers, cart, orders, payments, deliveries, address, dev
 )
-from services.supabase_realtime import keep_realtime_alive
+
+from lifespan import lifespan
 
 log_level = logging.WARNING
 formatter = logging.Formatter(
@@ -43,15 +44,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
-
-# lifespan
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    task = asyncio.create_task(keep_realtime_alive())
-    
-    yield
-    task.cancel()
 
 
 app = FastAPI(lifespan=lifespan)

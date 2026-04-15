@@ -14,24 +14,34 @@ async def keep_realtime_alive():
     REALTIME_URL = f"wss://{SUPABASE_PROJECT_ID}.supabase.co/realtime/v1"
     
     if not SUPABASE_PROJECT_ID or not SUPABASE_ANON_KEY:
-        raise ValueError("SUPABASE_PROJECT_ID and SUPABASE_ANON_KEY must be set in environment variables.")
+        logger.error("SUPABASE_PROJECT_ID and SUPABASE_ANON_KEY must be set in environment variables.")
+        return
     
-    client = AsyncRealtimeClient(REALTIME_URL, SUPABASE_ANON_KEY)
-    await client.connect()
+    try:
+        logger.warning("Keepalive: Starting...")
+        client = AsyncRealtimeClient(REALTIME_URL, SUPABASE_ANON_KEY)
+        await client.connect()
 
-    channel = client.channel("backend-keepalive")    
-    channel.on_broadcast('ping', lambda payload: None)
+        channel = client.channel("backend-keepalive")    
+        channel.on_broadcast('ping', lambda payload: None)
 
-    def _on_subscribe(status: RealtimeSubscribeStates, err: Optional[Exception]):
-        if status == RealtimeSubscribeStates.SUBSCRIBED:
-            logger.warning("Realtime keepalive: CONNECTED ✅")
-        elif status == RealtimeSubscribeStates.CHANNEL_ERROR:
-            logger.warning(f"Realtime keepalive: ERROR ❌ {err}")
-        elif status == RealtimeSubscribeStates.TIMED_OUT:
-            logger.warning("Realtime keepalive: TIMEOUT ❌")
+        def _on_subscribe(status: RealtimeSubscribeStates, err: Optional[Exception]):
 
-    await channel.subscribe(_on_subscribe)
+            logger.warning(f"status {status}")
 
-    while True:
-        await channel.send_broadcast('ping', {})
-        await asyncio.sleep(30)
+            if status == RealtimeSubscribeStates.SUBSCRIBED:
+                logger.warning("Realtime keepalive: CONNECTED ✅")
+            elif status == RealtimeSubscribeStates.CHANNEL_ERROR:
+                logger.warning(f"Realtime keepalive: ERROR ❌ {err}")
+            elif status == RealtimeSubscribeStates.TIMED_OUT:
+                logger.warning("Realtime keepalive: TIMEOUT ❌")
+
+        await channel.subscribe(_on_subscribe)
+        logger.warning("Keepalive: Subscribed, starting heartbeat loop")
+
+        while True:
+            await channel.send_broadcast('ping', {})
+            await asyncio.sleep(30)
+
+    except Exception as e:
+        logger.error(f"Keepalive crashed: {e}")

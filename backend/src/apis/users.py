@@ -16,6 +16,7 @@ from fastapi import (
 
 from core.auth import verify_token
 from dao.dao_users import DAOUsers
+from dao.dao_seller_profiles import DAOSellerProfiles
 from dao.dao_user_addresses import DAOUserAddresses
 from schemas.request_schemas import RequestUpdateProfile
 
@@ -28,7 +29,11 @@ def get_current_user_profile(user=Depends(verify_token)):
     try:
         dao_users = DAOUsers()
         users = dao_users.get_users(user_id=user["id"])
-    
+        if users.get("is_seller"):
+            dao = DAOSellerProfiles()
+            profile = dao.read_seller_profile_by_user_id(user["id"])
+            users.update({"seller_id": profile["id"]})
+            
         return {"success": True , "user": users}
     
     except HTTPException as e:

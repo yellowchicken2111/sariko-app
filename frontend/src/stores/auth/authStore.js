@@ -40,7 +40,8 @@ export const useAuthStore = defineStore("authStore", {
             session: null,
             user: null,
             isLoading: false,
-            viewMode: 'buyer', // 'buyer' | 'seller'
+            viewMode: 'buyer', // 'buyer' | 'seller',
+            sellerId: null,
 
             // auth subscription
             _authSub: null,
@@ -59,6 +60,7 @@ export const useAuthStore = defineStore("authStore", {
                     phone: null,
                     isSeller: meta.is_seller || false,
                     avatarUrl: null,
+                    sellerId: null
                 };
                 if (this.viewMode === 'buyer' && meta.is_seller) {
                     this.viewMode = 'seller'
@@ -82,6 +84,7 @@ export const useAuthStore = defineStore("authStore", {
                             if (profile.user.avatar_url) this.user.avatarUrl = profile.user.avatar_url
                             if (profile.user.name) this.user.fullName = profile.user.name
                             if (profile.user.phone) this.user.phone = profile.user.phone
+                            if (profile.user.seller_id) this.sellerId = profile.user.seller_id
                         }
                     } catch (e) {
                         console.error(`authStore - bootstrap - profile fetch failed: ${e}`);
@@ -108,7 +111,7 @@ export const useAuthStore = defineStore("authStore", {
                 }
 
                 const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                    this._setFromSession(session);
+                    this._setFromSession({session});
                 });
                 this._authSub = subscription;
             } catch (e) {

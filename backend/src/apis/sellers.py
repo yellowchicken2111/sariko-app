@@ -57,13 +57,25 @@ def _get_seller_id(user):
     return profile["id"]
 
 
+@router.get("/me")
+def get_seller_info(user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        return {"success": True, "seller_id": seller_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in GET /sellers/me: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))\
+        
+
 @router.get("/me/orders")
 def get_seller_orders(user=Depends(verify_token)):
     try:
         seller_id = _get_seller_id(user)
         dao_orders = DAOOrders()
         orders = dao_orders.read_orders_by_seller_id(seller_id)
-        return {"success": True, "orders": orders}
+        return {"success": True, "orders": orders, "seller_id": seller_id}
     except HTTPException:
         raise
     except Exception as e:

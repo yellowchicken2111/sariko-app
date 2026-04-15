@@ -70,7 +70,6 @@ export default {
                     filter: `id=eq.${this.orderId}`
                 },
                 (payload) => {
-                    console.log({payload})
                     if (payload.new.payment_status === 'paid') {
                         this.state = 'success'
                         this.cleanup()
@@ -109,7 +108,7 @@ export default {
             this.state = 'polling'
 
             for (const [key, value] of params) {
-                    if (key.startsWith('vnp_')) vnpParams.append(key, value)
+                if (key.startsWith('vnp_')) vnpParams.append(key, value)
             }
             const queryString = vnpParams.toString()
             const res = await apiPayments.checkVnpayReturn(queryString)
@@ -125,9 +124,19 @@ export default {
                 return
             }
 
-            this.timeoutId = setTimeout(() => {
-                this.state = 'failed'
+            this.timeoutId = setTimeout(async () => {
                 this.cleanup()
+                try {
+                    const res = await apiPayments.pollPaymentStatus(this.orderId)
+                    if (res?.data?.payment_status === 'paid') {
+                        this.state = 'success'
+                    } else {
+                        this.state = 'failed'
+                    }
+                } catch (e) {
+                    this.state = 'failed'
+                }
+                
             }, 30000)
 
         } catch (e) {

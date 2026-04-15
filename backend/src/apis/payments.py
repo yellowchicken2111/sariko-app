@@ -159,17 +159,17 @@ def vnpay_ipn(request: Request):
 
     # Idempotency: skip if already paid
     if order.get("payment_status") == "paid":
-        logger.info(f"VNPay IPN: Order {order_id} already paid, skipping")
+        logger.warning(f"VNPay IPN: Order {order_id} already paid, skipping")
         return JSONResponse(content={"RspCode": "02", "Message": "Order already confirmed"})
 
     if response_code == "00" and transaction_status == "00":
         # Payment successful — update status
         try:
             dao_orders.update_payment_status(order_id=order_id, payment_status="paid", transaction_ref=txn_ref)
-            logger.info(f"VNPay IPN: Payment success for order_id={order_id}, txn_ref={txn_ref}")
+            logger.warning(f"VNPay IPN: Payment success for order_id={order_id}, txn_ref={txn_ref}")
             return JSONResponse(content={"RspCode": "00", "Message": "Confirm Success"})
         except Exception as e:
-            logger.error(f"VNPay IPN: Failed to update order: {e}")
+            logger.warning(f"VNPay IPN: Failed to update order: {e}")
             return JSONResponse(content={"RspCode": "99", "Message": "Unknown error"})
     else:
         logger.warning(f"VNPay IPN: Payment failed. ResponseCode={response_code}, TxnRef={txn_ref}")

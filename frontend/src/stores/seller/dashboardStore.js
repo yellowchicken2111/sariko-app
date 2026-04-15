@@ -4,7 +4,9 @@ import apiSellerDashboard from "@/apis/sellers/apiSellerDashboard";
 export const useDashboardStore = defineStore("dashboardStore", {
     state() {
         return {
+            sellerId: null,
             orders: [],
+            orderDetails: null,
             isLoading: false,
             selectedFilter: 'new',
         }
@@ -41,12 +43,33 @@ export const useDashboardStore = defineStore("dashboardStore", {
     },
 
     actions: {
+
+        async fetchSellerInfo() {
+            try {
+                const res = await apiSellerDashboard.getSellerInfo()
+                this.sellerId = res.seller_id
+            } catch (e) {
+                console.error('dashboardStore - fetchSellerInfo -', e)
+            }
+        },
+
         async fetchOrders() {
             if (this.isLoading) return
             this.isLoading = true
             try {
                 const res = await apiSellerDashboard.getOrders()
                 this.orders = res.orders || []
+            } catch (e) {
+                console.error('dashboardStore - fetchOrders -', e)
+            } finally {
+                this.isLoading = false
+            }
+        },
+
+        async fetchOrderDetails(orderId) {
+            try {
+                const res = await apiSellerDashboard.getOrderDetail(orderId)
+                this.orderDetails = res.order || null
             } catch (e) {
                 console.error('dashboardStore - fetchOrders -', e)
             } finally {
