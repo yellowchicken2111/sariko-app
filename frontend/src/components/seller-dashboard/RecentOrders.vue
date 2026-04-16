@@ -1,4 +1,5 @@
 <script>
+import { useId } from "vue";
 import { supabase } from '@/lib/supabase';
 import { Check, X, Filter } from 'lucide-vue-next';
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -211,6 +212,7 @@ export default {
         listenOrders() {
             if (!this.sellerId) return
 
+            const channelName = `buyer-orders-${userId}-${useId()}`
             this.channel = supabase
             .channel(`seller-orders-${this.sellerId}`)
             .on('postgres_changes',
@@ -236,7 +238,7 @@ export default {
                 }
             )
             .subscribe((status, err) => {
-                console.log('Status:', status)
+                console.log('Seller realtime status:', status)
                 if (err) console.error('Seller realtime error:', err)
             })
         },

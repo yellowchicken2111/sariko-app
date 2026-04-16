@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useId } from "vue";
 import { supabase } from "@/lib/supabase";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
 
@@ -60,10 +61,10 @@ export const useDeliveryStore = defineStore("deliveryStore", {
             } catch (e) {
                 console.error('deliveryStore - startWatching initial fetch -', e)
             }
-
             // Supabase realtime: listen for changes on deliveries table for this order
+            const channelName = `delivery-${orderId}-${useId()}`
             this._channel = supabase
-                .channel(`delivery-${orderId}`)
+                .channel(channelName)
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
@@ -80,7 +81,10 @@ export const useDeliveryStore = defineStore("deliveryStore", {
                         share_link:   d.share_link,
                     }
                 })
-                .subscribe()
+                .subscribe((status, err) => {
+                    console.log('Delivery realtime subscribe status:', status)
+                    if (err) console.error('Delivery realtime error:', err)
+                })
         },
 
         stopWatching() {

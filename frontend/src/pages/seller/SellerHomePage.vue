@@ -1,4 +1,5 @@
 <script>
+import { useId } from "vue";
 import { mapActions } from 'pinia';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import { useAuthStore } from '@/stores/auth/authStore';
@@ -63,8 +64,10 @@ export default {
         listenOrders() {
             const sellerId = useAuthStore().sellerId
             if (!sellerId) return
+            
+            const channelName = `seller-home-${sellerId}-${useId()}`
             this.channel = supabase
-                .channel(`seller-home-${sellerId}`)
+                .channel(channelName)
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
@@ -72,9 +75,9 @@ export default {
                     filter: `seller_id=eq.${sellerId}`
                 }, () => this.debouncedFetch())
                 .subscribe((status, err) => {
-                console.log('Realtime Seller Action Today:', status)
-                if (err) console.error('Seller realtime error:', err)
-            })
+                    console.log(`Realtime channel ${channelName} status: `, status)
+                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
+                })
         },
 
         cleanup() {
