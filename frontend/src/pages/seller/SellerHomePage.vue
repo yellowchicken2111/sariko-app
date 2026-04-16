@@ -71,7 +71,10 @@ export default {
                     table: 'orders',
                     filter: `seller_id=eq.${sellerId}`
                 }, () => this.debouncedFetch())
-                .subscribe()
+                .subscribe((status, err) => {
+                console.log('Realtime Seller Action Today:', status)
+                if (err) console.error('Seller realtime error:', err)
+            })
         },
 
         cleanup() {
