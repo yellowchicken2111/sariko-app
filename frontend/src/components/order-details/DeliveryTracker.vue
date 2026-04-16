@@ -22,6 +22,9 @@ export default {
         currentStatus() {
             return this.delivery?.status || 'ASSIGNING_DRIVER'
         },
+        isCancelled() {
+            return ['CANCELLED', 'CANCELED', 'REJECTED', 'EXPIRED'].includes(this.currentStatus)
+        },
         currentStepIndex() {
             const idx = STEPS.findIndex(s => s.key === this.currentStatus)
             return idx >= 0 ? idx : 0
@@ -65,8 +68,13 @@ export default {
 
         <div class="tracker-title">{{ $t('delivery_tracker.title') }}</div>
 
+        <!-- Cancelled state -->
+        <div v-if="isCancelled" class="cancelled-notice">
+            {{ $t('delivery_tracker.status_CANCELLED') }}
+        </div>
+
         <!-- Status Timeline -->
-        <div class="timeline">
+        <div v-else class="timeline">
             <div
                 v-for="(step, i) in steps"
                 :key="step.key"
@@ -244,6 +252,17 @@ export default {
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.cancelled-notice {
+    text-align: center;
+    padding: 16px;
+    color: #f87171;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(248, 113, 113, 0.1);
+    border-radius: 10px;
+    margin-bottom: 12px;
 }
 
 /* Tracking Button */

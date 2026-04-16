@@ -23,8 +23,12 @@ export default {
             return this.$t('seller_home.greeting_evening', { name })
         },
 
+        dateLocale() {
+            return this.$i18n.locale === 'vi' ? 'vi-VN' : 'en-PH'
+        },
+
         dateText() {
-            return this.now.toLocaleDateString('vi-VN', {
+            return this.now.toLocaleDateString(this.dateLocale, {
                 weekday: 'long',
                 day: '2-digit',
                 month: '2-digit',
@@ -33,7 +37,7 @@ export default {
         },
 
         timeText() {
-            return this.now.toLocaleTimeString('vi-VN', {
+            return this.now.toLocaleTimeString(this.dateLocale, {
                 hour: '2-digit',
                 minute: '2-digit',
             })

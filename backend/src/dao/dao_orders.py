@@ -165,7 +165,7 @@ class DAOOrders(DAOBase):
         """Read order with seller profile coords for delivery booking."""
         try:
             result = self._supabase_client.table(self._table_name) \
-                .select("id, user_id, seller_id, status, delivery_method, delivery_address, delivery_lat, delivery_lon, quotation_id, delivery_fee, seller_profiles(store_name, address, lat, lon), users(name, phone, email)") \
+                .select("id, user_id, seller_id, status, delivery_method, delivery_address, delivery_lat, delivery_lon, quotation_id, delivery_fee, seller_profiles(store_name, address, lat, lon, phone), users(name, phone, email)") \
                 .eq("id", order_id) \
                 .maybe_single() \
                 .execute()

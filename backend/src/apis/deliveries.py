@@ -1,7 +1,9 @@
+import hashlib
+import hmac
+import json
 import logging
-from datetime import datetime, timezone
-
-from fastapi import APIRouter, HTTPException, Depends, Request, status
+import os
+from fastapi import APIRouter, HTTPException, Depends, Request
 
 from core.auth import verify_token
 from dao.dao_deliveries import DAODeliveries
@@ -43,6 +45,8 @@ def get_quotation(body: RequestQuotation, user=Depends(verify_token)):
         return {
             "success": True,
             "quotation_id": result.quotation_id,
+            "stop_id_0": result.stop_id_0,
+            "stop_id_1": result.stop_id_1,
             "total_fee": result.total_fee,
             "currency": result.currency,
             "distance_km": result.distance_km,
@@ -56,12 +60,12 @@ def get_quotation(body: RequestQuotation, user=Depends(verify_token)):
 
 
 # --------------------------------------------------------------------------
-# GET /deliveries/{order_id}/status — poll delivery status (buyer)
+# GET /deliveries/{order_id}/status — read delivery status from DB (buyer)
+# Webhook updates the DB; frontend uses Supabase realtime — no Lalamove API call needed here
 # --------------------------------------------------------------------------
 @router.get("/{order_id}/status")
 def get_delivery_status(order_id: str, user=Depends(verify_token)):
     try:
-        # Verify the order belongs to this user
         dao_orders = DAOOrders()
         order = dao_orders.read_order_by_id(order_id, user["id"])
         if not order:
@@ -71,50 +75,6 @@ def get_delivery_status(order_id: str, user=Depends(verify_token)):
         delivery = dao_deliveries.read_delivery_by_order_id(order_id)
         if not delivery:
             return {"success": True, "delivery": None}
-
-        # In mock mode, compute status from elapsed time
-        service = get_lalamove_service()
-        lalamove_order_id = delivery.get("lalamove_order_id")
-        created_at_str = delivery.get("created_at")
-
-        if lalamove_order_id and created_at_str:
-            if isinstance(created_at_str, str):
-                created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
-            else:
-                created_at = created_at_str
-
-            result = service.get_order(lalamove_order_id, created_at)
-
-            # Update delivery row with latest status
-            update_data = {"status": result.status}
-            if result.driver_name:
-                update_data["driver_name"] = result.driver_name
-            if result.driver_phone:
-                update_data["driver_phone"] = result.driver_phone
-            if result.driver_plate:
-                update_data["driver_plate"] = result.driver_plate
-            if result.tracking_url:
-                update_data["tracking_url"] = result.tracking_url
-            if result.share_link:
-                update_data["share_link"] = result.share_link
-
-            dao_deliveries.update_delivery(delivery["id"], update_data)
-
-            # If completed, also mark order as done
-            if result.status == "COMPLETED" and order.get("status") != "done":
-                dao_orders.update_order_status(order_id, "done")
-
-            return {
-                "success": True,
-                "delivery": {
-                    "status": result.status,
-                    "driver_name": result.driver_name,
-                    "driver_phone": result.driver_phone,
-                    "driver_plate": result.driver_plate,
-                    "tracking_url": result.tracking_url,
-                    "share_link": result.share_link,
-                }
-            }
 
         return {
             "success": True,
@@ -136,54 +96,109 @@ def get_delivery_status(order_id: str, user=Depends(verify_token)):
 
 
 # --------------------------------------------------------------------------
-# POST /deliveries/webhook — Lalamove status callback (public)
+# POST /deliveries/webhook — Lalamove status callback (public, v3)
 # --------------------------------------------------------------------------
 @router.post("/webhook")
 async def delivery_webhook(request: Request):
     try:
-        body = await request.json()
-        lalamove_order_id = body.get("orderId")
-        new_status = body.get("status")
+        # Read raw bytes first — needed for exact HMAC verification
+        raw_body = await request.body()
+        body = json.loads(raw_body)
+
+        api_key    = body.get("apiKey", "")
+        timestamp  = body.get("timestamp", 0)
+        signature  = body.get("signature", "")
+        event_type = body.get("eventType", "")
+        data       = body.get("data", {})
+
+        # Signature validation — extract raw data substring to avoid re-serialize issues
+        api_secret = os.getenv("LALAMOVE_API_SECRET", "")
+        if api_secret:
+            if api_key != os.getenv("LALAMOVE_API_KEY", ""):
+                logger.warning(f"Webhook: apiKey mismatch ({api_key[:10]}...)")
+                return {"success": False, "detail": "Invalid apiKey"}
+
+            # Extract the raw "data" value from the original body bytes
+            # so we sign exactly what Lalamove signed (no re-serialization risk)
+            raw_str   = raw_body.decode("utf-8")
+            data_start = raw_str.index('"data"') + len('"data"')
+            # skip whitespace and ':'
+            i = data_start
+            while i < len(raw_str) and raw_str[i] in ' \t\r\n:':
+                i += 1
+            # extract balanced JSON object/array
+            depth, in_str, escape = 0, False, False
+            start = i
+            while i < len(raw_str):
+                c = raw_str[i]
+                if escape:
+                    escape = False
+                elif c == '\\' and in_str:
+                    escape = True
+                elif c == '"':
+                    in_str = not in_str
+                elif not in_str:
+                    if c in '{[':
+                        depth += 1
+                    elif c in '}]':
+                        depth -= 1
+                        if depth == 0:
+                            break
+                i += 1
+            raw_data_str = raw_str[start:i + 1]
+
+            path = request.url.path
+            raw  = f"{timestamp}\r\nPOST\r\n{path}\r\n\r\n{raw_data_str}"
+            expected = hmac.new(api_secret.encode(), raw.encode(), hashlib.sha256).hexdigest()
+            if not hmac.compare_digest(expected, signature):
+                logger.warning(f"Webhook: signature mismatch. path={path}")
+                return {"success": False, "detail": "Invalid signature"}
+
+        # v3 payload: data.order holds the order fields
+        order_data  = data.get("order", {})
+        driver_data = data.get("driver", {})
+
+        lalamove_order_id = order_data.get("orderId")
+        new_status        = order_data.get("status")
 
         if not lalamove_order_id or not new_status:
-            raise HTTPException(status_code=400, detail="Missing orderId or status")
+            logger.warning(f"Webhook: missing orderId or status in payload (eventType={event_type})")
+            return {"success": True}  # 200 so Lalamove doesn't retry malformed events
 
         dao_deliveries = DAODeliveries()
         delivery = dao_deliveries.read_delivery_by_lalamove_order_id(lalamove_order_id)
         if not delivery:
-            logger.warning(f"Webhook: delivery not found for lalamove_order_id={lalamove_order_id}")
-            return {"success": False, "detail": "Delivery not found"}
-
-        # Extract driver info from webhook payload
-        driver_data = body.get("data", {})
-        driver_info = driver_data.get("driver", {})
+            logger.warning(f"Webhook: no delivery row for lalamove_order_id={lalamove_order_id}")
+            return {"success": True}  # 200 — unknown order, don't retry
 
         update_data = {"status": new_status}
-        if driver_info.get("name"):
-            update_data["driver_name"] = driver_info["name"]
-        if driver_info.get("phone"):
-            update_data["driver_phone"] = driver_info["phone"]
-        if driver_info.get("plateNumber"):
-            update_data["driver_plate"] = driver_info["plateNumber"]
-        if driver_data.get("shareLink"):
-            update_data["share_link"] = driver_data["shareLink"]
-        if driver_data.get("trackingUrl"):
-            update_data["tracking_url"] = driver_data["trackingUrl"]
+
+        # Driver info present in DRIVER_ASSIGNED and some ORDER_STATUS_CHANGED events
+        if driver_data.get("name"):
+            update_data["driver_name"] = driver_data["name"]
+        if driver_data.get("phone"):
+            update_data["driver_phone"] = driver_data["phone"]
+        if driver_data.get("plateNumber"):
+            update_data["driver_plate"] = driver_data["plateNumber"]
+        if order_data.get("shareLink"):
+            update_data["share_link"] = order_data["shareLink"]
 
         dao_deliveries.update_delivery(delivery["id"], update_data)
+        logger.warning(f"[Webhook] {event_type} → order={lalamove_order_id} status={new_status}")
 
-        # If completed, mark order as done
+        # Terminal status → update our order
         if new_status == "COMPLETED":
             dao_orders = DAOOrders()
             dao_orders.update_order_status(delivery["order_id"], "done")
+        elif new_status in ("CANCELED", "CANCELLED", "REJECTED", "EXPIRED"):
+            dao_deliveries.update_delivery(delivery["id"], {"status": "CANCELLED"})
 
         return {"success": True}
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.exception(f"Exception in POST /deliveries/webhook: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        # Still return 200 to avoid Lalamove retry storms on our own bugs
+        return {"success": False, "detail": "Internal error"}
 
 
 # --------------------------------------------------------------------------

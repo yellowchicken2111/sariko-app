@@ -44,7 +44,6 @@ create table public.seller_profiles (
   id uuid not null default gen_random_uuid (),
   user_id uuid null,
   store_name text not null,
-  slug text not null,
   description text null,
   avatar_url text null,
   cover_url text null,
@@ -56,12 +55,14 @@ create table public.seller_profiles (
   closing_time time without time zone null,
   is_verified boolean null default false,
   created_at timestamp without time zone null default now(),
+  slug text not null,
+  phone text null,
   constraint seller_profiles_pkey primary key (id),
   constraint seller_profiles_slug_key unique (slug),
-  constraint seller_profiles_user_id_fkey foreign key (user_id) references users (id) on delete cascade
+  constraint seller_profiles_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
-create index if not exists idx_seller_location on public.seller_profiles using btree (lat, lon) TABLESPACE pg_default;
+create index IF not exists idx_seller_location on public.seller_profiles using btree (lat, lon) TABLESPACE pg_default;
 
 -- 4. MENU CATEGORIES
 create table public.menu_categories (
@@ -235,3 +236,7 @@ create table public.deliveries (
   constraint deliveries_pkey primary key (id),
   constraint deliveries_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;
+
+create index IF not exists idx_deliveries_order_id on public.deliveries using btree (order_id) TABLESPACE pg_default;
+
+create index IF not exists idx_deliveries_lalamove_order_id on public.deliveries using btree (lalamove_order_id) TABLESPACE pg_default;

@@ -10,14 +10,14 @@ export default {
 
         stats() {
             const today = new Date().toDateString()
-            const t = this.orders.filter(o => new Date(o.created_at).toDateString() === today)
-            const salesTotal = t
+            const todayOrders = this.orders.filter(o => new Date(o.created_at).toDateString() === today)
+            const salesTotal = todayOrders
                 .filter(o => o.status === 'done')
                 .reduce((sum, o) => sum + (o.total_amount || 0), 0)
             return [
-                { icon: '🔔', value: t.filter(o => o.status === 'pending').length,   label: this.$t('seller_home.stat_label_new') },
-                { icon: '🍳', value: t.filter(o => o.status === 'confirmed').length, label: this.$t('seller_home.stat_label_preparing') },
-                { icon: '✅', value: t.filter(o => o.status === 'done').length,      label: this.$t('seller_home.stat_label_done') },
+                { icon: '🔔', value: this.orders.filter(o => o.status === 'pending').length,   label: this.$t('seller_home.stat_label_new') },
+                { icon: '🍳', value: this.orders.filter(o => o.status === 'confirmed').length, label: this.$t('seller_home.stat_label_preparing') },
+                { icon: '✅', value: todayOrders.filter(o => o.status === 'done').length,      label: this.$t('seller_home.stat_label_done') },
                 { icon: '💰', value: new Intl.NumberFormat('vi-VN').format(salesTotal) + ' ₫', label: this.$t('seller_home.stat_label_sales'), isSales: true },
             ]
         },

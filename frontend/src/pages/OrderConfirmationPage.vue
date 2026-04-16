@@ -39,9 +39,9 @@ export default {
     watch: {
         shouldTrackDelivery(val) {
             if (val) {
-                useDeliveryStore().startPolling(this.orderId)
+                useDeliveryStore().startWatching(this.orderId)
             } else {
-                useDeliveryStore().stopPolling()
+                useDeliveryStore().stopWatching()
             }
         }
     },
@@ -50,14 +50,13 @@ export default {
         const orderStore = useOrderStore()
         await orderStore.getOrderDetail(this.orderId)
 
-        // Start delivery polling if order is ready + delivery
         if (this.shouldTrackDelivery) {
-            useDeliveryStore().startPolling(this.orderId)
+            useDeliveryStore().startWatching(this.orderId)
         }
     },
 
     beforeUnmount() {
-        useDeliveryStore().stopPolling()
+        useDeliveryStore().stopWatching()
     }
 }
 </script>

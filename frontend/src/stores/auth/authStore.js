@@ -222,7 +222,8 @@ export const useAuthStore = defineStore("authStore", {
                     progress: true,
                     position: "bottom",
                 });
-                const redirect = router.currentRoute.value.query.redirect || '/home';
+                const defaultRoute = this.user?.isSeller ? '/seller/home' : '/home'
+                const redirect = router.currentRoute.value.query.redirect || defaultRoute;
                 router.push(redirect);
 
             } catch (error) {

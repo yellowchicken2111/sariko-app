@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { supabase } from "@/lib/supabase";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
 
 export const useDeliveryStore = defineStore("deliveryStore", {
@@ -7,7 +8,7 @@ export const useDeliveryStore = defineStore("deliveryStore", {
             quotation: null,         // { quotation_id, total_fee, currency, distance_km }
             currentDelivery: null,   // { status, driver_name, driver_phone, driver_plate, tracking_url, share_link }
             quotationLoading: false,
-            _pollingTimer: null,
+            _channel: null,
         }
     },
 
@@ -46,41 +47,51 @@ export const useDeliveryStore = defineStore("deliveryStore", {
             }
         },
 
-        async pollOnce(orderId) {
+        // Load initial delivery state from backend, then subscribe to realtime
+        async startWatching(orderId) {
+            this.stopWatching()
+
+            // Initial fetch from DB
             try {
                 const res = await apiDeliveries.getDeliveryStatus(orderId)
                 if (res?.success && res.delivery) {
                     this.currentDelivery = res.delivery
-
-                    // Stop polling when terminal status
-                    if (res.delivery.status === 'COMPLETED' || res.delivery.status === 'CANCELLED') {
-                        this.stopPolling()
-                    }
                 }
             } catch (e) {
-                console.error('deliveryStore - pollOnce -', e)
+                console.error('deliveryStore - startWatching initial fetch -', e)
             }
+
+            // Supabase realtime: listen for changes on deliveries table for this order
+            this._channel = supabase
+                .channel(`delivery-${orderId}`)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'deliveries',
+                    filter: `order_id=eq.${orderId}`,
+                }, (payload) => {
+                    const d = payload.new
+                    this.currentDelivery = {
+                        status:       d.status,
+                        driver_name:  d.driver_name,
+                        driver_phone: d.driver_phone,
+                        driver_plate: d.driver_plate,
+                        tracking_url: d.tracking_url,
+                        share_link:   d.share_link,
+                    }
+                })
+                .subscribe()
         },
 
-        startPolling(orderId) {
-            this.stopPolling()
-            // Initial poll immediately
-            this.pollOnce(orderId)
-            // Then every 15 seconds
-            this._pollingTimer = setInterval(() => {
-                this.pollOnce(orderId)
-            }, 15000)
-        },
-
-        stopPolling() {
-            if (this._pollingTimer) {
-                clearInterval(this._pollingTimer)
-                this._pollingTimer = null
+        stopWatching() {
+            if (this._channel) {
+                supabase.removeChannel(this._channel)
+                this._channel = null
             }
         },
 
         reset() {
-            this.stopPolling()
+            this.stopWatching()
             this.quotation = null
             this.currentDelivery = null
             this.quotationLoading = false
