@@ -283,16 +283,20 @@
         "status_preparing": "Preparing",
         "action_accept": "Accept",
         "action_mark_ready": "Mark Ready",
+        "action_ready_delivery": "Ready for Delivery",
         "action_reject": "Reject",
         "reject_dialog_title": "Reject Order",
         "reject_dialog_sub": "Select a reason",
         "reject_reason_placeholder": "Describe the reason...",
         "reject_confirm": "Confirm Reject",
         "toast_order_accepted": "Order accepted!",
-        "toast_order_ready": "Order marked ready!",
+        "toast_order_ready": "Delivery booked!",
         "toast_order_rejected": "Order rejected.",
         "toast_update_failed": "Failed to update order",
-        "toast_reject_failed": "Failed to reject order"
+        "toast_reject_failed": "Failed to reject order",
+        "error_missing_info": "Cannot mark ready — missing info",
+        "missing_address": "Store address is not set",
+        "missing_phone": "Phone number is not set"
     },
     "seller_orders": {
         "filter_all": "All",

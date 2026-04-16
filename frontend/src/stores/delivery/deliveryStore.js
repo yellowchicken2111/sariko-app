@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { useId } from "vue";
 import { supabase } from "@/lib/supabase";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
 
@@ -28,11 +27,11 @@ export const useDeliveryStore = defineStore("deliveryStore", {
     },
 
     actions: {
-        async getQuotation(sellerId, deliveryLat, deliveryLon) {
+        async getQuotation(sellerId, deliveryLat, deliveryLon, deliveryAddress) {
             this.quotationLoading = true
             this.quotation = null
             try {
-                const res = await apiDeliveries.getQuotation(sellerId, deliveryLat, deliveryLon)
+                const res = await apiDeliveries.getQuotation(sellerId, deliveryLat, deliveryLon, deliveryAddress)
                 if (res?.success) {
                     this.quotation = {
                         quotation_id: res.quotation_id,
@@ -62,7 +61,7 @@ export const useDeliveryStore = defineStore("deliveryStore", {
                 console.error('deliveryStore - startWatching initial fetch -', e)
             }
             // Supabase realtime: listen for changes on deliveries table for this order
-            const channelName = `delivery-${orderId}-${useId()}`
+            const channelName = `delivery-${orderId}-${Math.random().toString(36).slice(2, 8)}`
             this._channel = supabase
                 .channel(channelName)
                 .on('postgres_changes', {

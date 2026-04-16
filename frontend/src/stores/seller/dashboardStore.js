@@ -5,6 +5,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
     state() {
         return {
             sellerId: null,
+            sellerInfo: null,   // { store_name, address, phone, has_address, has_phone }
             orders: [],
             orderDetails: null,
             isLoading: false,
@@ -48,6 +49,13 @@ export const useDashboardStore = defineStore("dashboardStore", {
             try {
                 const res = await apiSellerDashboard.getSellerInfo()
                 this.sellerId = res.seller_id
+                this.sellerInfo = {
+                    store_name: res.store_name,
+                    address: res.address,
+                    phone: res.phone,
+                    has_address: res.has_address,
+                    has_phone: res.has_phone,
+                }
             } catch (e) {
                 console.error('dashboardStore - fetchSellerInfo -', e)
             }

@@ -1,5 +1,4 @@
 <script>
-import { useId } from "vue";
 import { mapState } from 'pinia';
 import { supabase } from '@/lib/supabase';
 import { useOrderStore } from '@/stores/order/orderStore';
@@ -76,7 +75,7 @@ export default {
             const userId = this.authUser?.id || useAuthStore().session?.user?.id
             if (!userId) return
             
-            const channelName = `buyer-orders-${userId}-${useId()}`
+            const channelName = `buyer-orders-${userId}-${Math.random().toString(36).slice(2, 8)}`
             this.channel = supabase
                 .channel(channelName)
                 .on('postgres_changes',

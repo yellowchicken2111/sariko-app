@@ -1,5 +1,4 @@
 <script>
-import { useId } from "vue";
 import { mapActions } from 'pinia';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import { useAuthStore } from '@/stores/auth/authStore';
@@ -51,7 +50,7 @@ export default {
     },
 
     methods: {
-        ...mapActions(useDashboardStore, ['fetchOrders']),
+        ...mapActions(useDashboardStore, ['fetchOrders', 'fetchSellerInfo']),
 
         debouncedFetch() {
             if (this.fetchDebounceTimer) return
@@ -65,7 +64,7 @@ export default {
             const sellerId = useAuthStore().sellerId
             if (!sellerId) return
             
-            const channelName = `seller-home-${sellerId}-${useId()}`
+            const channelName = `seller-home-${sellerId}-${Math.random().toString(36).slice(2, 8)}`
             this.channel = supabase
                 .channel(channelName)
                 .on('postgres_changes', {
@@ -87,7 +86,7 @@ export default {
     },
 
     async mounted() {
-        await this.fetchOrders()
+        await Promise.all([this.fetchOrders(), this.fetchSellerInfo()])
         this.listenOrders()
     },
 

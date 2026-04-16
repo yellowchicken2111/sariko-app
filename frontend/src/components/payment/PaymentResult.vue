@@ -55,7 +55,7 @@ export default {
 
         listenPaymentStatus() {
             this.channel = supabase
-            .channel(`payment-${this.orderId}`)
+            .channel(`payment-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`)
             .on(
                 'postgres_changes',
                 {

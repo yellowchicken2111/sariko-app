@@ -36,10 +36,10 @@ def get_quotation(body: RequestQuotation, user=Depends(verify_token)):
         result = service.get_quotation(
             pickup_lat=float(seller_lat),
             pickup_lon=float(seller_lon),
-            pickup_address=seller.get("address", ""),
+            pickup_address=seller.get("address") or "Pickup",
             dropoff_lat=body.delivery_lat,
             dropoff_lon=body.delivery_lon,
-            dropoff_address="",
+            dropoff_address=body.delivery_address,
         )
 
         return {

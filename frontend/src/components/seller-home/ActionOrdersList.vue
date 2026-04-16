@@ -1,5 +1,5 @@
 <script>
-import { Check, X } from 'lucide-vue-next';
+import { Check, X, AlertTriangle } from 'lucide-vue-next';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
 
@@ -23,7 +23,7 @@ const REJECT_REASONS = [
 export default {
     name: 'ActionOrdersList',
 
-    components: { Check, X },
+    components: { Check, X, AlertTriangle },
 
     props: {
         orders: {
@@ -39,10 +39,16 @@ export default {
             selectedReason: '',
             customReason: '',
             rejecting: false,
+            orderErrors: {},   // { [orderId]: string[] } — inline error messages per order
+            loadingOrders: {},  // { [orderId]: true } — per-order loading state
         }
     },
 
     computed: {
+        sellerInfo() {
+            return useDashboardStore().sellerInfo
+        },
+
         displayOrders() {
             return this.orders.map(order => ({
                 ...order,
@@ -51,7 +57,7 @@ export default {
                 items: order.order_items || [],
                 totalText: new Intl.NumberFormat('vi-VN').format(order.total_amount || 0) + ' ₫',
                 time: new Date(order.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                nextLabel: STATUS_NEXT[order.status] === 'confirmed' ? this.$t('seller_home.action_accept') : this.$t('seller_home.action_mark_ready'),
+                nextLabel: STATUS_NEXT[order.status] === 'confirmed' ? this.$t('seller_home.action_accept') : this.$t('seller_home.action_ready_delivery'),
             }))
         },
 
@@ -75,21 +81,56 @@ export default {
     },
 
     methods: {
+        t(key, fallback) {
+            if (typeof this.$t === 'function') return this.$t(key)
+            return fallback || key
+        },
+
+        checkSellerReadiness() {
+            const missing = []
+            if (!this.sellerInfo?.has_address) missing.push(this.t('seller_home.missing_address', 'Store address is missing'))
+            if (!this.sellerInfo?.has_phone) missing.push(this.t('seller_home.missing_phone', 'Phone number is missing'))
+            return missing
+        },
+
+        clearError(orderId) {
+            delete this.orderErrors[orderId]
+        },
+
         async onAccept(order) {
             const nextStatus = STATUS_NEXT[order.status]
             if (!nextStatus) return
+            if (this.loadingOrders[order.id]) return
+
+            // Pre-flight check: when marking ready (triggers Lalamove), validate seller info
+            if (nextStatus === 'ready' && order.delivery_method === 'delivery') {
+                const missing = this.checkSellerReadiness()
+                if (missing.length > 0) {
+                    this.orderErrors = { ...this.orderErrors, [order.id]: missing }
+                    return
+                }
+            }
+            this.clearError(order.id)
+            this.loadingOrders = { ...this.loadingOrders, [order.id]: true }
+
             try {
                 await apiSellerDashboard.updateOrderStatus(order.id, nextStatus)
                 useDashboardStore().updateOrderLocally(order.id, nextStatus)
                 this.$q.notify({
                     classes: 'quasar-notify-positive',
-                    message: nextStatus === 'confirmed' ? this.$t('seller_home.toast_order_accepted') : this.$t('seller_home.toast_order_ready'),
+                    message: nextStatus === 'confirmed'
+                        ? this.t('seller_home.toast_order_accepted', 'Order accepted!')
+                        : this.t('seller_home.toast_order_ready', 'Delivery booked!'),
                     position: 'bottom',
                     timeout: 1500,
                 })
             } catch (e) {
                 console.error('ActionOrdersList - onAccept -', e)
-                this.$q.notify({ type: 'negative', message: this.$t('seller_home.toast_update_failed'), position: 'bottom' })
+                const errorMsg = e?.response?.data?.detail || this.t('seller_home.toast_update_failed', 'Failed to update order')
+                this.orderErrors = { ...this.orderErrors, [order.id]: [errorMsg] }
+            } finally {
+                const { [order.id]: _, ...rest } = this.loadingOrders
+                this.loadingOrders = rest
             }
         },
 
@@ -113,13 +154,17 @@ export default {
                 this.showRejectDialog = false
                 this.$q.notify({
                     classes: 'quasar-notify-positive',
-                    message: this.$t('seller_home.toast_order_rejected'),
+                    message: this.t('seller_home.toast_order_rejected', 'Order rejected.'),
                     position: 'bottom',
                     timeout: 1500,
                 })
             } catch (e) {
                 console.error('ActionOrdersList - confirmReject -', e)
-                this.$q.notify({ type: 'negative', message: this.$t('seller_home.toast_reject_failed'), position: 'bottom' })
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.t('seller_home.toast_reject_failed', 'Failed to reject order'),
+                    position: 'bottom',
+                })
             } finally {
                 this.rejecting = false
             }
@@ -170,11 +215,22 @@ export default {
                     <span class="total-value">{{ order.totalText }}</span>
                 </div>
 
+                <!-- Inline error card -->
+                <div v-if="orderErrors[order.id]" class="error-card">
+                    <div class="error-card__header">
+                        <AlertTriangle :size="16" />
+                        <span>{{ $t('seller_home.error_missing_info') }}</span>
+                    </div>
+                    <ul class="error-card__list">
+                        <li v-for="(msg, i) in orderErrors[order.id]" :key="i">{{ msg }}</li>
+                    </ul>
+                </div>
+
                 <div class="order-actions">
-                    <q-btn flat dense no-caps class="btn-reject" @click="openRejectDialog(order)">
+                    <q-btn flat dense no-caps class="btn-reject" :disable="!!loadingOrders[order.id]" @click="openRejectDialog(order)">
                         <X :size="14" style="margin-right: 4px;" /> {{ $t('seller_home.action_reject') }}
                     </q-btn>
-                    <q-btn unelevated dense no-caps class="btn-accept" @click="onAccept(order)">
+                    <q-btn unelevated dense no-caps class="btn-accept" :loading="!!loadingOrders[order.id]" @click="onAccept(order)">
                         <Check :size="14" style="margin-right: 4px;" /> {{ order.nextLabel }}
                     </q-btn>
                 </div>
@@ -339,6 +395,33 @@ export default {
     font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
+}
+
+/* Inline error card */
+.error-card {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.error-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.error-card__list {
+    margin: 0;
+    padding-left: 20px;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 12px;
+    line-height: 1.6;
 }
 
 .order-actions {

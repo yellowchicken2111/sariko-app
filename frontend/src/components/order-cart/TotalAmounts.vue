@@ -108,8 +108,9 @@ export default {
             const lat = authStore.inputLat
             const lon = authStore.inputLon
             const sellerId = this.cart?.seller_id
-            if (sellerId && lat && lon) {
-                this.deliveryStore.getQuotation(sellerId, lat, lon)
+            const address = authStore.inputAddress
+            if (sellerId && lat && lon && address) {
+                this.deliveryStore.getQuotation(sellerId, lat, lon, address)
             }
         }
     }

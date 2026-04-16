@@ -12,6 +12,18 @@ from schemas.request_schemas import RequestUpdateOrderStatus
 router = APIRouter(prefix="/sellers")
 logger = logging.getLogger(__name__)
 
+def _to_e164(phone: str) -> str:
+    """Convert Vietnamese phone number to E.164 format (+84...)."""
+    if not phone:
+        return "+84900000000"
+    phone = phone.strip().replace(" ", "").replace("-", "")
+    if phone.startswith("+"):
+        return phone
+    if phone.startswith("0"):
+        return "+84" + phone[1:]
+    return "+84" + phone
+
+
 VALID_STATUS_TRANSITIONS = {
     "pending": ["confirmed", "cancelled"],
     "confirmed": ["ready", "cancelled"],
@@ -46,8 +58,19 @@ def _get_seller_id(user):
 @router.get("/me")
 def get_seller_info(user=Depends(verify_token)):
     try:
-        seller_id = _get_seller_id(user)
-        return {"success": True, "seller_id": seller_id}
+        dao = DAOSellerProfiles()
+        profile = dao.read_seller_profile_by_user_id(user["id"])
+        if not profile:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not a seller")
+        return {
+            "success": True,
+            "seller_id": profile["id"],
+            "store_name": profile.get("store_name"),
+            "address": profile.get("address"),
+            "phone": profile.get("phone"),
+            "has_address": bool(profile.get("address") and profile.get("lat") and profile.get("lon")),
+            "has_phone": bool(profile.get("phone")),
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -104,52 +127,63 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
 
         # Pass cancellation_reason when rejecting
         cancellation_reason = body.cancellation_reason if body.status == "cancelled" else None
-        updated = dao_orders.update_order_status(order_id, body.status, cancellation_reason)
 
-        # Auto-book Lalamove delivery when seller marks order "ready"
+        # For "ready" + delivery: book Lalamove FIRST, only update status if booking succeeds
         if body.status == "ready" and order.get("delivery_method") == "delivery":
-            try:
-                from services.lalamove_service import get_lalamove_service
-                from dao.dao_deliveries import DAODeliveries
+            from services.lalamove_service import get_lalamove_service
+            from dao.dao_deliveries import DAODeliveries
 
-                full_order = dao_orders.read_order_with_seller_coords(order_id)
-                if full_order:
-                    seller  = full_order.get("seller_profiles") or {}
-                    buyer   = full_order.get("users") or {}
-                    service = get_lalamove_service()
+            full_order = dao_orders.read_order_with_seller_coords(order_id)
+            if not full_order:
+                raise HTTPException(status_code=500, detail="Could not load order details for delivery")
 
-                    # Original quotation has expired — re-quote at booking time
-                    quotation = service.get_quotation(
-                        pickup_lat=float(seller.get("lat") or 0),
-                        pickup_lon=float(seller.get("lon") or 0),
-                        pickup_address=seller.get("address", ""),
-                        dropoff_lat=float(full_order.get("delivery_lat") or 0),
-                        dropoff_lon=float(full_order.get("delivery_lon") or 0),
-                        dropoff_address=full_order.get("delivery_address", ""),
-                    )
+            seller  = full_order.get("seller_profiles") or {}
+            buyer   = full_order.get("users") or {}
 
-                    result = service.place_order(
-                        quotation_id=quotation.quotation_id,
-                        stop_id_0=quotation.stop_id_0,
-                        stop_id_1=quotation.stop_id_1,
-                        sender_name=seller.get("store_name", "Seller"),
-                        sender_phone=seller.get("phone") or "0900000000",
-                        recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
-                        recipient_phone=buyer.get("phone") or "0900000000",
-                        recipient_remarks=full_order.get("delivery_address") or "",
-                    )
+            pickup_address  = seller.get("address") or ""
+            dropoff_address = full_order.get("delivery_address") or ""
 
-                    dao_deliveries = DAODeliveries()
-                    dao_deliveries.create_delivery(
-                        order_id=order_id,
-                        provider="lalamove",
-                        status=result.status,
-                        lalamove_order_id=result.lalamove_order_id,
-                        share_link=result.share_link,
-                    )
-                    logger.warning(f"[Delivery] Auto-booked order={order_id} lalamove={result.lalamove_order_id}")
-            except Exception as delivery_err:
-                logger.error(f"Failed to auto-book delivery for order {order_id}: {delivery_err}")
+            if not pickup_address.strip() or not dropoff_address.strip():
+                raise HTTPException(
+                    status_code=400,
+                    detail="Missing pickup or dropoff address. Please update your store address in settings."
+                )
+
+            service = get_lalamove_service()
+
+            # Re-quote (original quotation has expired)
+            quotation = service.get_quotation(
+                pickup_lat=float(seller.get("lat") or 0),
+                pickup_lon=float(seller.get("lon") or 0),
+                pickup_address=pickup_address,
+                dropoff_lat=float(full_order.get("delivery_lat") or 0),
+                dropoff_lon=float(full_order.get("delivery_lon") or 0),
+                dropoff_address=dropoff_address,
+            )
+
+            result = service.place_order(
+                quotation_id=quotation.quotation_id,
+                stop_id_0=quotation.stop_id_0,
+                stop_id_1=quotation.stop_id_1,
+                sender_name=seller.get("store_name", "Seller"),
+                sender_phone=_to_e164(seller.get("phone") or ""),
+                recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
+                recipient_phone=_to_e164(buyer.get("phone") or ""),
+                recipient_remarks=full_order.get("delivery_address") or "",
+            )
+
+            dao_deliveries = DAODeliveries()
+            dao_deliveries.create_delivery(
+                order_id=order_id,
+                provider="lalamove",
+                status=result.status,
+                lalamove_order_id=result.lalamove_order_id,
+                share_link=result.share_link,
+            )
+            logger.info(f"[Delivery] Auto-booked order={order_id} lalamove={result.lalamove_order_id}")
+
+        # Only update status after delivery booking succeeds (or if not a delivery order)
+        updated = dao_orders.update_order_status(order_id, body.status, cancellation_reason)
 
         return {"success": True, "order": updated}
     except HTTPException:

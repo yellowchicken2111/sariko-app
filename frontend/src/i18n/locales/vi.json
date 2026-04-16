@@ -283,16 +283,20 @@
         "status_preparing": "Đang làm",
         "action_accept": "Nhận đơn",
         "action_mark_ready": "Sẵn sàng",
+        "action_ready_delivery": "Sẵn sàng giao",
         "action_reject": "Từ chối",
         "reject_dialog_title": "Từ chối đơn hàng",
         "reject_dialog_sub": "Chọn lý do",
         "reject_reason_placeholder": "Mô tả lý do...",
         "reject_confirm": "Xác nhận từ chối",
         "toast_order_accepted": "Đã nhận đơn!",
-        "toast_order_ready": "Đã đánh dấu sẵn sàng!",
+        "toast_order_ready": "Đã đặt giao hàng!",
         "toast_order_rejected": "Đã từ chối đơn.",
         "toast_update_failed": "Cập nhật thất bại",
-        "toast_reject_failed": "Từ chối thất bại"
+        "toast_reject_failed": "Từ chối thất bại",
+        "error_missing_info": "Chưa thể giao — thiếu thông tin",
+        "missing_address": "Chưa cài đặt địa chỉ cửa hàng",
+        "missing_phone": "Chưa cài đặt số điện thoại"
     },
     "seller_orders": {
         "filter_all": "Tất cả",

@@ -4,7 +4,7 @@ from typing import (
     Union,
     Optional
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 # Cart API
@@ -41,6 +41,15 @@ class RequestCreateOrder(BaseModel):
     delivery_fee: Optional[float] = None
     quotation_id: Optional[str] = None
     note: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_delivery_fields(self):
+        if self.delivery_method == "delivery":
+            if not self.delivery_address or not self.delivery_address.strip():
+                raise ValueError("delivery_address is required for delivery orders")
+            if self.delivery_lat is None or self.delivery_lon is None:
+                raise ValueError("delivery_lat and delivery_lon are required for delivery orders")
+        return self
 
 # Seller Order API
 class RequestUpdateOrderStatus(BaseModel):
