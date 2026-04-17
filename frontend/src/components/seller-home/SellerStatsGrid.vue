@@ -19,16 +19,13 @@ export default {
         ...mapState(useDashboardStore, ['orders']),
 
         stats() {
-            const today = new Date().toDateString()
-            const todayOrders = this.orders.filter(o => new Date(o.created_at).toDateString() === today)
-            const salesTotal = todayOrders
-                .filter(o => o.status === 'done')
-                .reduce((sum, o) => sum + (o.total_amount || 0), 0)
+            const doneOrders = this.orders.filter(o => o.status === 'done')
+            const salesTotal = doneOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0)
 
             const values = [
                 this.orders.filter(o => o.status === 'pending').length,
                 this.orders.filter(o => o.status === 'confirmed').length,
-                todayOrders.filter(o => o.status === 'done').length,
+                doneOrders.length,
                 new Intl.NumberFormat('vi-VN').format(salesTotal) + ' ₫',
             ]
             const labelKeys = [
