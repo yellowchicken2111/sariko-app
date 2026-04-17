@@ -1,6 +1,7 @@
 <script>
 import LayoutSellerMe from '@/layouts/seller/LayoutSellerMe.vue';
 import SellerMeHeader from '@/components/seller-me/SellerMeHeader.vue';
+import SellerMeShareCard from '@/components/seller-me/SellerMeShareCard.vue';
 import SellerMeSettings from '@/components/seller-me/SellerMeSettings.vue';
 import SellerMeEarnings from '@/components/seller-me/SellerMeEarnings.vue';
 import SellerMeReviews from '@/components/seller-me/SellerMeReviews.vue';
@@ -12,6 +13,7 @@ export default {
     components: {
         LayoutSellerMe,
         SellerMeHeader,
+        SellerMeShareCard,
         SellerMeSettings,
         SellerMeEarnings,
         SellerMeReviews,
@@ -25,6 +27,10 @@ export default {
 
         <template #ProfileHeader>
             <SellerMeHeader />
+        </template>
+
+        <template #Promote>
+            <SellerMeShareCard />
         </template>
 
         <template #Settings>

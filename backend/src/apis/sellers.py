@@ -65,6 +65,7 @@ def get_seller_info(user=Depends(verify_token)):
         return {
             "success": True,
             "seller_id": profile["id"],
+            "slug": profile.get("slug"),
             "store_name": profile.get("store_name"),
             "address": profile.get("address"),
             "phone": profile.get("phone"),

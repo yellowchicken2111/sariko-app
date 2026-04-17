@@ -5,6 +5,10 @@
             <slot name="ProfileHeader" />
         </div>
 
+        <div class="promote-section">
+            <slot name="Promote" />
+        </div>
+
         <div class="settings-section">
             <slot name="Settings" />
         </div>
@@ -38,6 +42,10 @@
 }
 
 .profile-section {
+    margin-bottom: 20px;
+}
+
+.promote-section {
     margin-bottom: 20px;
 }
 

@@ -20,7 +20,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
     state() {
         return {
             sellerId: null,
-            sellerInfo: null,   // { store_name, address, phone, has_address, has_phone }
+            sellerInfo: null,   // { slug, store_name, address, phone, has_address, has_phone }
             orders: [],
             orderDetails: null,
             orderDelivery: null,
@@ -81,6 +81,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
                 const res = await apiSellerDashboard.getSellerInfo()
                 this.sellerId = res.seller_id
                 this.sellerInfo = {
+                    slug: res.slug,
                     store_name: res.store_name,
                     address: res.address,
                     phone: res.phone,
