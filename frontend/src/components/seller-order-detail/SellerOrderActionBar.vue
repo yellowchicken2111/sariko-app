@@ -193,10 +193,12 @@ export default {
                     </q-btn>
                 </template>
                 <template v-else-if="maxRebookReached">
-                    <div class="no-driver-notice">{{ $t('seller_order_detail.no_driver_notice') }}</div>
-                    <q-btn unelevated no-caps class="btn-cancel-order" :loading="rejecting" @click="onCancelDueToNoDriver">
-                        {{ $t('seller_order_detail.action_cancel_order') }}
-                    </q-btn>
+                    <div class="cancel-block">
+                        <div class="no-driver-notice">{{ $t('seller_order_detail.no_driver_notice') }}</div>
+                        <q-btn unelevated no-caps class="btn-cancel-order" :loading="rejecting" @click="onCancelDueToNoDriver">
+                            {{ $t('seller_order_detail.action_cancel_order') }}
+                        </q-btn>
+                    </div>
                 </template>
                 <!-- delivery null = auto-book failed; contact-admin notice handles messaging -->
                 <div v-else-if="delivery || order.delivery_method !== 'delivery'" class="status-message">
@@ -299,16 +301,21 @@ export default {
     padding: 12px;
 }
 
-.no-driver-notice {
+.cancel-block {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.no-driver-notice {
     font-size: 13px;
     color: #ef4444;
     text-align: center;
-    margin-bottom: 8px;
 }
 
 .btn-cancel-order {
-    flex: 1;
+    width: 100%;
     background: #ef4444;
     color: #fff;
     font-weight: 700;

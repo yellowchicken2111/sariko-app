@@ -18,6 +18,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
             orders: [],
             orderDetails: null,
             orderDelivery: null,
+            deliveryStatuses: {}, // { [orderId]: { status, rebook_count } | 'loading' | 'error' }
             isLoading: false,
             orderDetailLoading: false,
             selectedFilter: 'new',
@@ -42,6 +43,19 @@ export const useDashboardStore = defineStore("dashboardStore", {
         recentOrders(state) {
             return state.orders.slice(0, 20)
         },
+        // Count of orders that actually appear in the "Need Your Action" list
+        actionDisplayCount(state) {
+            const CANCELLED = ['CANCELED', 'REJECTED', 'EXPIRED']
+            return state.orders.filter(order => {
+                if (order.status === 'pending' || order.status === 'confirmed') return true
+                if (order.status === 'ready' && order.delivery_method === 'delivery') {
+                    const ds = state.deliveryStatuses[order.id]
+                    return ds && ds !== 'loading' && ds !== 'error' && CANCELLED.includes(ds.status)
+                }
+                return false
+            }).length
+        },
+
         filteredOrders(state) {
             const filter = state.selectedFilter
             if (filter === 'all') return state.orders
@@ -143,6 +157,20 @@ export const useDashboardStore = defineStore("dashboardStore", {
             await apiDeliveries.rebookDelivery(orderId)
             await this._fetchDelivery(orderId)
             this._startPolling(orderId)
+        },
+
+        async fetchDeliveryStatus(orderId) {
+            this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: 'loading' }
+            try {
+                const res = await apiDeliveries.getSellerDeliveryStatus(orderId)
+                this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: res.delivery }
+            } catch (e) {
+                this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: 'error' }
+            }
+        },
+
+        setDeliveryStatus(orderId, statusObj) {
+            this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: statusObj }
         },
 
         updateOrderLocally(orderId, newStatus) {

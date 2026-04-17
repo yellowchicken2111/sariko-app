@@ -363,7 +363,7 @@
         "action_rebook_delivery": "Re-book Delivery",
         "action_cancel_order": "Cancel Order",
         "no_driver_notice": "No rider found after 3 attempts",
-        "cancel_reason_no_driver": "No rider available in your area",
+        "cancel_reason_no_driver": "Unable to book delivery after 3 attempts — no rider available in your area",
         "contact_admin_notice": "There was an error with the delivery. If this keeps happening, please contact admin.",
         "toast_rebook_success": "Delivery re-booked!",
         "toast_rebook_failed": "Failed to re-book delivery",

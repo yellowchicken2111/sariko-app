@@ -1,34 +1,19 @@
 <script>
-import { House, ShoppingCart, Clipboard, Bell, CircleUserRound, LayoutDashboard } from 'lucide-vue-next';
-import { useAuthStore } from '@/stores/auth/authStore';
+import { House, ShoppingCart, Clipboard, Bell, CircleUserRound } from 'lucide-vue-next';
 import { useCartStore } from '@/stores/cart/cartStore';
 import { useOrderStore } from '@/stores/order/orderStore';
 
 export default {
     name: 'BottomNavigation',
 
-    components: {
-        House, ShoppingCart, Clipboard, Bell, CircleUserRound, LayoutDashboard
-    },
+    components: { House, ShoppingCart, Clipboard, Bell, CircleUserRound },
 
     computed: {
-        authStore() {
-            return useAuthStore()
-        },
-        cartStore() {
-            return useCartStore()
-        },
-        isSellerMode() {
-            return this.authStore.user?.isSeller && this.authStore.viewMode === 'seller'
-        },
         cartBadge() {
-            return this.cartStore.itemCount
-        },
-        orderStore() {
-            return useOrderStore()
+            return useCartStore().itemCount
         },
         unpaidBadge() {
-            return this.orderStore.unpaidCount
+            return useOrderStore().unpaidCount
         },
         isShow() {
             const path = this.$route.path
@@ -43,6 +28,7 @@ export default {
                 && !path.match(/^\/food\/.+$/)
         }
     },
+
     methods: {
         isActive(path) {
             if (path === '/home') {
@@ -61,18 +47,12 @@ export default {
 
 <template>
     <nav ref="navRef" v-show="isShow" class="bottom-nav">
-        <!-- Tab 1: Home (both modes) -->
         <router-link to="/home" class="nav-item" :class="{ active: isActive('/home') }">
             <House size="18px" />
             <div class="nav-label">{{ $t('bottom_nav.button_label_home') }}</div>
         </router-link>
 
-        <!-- Tab 2: Dashboard (seller) / Orders (buyer) -->
-        <router-link v-if="isSellerMode" to="/dashboard" class="nav-item" :class="{ active: isActive('/dashboard') }">
-            <LayoutDashboard size="18px" />
-            <div class="nav-label">{{ $t('bottom_nav.button_label_dashboard') }}</div>
-        </router-link>
-        <router-link v-else to="/orders" class="nav-item" :class="{ active: isActive('/orders') }">
+        <router-link to="/orders" class="nav-item" :class="{ active: isActive('/orders') }">
             <div class="icon-wrapper">
                 <Clipboard size="18px" />
                 <span v-if="unpaidBadge > 0" class="order-badge">{{ unpaidBadge }}</span>
@@ -80,12 +60,7 @@ export default {
             <div class="nav-label">{{ $t('bottom_nav.button_label_orders') }}</div>
         </router-link>
 
-        <!-- Tab 3: Cart (buyer) / Orders (seller) -->
-        <router-link v-if="isSellerMode" to="/orders" class="nav-item" :class="{ active: isActive('/orders') }">
-            <Clipboard size="18px" />
-            <div class="nav-label">{{ $t('bottom_nav.button_label_orders') }}</div>
-        </router-link>
-        <router-link v-else to="/cart" class="nav-item">
+        <router-link to="/cart" class="nav-item">
             <div class="icon-cart">
                 <ShoppingCart size="18px" style="color: #2d271f"/>
                 <span v-if="cartBadge > 0" class="cart-badge">{{ cartBadge }}</span>
@@ -93,21 +68,15 @@ export default {
             <div class="nav-label">{{ $t('bottom_nav.button_label_cart') }}</div>
         </router-link>
 
-        <!-- Tab 4: Notifications (both modes) — disabled, UI not designed yet -->
         <div class="nav-item disabled">
             <Bell size="18px" />
             <div class="nav-label">{{ $t('bottom_nav.button_label_notifications') }}</div>
         </div>
 
-        <!-- Tab 5: Account (both modes) — disabled, UI not designed yet -->
         <router-link to="/account" class="nav-item">
             <CircleUserRound size="18px" />
             <div class="nav-label">{{ $t('bottom_nav.button_label_account') }}</div>
         </router-link>
-        <!-- <div class="nav-item disabled">
-            <CircleUserRound size="18px" />
-            <div class="nav-label">{{ $t('bottom_nav.button_label_account') }}</div>
-        </div> -->
     </nav>
 </template>
 
@@ -119,7 +88,6 @@ export default {
     left: 0;
     right: 0;
     background: var(--bg-main);
-    /* primary_background */
     display: flex;
     margin: auto;
     justify-content: space-around;
@@ -137,7 +105,6 @@ export default {
     justify-content: center;
     text-decoration: none;
     color: var(--text-secondary);
-    /* primary_text opacity 0.6 is close to text-secondary */
     padding: 8px 16px;
     border-radius: 12px;
     transition: all 0.2s ease;
@@ -151,11 +118,9 @@ export default {
     height: 40px;
     border-radius: 50%;
     position: relative;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: #f5A623;
 }
 
@@ -207,17 +172,6 @@ export default {
     background-color: #2d271f;
 }
 
-.nav-item.active .nav-icon {
-    transform: scale(1.1);
-}
-
-.nav-icon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 4px;
-    transition: transform 0.2s ease;
-}
-
 .nav-label {
     margin-top: 5px;
     font-size: 10px;
@@ -227,22 +181,5 @@ export default {
 .nav-item.disabled {
     opacity: 0.35;
     pointer-events: none;
-}
-
-.nav-badge {
-    position: absolute;
-    top: 2px;
-    right: 12px;
-    background: var(--color-accent);
-    color: var(--bg-main);
-    font-size: 10px;
-    font-weight: 600;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 4px;
 }
 </style>

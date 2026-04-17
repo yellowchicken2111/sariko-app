@@ -42,7 +42,6 @@ export default {
             rejecting: false,
             orderErrors: {},      // { [orderId]: string[] }
             loadingOrders: {},    // { [orderId]: true }
-            deliveryStatuses: {}, // { [orderId]: { status, rebook_count } | 'loading' | 'error' }
             rebookingOrders: {},  // { [orderId]: true }
             rebookErrors: {},     // { [orderId]: 'max_attempts'|'error' }
         }
@@ -51,6 +50,9 @@ export default {
     computed: {
         sellerInfo() {
             return useDashboardStore().sellerInfo
+        },
+        deliveryStatuses() {
+            return useDashboardStore().deliveryStatuses
         },
 
         displayOrders() {
@@ -122,13 +124,7 @@ export default {
         },
 
         async fetchDeliveryStatus(orderId) {
-            this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: 'loading' }
-            try {
-                const data = await apiDeliveries.getSellerDeliveryStatus(orderId)
-                this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: data.delivery }
-            } catch (e) {
-                this.deliveryStatuses = { ...this.deliveryStatuses, [orderId]: 'error' }
-            }
+            await useDashboardStore().fetchDeliveryStatus(orderId)
         },
 
         async onRebook(order) {
@@ -137,10 +133,11 @@ export default {
             this.rebookingOrders = { ...this.rebookingOrders, [order.id]: true }
             try {
                 await apiDeliveries.rebookDelivery(order.id)
-                this.deliveryStatuses = {
-                    ...this.deliveryStatuses,
-                    [order.id]: { status: 'ASSIGNING_DRIVER', rebook_count: (this.deliveryStatuses[order.id]?.rebook_count || 0) + 1 },
-                }
+                const prev = useDashboardStore().deliveryStatuses[order.id]
+                useDashboardStore().setDeliveryStatus(order.id, {
+                    status: 'ASSIGNING_DRIVER',
+                    rebook_count: (prev?.rebook_count || 0) + 1,
+                })
                 this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_home.toast_rebook_success'), position: 'bottom', timeout: 1500 })
             } catch (e) {
                 console.error('ActionOrdersList - onRebook -', e)
@@ -293,7 +290,7 @@ export default {
                             {{ $t('seller_home.delivery_issue_details') }}
                         </button>
                         <q-btn
-                            v-if="rebookErrors[order.id] !== 'max_attempts'"
+                            v-if="(deliveryStatuses[order.id]?.rebook_count || 0) < 3 && rebookErrors[order.id] !== 'max_attempts'"
                             unelevated dense no-caps
                             class="btn-rebook"
                             :loading="!!rebookingOrders[order.id]"

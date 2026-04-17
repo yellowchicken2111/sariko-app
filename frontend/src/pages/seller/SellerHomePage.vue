@@ -48,6 +48,9 @@ export default {
             return this.filterOptions.find(f => f.key === this.activeFilter)?.label || 'All'
         },
 
+        actionDisplayCount() {
+            return useDashboardStore().actionDisplayCount
+        },
         isLoading() {
             return useDashboardStore().isLoading
         },
@@ -115,7 +118,7 @@ export default {
             <div class="section-header">
                 <div class="section-title">
                     {{ $t('seller_home.section_needs_action') }}
-                    <span v-if="allActionOrders.length > 0" class="count-badge">{{ allActionOrders.length }}</span>
+                    <span v-if="actionDisplayCount > 0" class="count-badge">{{ actionDisplayCount }}</span>
                 </div>
                 <q-btn-dropdown
                     flat dense no-caps

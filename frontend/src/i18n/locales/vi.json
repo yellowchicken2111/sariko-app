@@ -356,7 +356,7 @@
         "action_rebook_delivery": "Đặt lại giao hàng",
         "action_cancel_order": "Hủy đơn hàng",
         "no_driver_notice": "Không tìm được tài xế sau 3 lần thử",
-        "cancel_reason_no_driver": "Không có tài xế trong khu vực",
+        "cancel_reason_no_driver": "Không thể đặt giao hàng sau 3 lần thử — không có tài xế trong khu vực",
         "contact_admin_notice": "Có lỗi khi đặt đơn giao hàng. Nếu lỗi tiếp tục xảy ra, hãy liên hệ admin.",
         "toast_rebook_success": "Đã đặt lại giao hàng!",
         "toast_rebook_failed": "Đặt lại giao hàng thất bại",

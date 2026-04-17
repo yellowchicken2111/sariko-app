@@ -1,5 +1,6 @@
 <script>
 import { House, ClipboardList, UtensilsCrossed, CircleUserRound } from 'lucide-vue-next';
+import { useDashboardStore } from '@/stores/seller/dashboardStore';
 
 export default {
     name: 'SellerBottomNav',
@@ -9,7 +10,10 @@ export default {
     computed: {
         isShow() {
             return this.$route.name !== 'seller-order-detail'
-        }
+        },
+        actionBadge() {
+            return useDashboardStore().actionDisplayCount
+        },
     },
 
     methods: {
@@ -28,7 +32,10 @@ export default {
 <template>
     <nav ref="navRef" v-show="isShow" class="bottom-nav">
         <router-link to="/seller/home" class="nav-item" :class="{ active: isActive('/seller/home') }">
-            <House size="18px" />
+            <div class="icon-wrapper">
+                <House size="18px" />
+                <span v-if="actionBadge > 0" class="action-badge">{{ actionBadge }}</span>
+            </div>
             <div class="nav-label">Today</div>
         </router-link>
 
@@ -90,5 +97,30 @@ export default {
     margin-top: 5px;
     font-size: 10px;
     font-weight: 500;
+}
+
+.icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background: var(--color-accent);
+    color: #121b2f;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid var(--bg-main);
 }
 </style>
