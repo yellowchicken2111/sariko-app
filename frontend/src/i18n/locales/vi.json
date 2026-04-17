@@ -263,7 +263,7 @@
         "status_ON_GOING": "Đang đến",
         "status_PICKED_UP": "Đã lấy hàng",
         "status_COMPLETED": "Đã giao",
-        "status_CANCELLED": "Đã huỷ",
+        "status_CANCELLED": "Không tìm được tài xế — seller đang đặt lại",
         "status_subtext_ready": "Đang tìm tài xế để giao đơn hàng của bạn.",
         "driver_label": "Tài xế của bạn",
         "track_rider": "Theo dõi tài xế"
@@ -277,6 +277,8 @@
         "stat_label_done": "Hoàn tất",
         "stat_label_sales": "Doanh thu",
         "section_needs_action": "Cần xử lý",
+        "delivery_needs_action": "Giao hàng có vấn đề — bấm để xử lý",
+        "delivery_issue_details": "Vấn đề giao hàng · Xem chi tiết",
         "empty_all_caught_up": "Tất cả ổn!",
         "empty_all_caught_up_sub": "Không có đơn nào cần xử lý lúc này.",
         "status_new": "Đơn mới",
@@ -296,7 +298,11 @@
         "toast_reject_failed": "Từ chối thất bại",
         "error_missing_info": "Chưa thể giao — thiếu thông tin",
         "missing_address": "Chưa cài đặt địa chỉ cửa hàng",
-        "missing_phone": "Chưa cài đặt số điện thoại"
+        "missing_phone": "Chưa cài đặt số điện thoại",
+        "action_rebook": "Đặt lại",
+        "toast_rebook_success": "Đã đặt lại giao hàng!",
+        "contact_admin_notice": "Lỗi giao hàng — nếu lỗi tiếp tục xảy ra, hãy liên hệ admin",
+        "driver_assigning": "Đang tìm tài xế, vui lòng chờ"
     },
     "seller_orders": {
         "filter_all": "Tất cả",
@@ -347,6 +353,13 @@
         "action_mark_ready": "Sẵn sàng giao hàng",
         "action_mark_done": "Đánh dấu hoàn tất",
         "action_reject": "Từ chối",
+        "action_rebook_delivery": "Đặt lại giao hàng",
+        "action_cancel_order": "Hủy đơn hàng",
+        "no_driver_notice": "Không tìm được tài xế sau 3 lần thử",
+        "cancel_reason_no_driver": "Không có tài xế trong khu vực",
+        "contact_admin_notice": "Có lỗi khi đặt đơn giao hàng. Nếu lỗi tiếp tục xảy ra, hãy liên hệ admin.",
+        "toast_rebook_success": "Đã đặt lại giao hàng!",
+        "toast_rebook_failed": "Đặt lại giao hàng thất bại",
         "action_bar_driver_on_way": "🚴 Tài xế đang đến",
         "action_bar_completed": "✅ Đơn hoàn tất",
         "action_bar_cancelled": "❌ Đơn đã huỷ",
@@ -357,7 +370,16 @@
         "toast_order_updated": "Đã cập nhật đơn!",
         "toast_order_rejected": "Đã từ chối đơn.",
         "toast_update_failed": "Cập nhật thất bại",
-        "toast_reject_failed": "Từ chối thất bại"
+        "toast_reject_failed": "Từ chối thất bại",
+        "delivery_step_created": "Đã tạo đơn giao hàng",
+        "delivery_step_assigning": "Đang tìm tài xế",
+        "delivery_step_ongoing": "Tài xế đang trên đường",
+        "delivery_step_pickedup": "Đã lấy hàng",
+        "delivery_step_completed": "Đã giao",
+        "delivery_cancelled_error": "Không tìm được tài xế. Vui lòng đặt lại hoặc hủy đơn.",
+        "delivery_rejected_error": "2 tài xế đã từ chối đơn này. Vui lòng đặt lại hoặc hủy đơn.",
+        "delivery_expired_error": "Không có tài xế nhận đơn trong thời hạn. Vui lòng đặt lại hoặc hủy đơn.",
+        "delivery_canceled_error": "Đơn giao hàng đã bị hủy. Vui lòng đặt lại hoặc hủy đơn."
     },
     "seller_me": {
         "seller_badge": "Người bán",

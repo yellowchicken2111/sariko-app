@@ -22,7 +22,7 @@ export const useDeliveryStore = defineStore("deliveryStore", {
         },
         isDeliveryActive(state) {
             const s = state.currentDelivery?.status
-            return s && s !== 'COMPLETED' && s !== 'CANCELLED'
+            return s && s !== 'COMPLETED' && !['CANCELED', 'REJECTED', 'EXPIRED'].includes(s)
         },
     },
 

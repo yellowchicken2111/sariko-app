@@ -36,7 +36,7 @@ if os.path.exists(env_path):
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from services.lalamove_service import LiveLalamoveService
+from services.lalamove_service import LalamoveService
 
 # ------------------------------------------------------------------
 # Test coordinates — HCMC
@@ -88,66 +88,66 @@ def check_env():
 
 def run():
     check_env()
-    svc = LiveLalamoveService()
+    svc = LalamoveService()
     quotation_id = None
-    lalamove_order_id = None
+    lalamove_order_id = '3474689909917717420'
 
-    # ── Step 1: Quotation ──────────────────────────────────────────
-    sep("Step 1: get_quotation")
-    try:
-        result = svc.get_quotation(
-            pickup_lat=PICKUP_LAT,
-            pickup_lon=PICKUP_LON,
-            pickup_address=PICKUP_ADDR,
-            dropoff_lat=DROPOFF_LAT,
-            dropoff_lon=DROPOFF_LON,
-            dropoff_address=DROPOFF_ADDR,
-        )
-        quotation_id = result.quotation_id
-        print(f"  ✓ quotation_id : {quotation_id}")
-        print(f"  ✓ total_fee    : {result.total_fee:,} {result.currency}")
-        print(f"  ✓ distance     : {result.distance_km} km")
-    except Exception as e:
-        print(f"  ✗ FAILED: {e}")
-        sys.exit(1)
+    # # ── Step 1: Quotation ──────────────────────────────────────────
+    # sep("Step 1: get_quotation")
+    # try:
+    #     result = svc.get_quotation(
+    #         pickup_lat=PICKUP_LAT,
+    #         pickup_lon=PICKUP_LON,
+    #         pickup_address=PICKUP_ADDR,
+    #         dropoff_lat=DROPOFF_LAT,
+    #         dropoff_lon=DROPOFF_LON,
+    #         dropoff_address=DROPOFF_ADDR,
+    #     )
+    #     quotation_id = result.quotation_id
+    #     print(f"  ✓ quotation_id : {quotation_id}")
+    #     print(f"  ✓ total_fee    : {result.total_fee:,} {result.currency}")
+    #     print(f"  ✓ distance     : {result.distance_km} km")
+    # except Exception as e:
+    #     print(f"  ✗ FAILED: {e}")
+    #     sys.exit(1)
 
-    # ── Step 2: Place order ────────────────────────────────────────
-    sep("Step 2: place_order")
-    try:
-        result = svc.place_order(
-            quotation_id=quotation_id,
-            stop_id_0=result.stop_id_0,
-            stop_id_1=result.stop_id_1,
-            sender_name=SENDER_NAME,
-            sender_phone=SENDER_PHONE,
-            recipient_name=RECIPIENT_NAME,
-            recipient_phone=RECIPIENT_PHONE,
-            recipient_remarks="Test order — will be cancelled immediately",
-        )
-        lalamove_order_id = result.lalamove_order_id
-        print(f"  ✓ order_id  : {lalamove_order_id}")
-        print(f"  ✓ status    : {result.status}")
-        print(f"  ✓ share_link: {result.share_link}")
-    except Exception as e:
-        print(f"  ✗ FAILED: {e}")
-        sys.exit(1)
+    # # ── Step 2: Place order ────────────────────────────────────────
+    # sep("Step 2: place_order")
+    # try:
+    #     result = svc.place_order(
+    #         quotation_id=quotation_id,
+    #         stop_id_0=result.stop_id_0,
+    #         stop_id_1=result.stop_id_1,
+    #         sender_name=SENDER_NAME,
+    #         sender_phone=SENDER_PHONE,
+    #         recipient_name=RECIPIENT_NAME,
+    #         recipient_phone=RECIPIENT_PHONE,
+    #         recipient_remarks="Test order — will be cancelled immediately",
+    #     )
+    #     lalamove_order_id = result.lalamove_order_id
+    #     print(f"  ✓ order_id  : {lalamove_order_id}")
+    #     print(f"  ✓ status    : {result.status}")
+    #     print(f"  ✓ share_link: {result.share_link}")
+    # except Exception as e:
+    #     print(f"  ✗ FAILED: {e}")
+    #     sys.exit(1)
 
-    # ── Step 3: Get order status ───────────────────────────────────
-    sep("Step 3: get_order")
-    try:
-        time.sleep(2)  # nhỏ delay để Lalamove xử lý
-        result = svc.get_order(
-            lalamove_order_id=lalamove_order_id,
-            created_at=datetime.now(timezone.utc),
-        )
-        print(f"  ✓ status      : {result.status}")
-        print(f"  ✓ driver_name : {result.driver_name or '(not assigned yet)'}")
-        print(f"  ✓ driver_phone: {result.driver_phone or '—'}")
-        print(f"  ✓ driver_plate: {result.driver_plate or '—'}")
-        print(f"  ✓ share_link  : {result.share_link or '—'}")
-    except Exception as e:
-        print(f"  ✗ FAILED: {e}")
-        # vẫn tiếp tục để cancel
+    # # ── Step 3: Get order status ───────────────────────────────────
+    # sep("Step 3: get_order")
+    # try:
+    #     time.sleep(2)  # nhỏ delay để Lalamove xử lý
+    #     result = svc.get_order(
+    #         lalamove_order_id=lalamove_order_id,
+    #         created_at=datetime.now(timezone.utc),
+    #     )
+    #     print(f"  ✓ status      : {result.status}")
+    #     print(f"  ✓ driver_name : {result.driver_name or '(not assigned yet)'}")
+    #     print(f"  ✓ driver_phone: {result.driver_phone or '—'}")
+    #     print(f"  ✓ driver_plate: {result.driver_plate or '—'}")
+    #     print(f"  ✓ share_link  : {result.share_link or '—'}")
+    # except Exception as e:
+    #     print(f"  ✗ FAILED: {e}")
+    #     # vẫn tiếp tục để cancel
 
     # ── Step 4: Cancel order ───────────────────────────────────────
     sep("Step 4: cancel_order")

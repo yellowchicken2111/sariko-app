@@ -23,6 +23,16 @@ export const apiDeliveries = {
         return response.data
     },
 
+    getSellerDeliveryStatus: async (orderId) => {
+        const response = await apiClient.get(`/v1/deliveries/${orderId}/seller-status`)
+        return response.data
+    },
+
+    rebookDelivery: async (orderId) => {
+        const response = await apiClient.post(`/v1/deliveries/${orderId}/rebook`)
+        return response.data
+    },
+
 }
 
 export default apiDeliveries

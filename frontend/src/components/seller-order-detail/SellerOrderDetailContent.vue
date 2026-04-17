@@ -17,14 +17,13 @@ const STATUS_CLASS = {
     cancelled: 'badge-cancelled',
 }
 
-const TIMELINE_STEP_KEYS = [
-    { status: 'pending',   labelKey: 'seller_order_detail.timeline_placed' },
-    { status: 'confirmed', labelKey: 'seller_order_detail.timeline_accepted' },
-    { status: 'ready',     labelKey: 'seller_order_detail.timeline_ready' },
-    { status: 'done',      labelKey: 'seller_order_detail.timeline_delivered' },
-]
-
-const STATUS_ORDER = ['pending', 'confirmed', 'ready', 'done']
+const DELIVERY_STATUS_ORDER = ['ASSIGNING_DRIVER', 'ON_GOING', 'PICKED_UP', 'COMPLETED']
+const DELIVERY_CANCELLED_STATUSES = ['CANCELED', 'REJECTED', 'EXPIRED']
+const DELIVERY_CANCEL_ERROR_KEY = {
+    REJECTED: 'seller_order_detail.delivery_rejected_error',
+    EXPIRED:  'seller_order_detail.delivery_expired_error',
+    CANCELED: 'seller_order_detail.delivery_canceled_error',
+}
 
 export default {
     name: 'SellerOrderDetailContent',
@@ -35,7 +34,11 @@ export default {
         order: {
             type: Object,
             required: true,
-        }
+        },
+        delivery: {
+            type: Object,
+            default: null,
+        },
     },
 
     computed: {
@@ -62,13 +65,75 @@ export default {
         },
 
         timelineSteps() {
-            const currentIdx = STATUS_ORDER.indexOf(this.order.status)
-            return TIMELINE_STEP_KEYS.map((step, idx) => ({
-                ...step,
-                label:   this.$t(step.labelKey),
-                done:    this.order.status !== 'cancelled' && idx <= currentIdx,
-                current: idx === currentIdx && this.order.status !== 'cancelled',
-            }))
+            const isCancelled = this.order.status === 'cancelled'
+            const orderStatusIdx = { pending: 0, confirmed: 1, ready: 2, done: 3 }
+            const currentOrderIdx = orderStatusIdx[this.order.status] ?? -1
+            const hasDelivery = this.order.delivery_method === 'delivery' && !!this.delivery
+            const deliveryCancelled = hasDelivery && DELIVERY_CANCELLED_STATUSES.includes(this.delivery.status)
+            const deliveryIdx = hasDelivery ? DELIVERY_STATUS_ORDER.indexOf(this.delivery.status) : -1
+
+            const steps = []
+
+            // --- Order steps ---
+            const orderSteps = [
+                { key: 'pending',   label: this.$t('seller_order_detail.timeline_placed') },
+                { key: 'confirmed', label: this.$t('seller_order_detail.timeline_accepted') },
+                { key: 'ready',     label: this.$t('seller_order_detail.timeline_ready') },
+            ]
+            orderSteps.forEach((step, idx) => {
+                const isReadyStep = step.key === 'ready'
+                // When delivery is active, 'ready' step is done (delivery phase started)
+                const done = !isCancelled && (hasDelivery && isReadyStep ? true : currentOrderIdx > idx)
+                // 'ready' is current only when no delivery and order is at ready status
+                const current = !isCancelled && !hasDelivery && currentOrderIdx === idx
+                steps.push({ key: step.key, label: step.label, done, current, error: false, errorMessage: null })
+            })
+
+            if (hasDelivery) {
+                // "Delivery order created" — always done once delivery row exists
+                steps.push({
+                    key: 'delivery_created',
+                    label: this.$t('seller_order_detail.delivery_step_created'),
+                    done: true, current: false, error: false, errorMessage: null,
+                })
+
+                if (deliveryCancelled) {
+                    // Show assigning rider as the failed step, hide the rest
+                    const errorKey = DELIVERY_CANCEL_ERROR_KEY[this.delivery.status] || 'seller_order_detail.delivery_cancelled_error'
+                    steps.push({
+                        key: 'ASSIGNING_DRIVER',
+                        label: this.$t('seller_order_detail.delivery_step_assigning'),
+                        done: false, current: false, error: true,
+                        errorMessage: this.$t(errorKey),
+                    })
+                } else {
+                    const deliveryStepDefs = [
+                        { key: 'ASSIGNING_DRIVER', label: this.$t('seller_order_detail.delivery_step_assigning') },
+                        { key: 'ON_GOING',         label: this.$t('seller_order_detail.delivery_step_ongoing') },
+                        { key: 'PICKED_UP',        label: this.$t('seller_order_detail.delivery_step_pickedup') },
+                        { key: 'COMPLETED',        label: this.$t('seller_order_detail.delivery_step_completed') },
+                    ]
+                    deliveryStepDefs.forEach((step, i) => {
+                        steps.push({
+                            key: step.key, label: step.label,
+                            done: deliveryIdx > i,
+                            current: deliveryIdx === i,
+                            error: false, errorMessage: null,
+                        })
+                    })
+                }
+            } else {
+                // Non-delivery: show "Delivered/Done" final step
+                steps.push({
+                    key: 'done',
+                    label: this.$t('seller_order_detail.timeline_delivered'),
+                    done: !isCancelled && this.order.status === 'done',
+                    current: !isCancelled && this.order.status === 'done',
+                    error: false, errorMessage: null,
+                })
+            }
+
+            return steps
         },
     },
 
@@ -157,17 +222,30 @@ export default {
             </div>
         </div>
 
-        <!-- Timeline -->
+        <!-- Unified Timeline -->
         <div class="card">
             <div class="section-label" style="margin-bottom:16px;">{{ $t('seller_order_detail.section_timeline') }}</div>
             <div class="timeline">
-                <div v-for="(step, idx) in timelineSteps" :key="step.status" class="timeline-step">
+                <div v-for="(step, idx) in timelineSteps" :key="step.key" class="timeline-step">
                     <div class="timeline-left">
-                        <div class="timeline-dot" :class="{ done: step.done, current: step.current }"></div>
+                        <div class="timeline-dot" :class="{ done: step.done, current: step.current, error: step.error }"></div>
                         <div v-if="idx < timelineSteps.length - 1" class="timeline-line" :class="{ done: step.done }"></div>
                     </div>
-                    <div class="timeline-label" :class="{ 'label-done': step.done, 'label-future': !step.done }">
-                        {{ step.label }}
+                    <div class="timeline-right">
+                        <div
+                            class="timeline-label"
+                            :class="{
+                                'label-done':    step.done,
+                                'label-current': step.current && !step.error,
+                                'label-future':  !step.done && !step.current && !step.error,
+                                'label-error':   step.error,
+                            }"
+                        >
+                            {{ step.label }}
+                        </div>
+                        <div v-if="step.errorMessage" class="delivery-error-inline">
+                            {{ step.errorMessage }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -262,6 +340,7 @@ export default {
     margin-top: 4px;
 }
 
+/* Timeline */
 .timeline { display: flex; flex-direction: column; }
 
 .timeline-step {
@@ -286,6 +365,7 @@ export default {
     flex-shrink: 0;
     &.done    { background: var(--color-success); border-color: var(--color-success); }
     &.current { border-color: var(--color-accent); background: rgba(245,166,35,0.3); }
+    &.error   { border-color: #ef4444; background: rgba(239,68,68,0.25); }
 }
 
 .timeline-line {
@@ -297,10 +377,28 @@ export default {
     &.done { background: var(--color-success); }
 }
 
+.timeline-right {
+    flex: 1;
+    padding-bottom: 20px;
+    min-width: 0;
+}
+
 .timeline-label {
     font-size: 13px;
-    padding-bottom: 24px;
     color: var(--text-muted);
-    &.label-done { color: var(--text-primary); font-weight: 500; }
+    &.label-done    { color: var(--text-primary); font-weight: 500; }
+    &.label-current { color: var(--color-accent); font-weight: 600; }
+    &.label-error   { color: #ef4444; font-weight: 600; }
+}
+
+.delivery-error-inline {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    font-size: 12px;
+    color: #f87171;
+    line-height: 1.5;
 }
 </style>

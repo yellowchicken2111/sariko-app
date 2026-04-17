@@ -23,7 +23,11 @@ export default {
 
     computed: {
         allActionOrders() {
-            return useDashboardStore().orders.filter(o => o.status === 'pending' || o.status === 'confirmed')
+            return useDashboardStore().orders.filter(o =>
+                o.status === 'pending' ||
+                o.status === 'confirmed' ||
+                (o.status === 'ready' && o.delivery_method === 'delivery')
+            )
         },
 
         filteredActionOrders() {
@@ -138,7 +142,29 @@ export default {
             </div>
 
             <div v-if="isLoading" class="skeleton-list">
-                <q-skeleton v-for="n in 2" :key="n" type="rect" height="160px" style="border-radius:16px;" animation="pulse" />
+                <div v-for="n in 2" :key="n" class="skeleton-card">
+                    <div class="sk-row">
+                        <div>
+                            <q-skeleton type="text" width="130px" animation="pulse" style="margin-bottom:5px;" />
+                            <q-skeleton type="text" width="55px" animation="pulse" />
+                        </div>
+                        <q-skeleton type="rect" width="62px" height="22px" style="border-radius:12px;" animation="pulse" />
+                    </div>
+                    <q-skeleton type="rect" height="1px" animation="pulse" style="margin:10px 0;opacity:.3;" />
+                    <div v-for="i in 2" :key="i" class="sk-row" style="margin-bottom:6px;">
+                        <q-skeleton type="text" width="150px" animation="pulse" />
+                        <q-skeleton type="text" width="65px" animation="pulse" />
+                    </div>
+                    <q-skeleton type="rect" height="1px" animation="pulse" style="margin:10px 0;opacity:.3;" />
+                    <div class="sk-row" style="margin-bottom:14px;">
+                        <q-skeleton type="text" width="35px" animation="pulse" />
+                        <q-skeleton type="text" width="80px" animation="pulse" />
+                    </div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;">
+                        <q-skeleton type="rect" width="80px" height="34px" style="border-radius:10px;" animation="pulse" />
+                        <q-skeleton type="rect" width="120px" height="34px" style="border-radius:10px;" animation="pulse" />
+                    </div>
+                </div>
             </div>
             <ActionOrdersList v-else :orders="filteredActionOrders" />
         </template>
@@ -197,5 +223,17 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.skeleton-card {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.sk-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 </style>

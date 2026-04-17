@@ -16,6 +16,18 @@ router = APIRouter(prefix="/deliveries")
 logger = logging.getLogger(__name__)
 
 
+def _to_e164(phone: str) -> str:
+    """Convert Vietnamese phone number to E.164 format (+84...)."""
+    if not phone:
+        return "+84900000000"
+    phone = phone.strip().replace(" ", "").replace("-", "")
+    if phone.startswith("+"):
+        return phone
+    if phone.startswith("0"):
+        return "+84" + phone[1:]
+    return "+84" + phone
+
+
 # --------------------------------------------------------------------------
 # POST /deliveries/quotation — get delivery fee estimate
 # --------------------------------------------------------------------------
@@ -161,7 +173,7 @@ async def delivery_webhook(request: Request):
         lalamove_order_id = order_data.get("orderId")
         new_status        = order_data.get("status")
 
-        if not lalamove_order_id or not new_status:
+        if (not event_type == 'DRIVER_ASSIGNED') and (not lalamove_order_id or not new_status):
             logger.warning(f"Webhook: missing orderId or status in payload (eventType={event_type})")
             return {"success": True}  # 200 so Lalamove doesn't retry malformed events
 
@@ -171,7 +183,9 @@ async def delivery_webhook(request: Request):
             logger.warning(f"Webhook: no delivery row for lalamove_order_id={lalamove_order_id}")
             return {"success": True}  # 200 — unknown order, don't retry
 
-        update_data = {"status": new_status}
+        update_data = {}
+        if new_status:
+            update_data["status"] = new_status
 
         # Driver info present in DRIVER_ASSIGNED and some ORDER_STATUS_CHANGED events
         if driver_data.get("name"):
@@ -186,12 +200,9 @@ async def delivery_webhook(request: Request):
         dao_deliveries.update_delivery(delivery["id"], update_data)
         logger.warning(f"[Webhook] {event_type} → order={lalamove_order_id} status={new_status}")
 
-        # Terminal status → update our order
         if new_status == "COMPLETED":
             dao_orders = DAOOrders()
             dao_orders.update_order_status(delivery["order_id"], "done")
-        elif new_status in ("CANCELED", "CANCELLED", "REJECTED", "EXPIRED"):
-            dao_deliveries.update_delivery(delivery["id"], {"status": "CANCELLED"})
 
         return {"success": True}
 
@@ -199,6 +210,120 @@ async def delivery_webhook(request: Request):
         logger.exception(f"Exception in POST /deliveries/webhook: {e}")
         # Still return 200 to avoid Lalamove retry storms on our own bugs
         return {"success": False, "detail": "Internal error"}
+
+
+# --------------------------------------------------------------------------
+# GET /deliveries/{order_id}/seller-status — seller reads delivery status
+# --------------------------------------------------------------------------
+@router.get("/{order_id}/seller-status")
+def get_delivery_status_for_seller(order_id: str, user=Depends(verify_token)):
+    try:
+        dao_sellers = DAOSellerProfiles()
+        profile = dao_sellers.read_seller_profile_by_user_id(user["id"])
+        if not profile:
+            raise HTTPException(status_code=403, detail="Not a seller")
+
+        dao_orders = DAOOrders()
+        order = dao_orders.read_order_by_id_for_seller(order_id, profile["id"])
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        dao_deliveries = DAODeliveries()
+        delivery = dao_deliveries.read_delivery_by_order_id(order_id)
+        if not delivery:
+            return {"success": True, "delivery": None}
+
+        return {
+            "success": True,
+            "delivery": {
+                "status": delivery.get("status"),
+                "driver_name": delivery.get("driver_name"),
+                "driver_phone": delivery.get("driver_phone"),
+                "driver_plate": delivery.get("driver_plate"),
+                "share_link": delivery.get("share_link"),
+                "rebook_count": delivery.get("rebook_count", 0),
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in GET /deliveries/{order_id}/seller-status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --------------------------------------------------------------------------
+# POST /deliveries/{order_id}/rebook — seller re-books after Lalamove rejects
+# --------------------------------------------------------------------------
+@router.post("/{order_id}/rebook")
+def rebook_delivery(order_id: str, user=Depends(verify_token)):
+    try:
+        dao_sellers = DAOSellerProfiles()
+        profile = dao_sellers.read_seller_profile_by_user_id(user["id"])
+        if not profile:
+            raise HTTPException(status_code=403, detail="Not a seller")
+
+        dao_orders = DAOOrders()
+        order = dao_orders.read_order_by_id_for_seller(order_id, profile["id"])
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        if order["status"] != "ready" or order.get("delivery_method") != "delivery":
+            raise HTTPException(status_code=400, detail="Order must be ready with delivery method")
+
+        dao_deliveries = DAODeliveries()
+        delivery = dao_deliveries.read_delivery_by_order_id(order_id)
+        if not delivery or delivery["status"] not in ("CANCELLED", "CANCELED", "REJECTED", "EXPIRED"):
+            raise HTTPException(status_code=400, detail="No cancelled delivery to rebook")
+
+        rebook_count = delivery.get("rebook_count", 0)
+        if rebook_count >= 3:
+            raise HTTPException(status_code=400, detail="Max rebook attempts reached")
+
+        full_order = dao_orders.read_order_with_seller_coords(order_id)
+        if not full_order:
+            raise HTTPException(status_code=500, detail="Could not load order details")
+
+        seller  = full_order.get("seller_profiles") or {}
+        buyer   = full_order.get("users") or {}
+        service = get_lalamove_service()
+
+        quotation = service.get_quotation(
+            pickup_lat=float(seller.get("lat") or 0),
+            pickup_lon=float(seller.get("lon") or 0),
+            pickup_address=seller.get("address", ""),
+            dropoff_lat=float(full_order.get("delivery_lat") or 0),
+            dropoff_lon=float(full_order.get("delivery_lon") or 0),
+            dropoff_address=full_order.get("delivery_address", ""),
+        )
+        result = service.place_order(
+            quotation_id=quotation.quotation_id,
+            stop_id_0=quotation.stop_id_0,
+            stop_id_1=quotation.stop_id_1,
+            sender_name=seller.get("store_name", "Seller"),
+            sender_phone=_to_e164(seller.get("phone") or ""),
+            recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
+            recipient_phone=_to_e164(buyer.get("phone") or ""),
+            recipient_remarks=full_order.get("delivery_address") or "",
+        )
+
+        dao_deliveries.update_delivery(delivery["id"], {
+            "status": result.status,
+            "lalamove_order_id": result.lalamove_order_id,
+            "share_link": result.share_link or "",
+            "driver_name": None,
+            "driver_phone": None,
+            "driver_plate": None,
+            "rebook_count": rebook_count + 1,
+        })
+        logger.warning(f"[Delivery] Re-booked order={order_id} attempt={rebook_count + 1} lalamove={result.lalamove_order_id}")
+
+        return {"success": True}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in POST /deliveries/{order_id}/rebook: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # --------------------------------------------------------------------------

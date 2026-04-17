@@ -263,7 +263,7 @@
         "status_ON_GOING": "On the way",
         "status_PICKED_UP": "Picked up",
         "status_COMPLETED": "Delivered",
-        "status_CANCELLED": "Cancelled",
+        "status_CANCELLED": "No rider found — seller is arranging",
         "status_subtext_ready": "A rider is being assigned to deliver your order.",
         "driver_label": "Your Rider",
         "track_rider": "Track Rider"
@@ -277,6 +277,8 @@
         "stat_label_done": "Done",
         "stat_label_sales": "Sales",
         "section_needs_action": "Needs Your Action",
+        "delivery_needs_action": "Delivery issue — tap to resolve",
+        "delivery_issue_details": "Delivery issue · See details",
         "empty_all_caught_up": "All caught up!",
         "empty_all_caught_up_sub": "No orders need your attention right now.",
         "status_new": "New Order",
@@ -296,7 +298,11 @@
         "toast_reject_failed": "Failed to reject order",
         "error_missing_info": "Cannot mark ready — missing info",
         "missing_address": "Store address is not set",
-        "missing_phone": "Phone number is not set"
+        "missing_phone": "Phone number is not set",
+        "action_rebook": "Re-book",
+        "toast_rebook_success": "Delivery re-booked!",
+        "contact_admin_notice": "Delivery error — if this keeps happening, please contact admin",
+        "driver_assigning": "Driver is being assigned, please wait"
     },
     "seller_orders": {
         "filter_all": "All",
@@ -354,10 +360,26 @@
         "reject_dialog_sub": "Select a reason",
         "reject_reason_placeholder": "Describe the reason...",
         "reject_confirm": "Confirm Reject",
+        "action_rebook_delivery": "Re-book Delivery",
+        "action_cancel_order": "Cancel Order",
+        "no_driver_notice": "No rider found after 3 attempts",
+        "cancel_reason_no_driver": "No rider available in your area",
+        "contact_admin_notice": "There was an error with the delivery. If this keeps happening, please contact admin.",
+        "toast_rebook_success": "Delivery re-booked!",
+        "toast_rebook_failed": "Failed to re-book delivery",
         "toast_order_updated": "Order updated!",
         "toast_order_rejected": "Order rejected.",
         "toast_update_failed": "Failed to update order",
-        "toast_reject_failed": "Failed to reject order"
+        "toast_reject_failed": "Failed to reject order",
+        "delivery_step_created": "Delivery order created",
+        "delivery_step_assigning": "Assigning rider",
+        "delivery_step_ongoing": "Rider on the way",
+        "delivery_step_pickedup": "Order picked up",
+        "delivery_step_completed": "Delivered",
+        "delivery_cancelled_error": "No rider could be assigned. Please re-book or cancel the order.",
+        "delivery_rejected_error": "2 riders declined this order. Please re-book or cancel.",
+        "delivery_expired_error": "No riders accepted within the time limit. Please re-book or cancel.",
+        "delivery_canceled_error": "The delivery was cancelled. Please re-book or cancel the order."
     },
     "seller_me": {
         "seller_badge": "Seller",

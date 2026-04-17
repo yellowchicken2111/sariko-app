@@ -1,5 +1,14 @@
 import { defineStore } from "pinia";
 import apiSellerDashboard from "@/apis/sellers/apiSellerDashboard";
+import apiDeliveries from "@/apis/deliveries/apiDeliveries";
+
+const DELIVERY_TERMINAL = ['COMPLETED', 'CANCELED', 'REJECTED', 'EXPIRED']
+
+let _pollTimer = null
+
+function _stopPolling() {
+    if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null }
+}
 
 export const useDashboardStore = defineStore("dashboardStore", {
     state() {
@@ -8,7 +17,9 @@ export const useDashboardStore = defineStore("dashboardStore", {
             sellerInfo: null,   // { store_name, address, phone, has_address, has_phone }
             orders: [],
             orderDetails: null,
+            orderDelivery: null,
             isLoading: false,
+            orderDetailLoading: false,
             selectedFilter: 'new',
         }
     },
@@ -74,15 +85,64 @@ export const useDashboardStore = defineStore("dashboardStore", {
             }
         },
 
-        async fetchOrderDetails(orderId) {
+        async loadOrderDetail(orderId) {
+            this.orderDetailLoading = true
             try {
                 const res = await apiSellerDashboard.getOrderDetail(orderId)
                 this.orderDetails = res.order || null
+                if (this.orderDetails?.status === 'ready' && this.orderDetails?.delivery_method === 'delivery') {
+                    await this._fetchDelivery(orderId)
+                    this._startPolling(orderId)
+                }
             } catch (e) {
-                console.error('dashboardStore - fetchOrders -', e)
+                console.error('dashboardStore - loadOrderDetail -', e)
             } finally {
-                this.isLoading = false
+                this.orderDetailLoading = false
             }
+        },
+
+        async _fetchDelivery(orderId) {
+            try {
+                const res = await apiDeliveries.getSellerDeliveryStatus(orderId)
+                this.orderDelivery = res?.delivery || null
+            } catch (e) {
+                console.error('dashboardStore - _fetchDelivery -', e)
+            }
+        },
+
+        _startPolling(orderId) {
+            _stopPolling()
+            _pollTimer = setInterval(async () => {
+                if (DELIVERY_TERMINAL.includes(this.orderDelivery?.status)) {
+                    _stopPolling()
+                    return
+                }
+                await this._fetchDelivery(orderId)
+            }, 10_000)
+        },
+
+        clearOrderDetail() {
+            _stopPolling()
+            this.orderDetails = null
+            this.orderDelivery = null
+        },
+
+        // Calls API, updates orderDetails + orders list, stops polling if no longer ready
+        async setOrderStatus(orderId, newStatus, reason = null) {
+            await apiSellerDashboard.updateOrderStatus(orderId, newStatus, reason)
+            if (this.orderDetails?.id === orderId) {
+                this.orderDetails.status = newStatus
+                if (reason) this.orderDetails.cancellation_reason = reason
+            }
+            this.updateOrderLocally(orderId, newStatus)
+            if (newStatus !== 'ready') _stopPolling()
+        },
+
+        // Calls rebook API, refreshes delivery state + restarts polling
+        async doRebookDelivery(orderId) {
+            await apiDeliveries.rebookDelivery(orderId)
+            await this._fetchDelivery(orderId)
+            this._startPolling(orderId)
         },
 
         updateOrderLocally(orderId, newStatus) {

@@ -233,6 +233,7 @@ create table public.deliveries (
   share_link text null,
   driver_plate text null,
   lalamove_order_id text null,
+  rebook_count integer null default 0,
   constraint deliveries_pkey primary key (id),
   constraint deliveries_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;

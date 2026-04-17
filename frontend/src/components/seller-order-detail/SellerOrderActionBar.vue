@@ -1,6 +1,5 @@
 <script>
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
-import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
 
 const STATUS_NEXT = {
     pending:   'confirmed',
@@ -14,13 +13,9 @@ export default {
     name: 'SellerOrderActionBar',
 
     props: {
-        order: {
-            type: Object,
-            required: true,
-        }
+        order: { type: Object, required: true },
+        delivery: { type: Object, default: null },
     },
-
-    emits: ['status-updated'],
 
     data() {
         return {
@@ -29,12 +24,51 @@ export default {
             customReason: '',
             rejecting: false,
             accepting: false,
+            rebooking: false,
+            rebookError: false,
+            tick: 0,
+            _tickInterval: null,
         }
     },
 
     computed: {
-        canAccept() { return !!STATUS_NEXT[this.order.status] },
+        isDeliveryCancelled() {
+            return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(this.delivery?.status)
+        },
+        canAccept() {
+            if (this.order.status === 'ready'
+                && this.order.delivery_method === 'delivery'
+                && this.isDeliveryCancelled) return false
+            return !!STATUS_NEXT[this.order.status]
+        },
         canReject()  { return ['pending', 'confirmed'].includes(this.order.status) },
+        rebookCount() { return this.delivery?.rebook_count || 0 },
+        canRebook() {
+            return this.order.status === 'ready'
+                && this.order.delivery_method === 'delivery'
+                && this.isDeliveryCancelled
+                && this.rebookCount < 3
+        },
+        maxRebookReached() {
+            return this.order.status === 'ready'
+                && this.order.delivery_method === 'delivery'
+                && this.isDeliveryCancelled
+                && this.rebookCount >= 3
+        },
+
+        isDeliveryStuck() {
+            void this.tick
+            if (!this.delivery?.created_at) return false
+            if (this.delivery.status !== 'ASSIGNING_DRIVER') return false
+            return Date.now() - new Date(this.delivery.created_at).getTime() > 15 * 60 * 1000
+        },
+
+        showContactAdmin() {
+            const autoBookFailed = this.order.status === 'ready'
+                && this.order.delivery_method === 'delivery'
+                && !this.delivery
+            return autoBookFailed || this.rebookError || this.isDeliveryStuck
+        },
 
         acceptLabel() {
             const map = {
@@ -64,15 +98,21 @@ export default {
         },
     },
 
+    mounted() {
+        this._tickInterval = setInterval(() => { this.tick++ }, 60_000)
+    },
+
+    beforeUnmount() {
+        clearInterval(this._tickInterval)
+    },
+
     methods: {
         async onAccept() {
             const nextStatus = STATUS_NEXT[this.order.status]
             if (!nextStatus) return
             this.accepting = true
             try {
-                await apiSellerDashboard.updateOrderStatus(this.order.id, nextStatus)
-                useDashboardStore().updateOrderLocally(this.order.id, nextStatus)
-                this.$emit('status-updated', nextStatus)
+                await useDashboardStore().setOrderStatus(this.order.id, nextStatus)
                 this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_order_detail.toast_order_updated'), position: 'bottom', timeout: 1500 })
             } catch (e) {
                 console.error('SellerOrderActionBar - onAccept -', e)
@@ -82,13 +122,40 @@ export default {
             }
         },
 
+        async onCancelDueToNoDriver() {
+            this.rejecting = true
+            try {
+                const reason = this.$t('seller_order_detail.cancel_reason_no_driver')
+                await useDashboardStore().setOrderStatus(this.order.id, 'cancelled', reason)
+                this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_order_detail.toast_order_rejected'), position: 'bottom', timeout: 1500 })
+            } catch (e) {
+                console.error('SellerOrderActionBar - onCancelDueToNoDriver -', e)
+                this.$q.notify({ type: 'negative', message: this.$t('seller_order_detail.toast_update_failed'), position: 'bottom' })
+            } finally {
+                this.rejecting = false
+            }
+        },
+
+        async onRebook() {
+            this.rebooking = true
+            this.rebookError = false
+            try {
+                await useDashboardStore().doRebookDelivery(this.order.id)
+                this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_order_detail.toast_rebook_success'), position: 'bottom', timeout: 1500 })
+            } catch (e) {
+                this.rebookError = true
+                console.error('SellerOrderActionBar - onRebook -', e)
+                this.$q.notify({ type: 'negative', message: this.$t('seller_order_detail.toast_rebook_failed'), position: 'bottom' })
+            } finally {
+                this.rebooking = false
+            }
+        },
+
         async confirmReject() {
             if (!this.canConfirmReject) return
             this.rejecting = true
             try {
-                await apiSellerDashboard.updateOrderStatus(this.order.id, 'cancelled', this.rejectReasonText)
-                useDashboardStore().updateOrderLocally(this.order.id, 'cancelled')
-                this.$emit('status-updated', 'cancelled', this.rejectReasonText)
+                await useDashboardStore().setOrderStatus(this.order.id, 'cancelled', this.rejectReasonText)
                 this.showRejectDialog = false
                 this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_order_detail.toast_order_rejected'), position: 'bottom', timeout: 1500 })
             } catch (e) {
@@ -104,6 +171,11 @@ export default {
 
 <template>
     <div>
+        <!-- Contact admin notice — infra errors requiring admin intervention -->
+        <div v-if="showContactAdmin" class="contact-admin-notice">
+            {{ $t('seller_order_detail.contact_admin_notice') }}
+        </div>
+
         <!-- Action buttons -->
         <div class="action-row">
             <template v-if="canAccept || canReject">
@@ -114,7 +186,23 @@ export default {
                     {{ acceptLabel }}
                 </q-btn>
             </template>
-            <div v-else-if="order.status === 'ready'"     class="status-message">{{ $t('seller_order_detail.action_bar_driver_on_way') }}</div>
+            <template v-else-if="order.status === 'ready'">
+                <template v-if="canRebook">
+                    <q-btn unelevated no-caps class="btn-rebook" :loading="rebooking" @click="onRebook">
+                        {{ $t('seller_order_detail.action_rebook_delivery') }} ({{ rebookCount + 1 }}/3)
+                    </q-btn>
+                </template>
+                <template v-else-if="maxRebookReached">
+                    <div class="no-driver-notice">{{ $t('seller_order_detail.no_driver_notice') }}</div>
+                    <q-btn unelevated no-caps class="btn-cancel-order" :loading="rejecting" @click="onCancelDueToNoDriver">
+                        {{ $t('seller_order_detail.action_cancel_order') }}
+                    </q-btn>
+                </template>
+                <!-- delivery null = auto-book failed; contact-admin notice handles messaging -->
+                <div v-else-if="delivery || order.delivery_method !== 'delivery'" class="status-message">
+                    {{ $t('seller_order_detail.action_bar_driver_on_way') }}
+                </div>
+            </template>
             <div v-else-if="order.status === 'done'"      class="status-message">{{ $t('seller_order_detail.action_bar_completed') }}</div>
             <div v-else-if="order.status === 'cancelled'" class="status-message cancelled">{{ $t('seller_order_detail.action_bar_cancelled') }}</div>
         </div>
@@ -155,6 +243,18 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.contact-admin-notice {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
 .action-row {
     display: flex;
     gap: 10px;
@@ -187,6 +287,35 @@ export default {
 }
 
 .cancelled { color: #ef4444; }
+
+.btn-rebook {
+    flex: 1;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.no-driver-notice {
+    width: 100%;
+    font-size: 13px;
+    color: #ef4444;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.btn-cancel-order {
+    flex: 1;
+    background: #ef4444;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 12px;
+    padding: 12px;
+}
 
 .reject-dialog {
     background: #1f2940;
