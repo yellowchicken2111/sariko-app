@@ -1,5 +1,6 @@
 <script>
 import { Phone } from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     components: {
@@ -11,7 +12,17 @@ export default {
         return {
             options,
             region: options[0],
-            phone: null
+        }
+    },
+
+    computed: {
+        phone: {
+            get() {
+                return useAuthStore().inputPhoneNumber
+            },
+            set(value) {
+                useAuthStore().inputPhoneNumber = value
+            }
         }
     }
 }
