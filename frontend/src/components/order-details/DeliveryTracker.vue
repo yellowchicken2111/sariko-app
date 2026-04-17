@@ -90,7 +90,7 @@ export default {
         </div>
 
         <!-- Driver Card -->
-        <div v-if="hasDriver" class="driver-card">
+        <div v-if="hasDriver && !isCancelled" class="driver-card">
             <div class="driver-avatar">
                 <Bike :size="20" />
             </div>
@@ -104,7 +104,7 @@ export default {
         </div>
 
         <!-- Tracking Link -->
-        <button v-if="hasTrackingUrl" class="tracking-btn" @click="openTracking">
+        <button v-if="hasTrackingUrl && !isCancelled" class="tracking-btn" @click="openTracking">
             <MapPin :size="16" />
             {{ $t('delivery_tracker.track_rider') }}
             <ExternalLink :size="14" />

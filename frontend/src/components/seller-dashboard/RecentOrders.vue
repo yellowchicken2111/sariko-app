@@ -299,11 +299,35 @@ export default {
         </div>
 
         <div v-if="isLoading" class="orders-list">
-            <q-skeleton v-for="n in 3" :key="n" type="rect" height="100px" style="border-radius: 16px;" animation="pulse" />
+            <div v-for="n in 3" :key="n" class="order-card">
+                <div class="sk-header">
+                    <div class="sk-customer">
+                        <q-skeleton type="text" width="130px" height="15px" animation="pulse" />
+                        <q-skeleton type="text" width="80px" height="11px" animation="pulse" style="margin-top:6px;" />
+                    </div>
+                    <q-skeleton type="rect" width="72px" height="22px" style="border-radius:12px;" animation="pulse" />
+                </div>
+                <q-separator class="separator" />
+                <div v-for="i in 2" :key="i" class="sk-item-row">
+                    <q-skeleton type="text" width="140px" height="13px" animation="pulse" />
+                    <q-skeleton type="text" width="60px" height="13px" animation="pulse" />
+                </div>
+                <q-separator class="separator" />
+                <div class="sk-total-row">
+                    <q-skeleton type="text" width="40px" height="15px" animation="pulse" />
+                    <q-skeleton type="text" width="90px" height="15px" animation="pulse" />
+                </div>
+                <div class="sk-actions-row">
+                    <q-skeleton type="rect" width="90px" height="34px" style="border-radius:10px;" animation="pulse" />
+                    <q-skeleton type="rect" width="110px" height="34px" style="border-radius:10px;" animation="pulse" />
+                </div>
+            </div>
         </div>
 
         <div v-else-if="recentOrders.length === 0" class="empty-state">
-            <p>{{ $t('seller_dashboard.empty_orders') }}</p>
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">{{ $t('seller_dashboard.empty_orders') }}</div>
+            <div class="empty-subtitle">{{ $t('seller_dashboard.empty_orders_subtitle') }}</div>
         </div>
 
         <div v-else class="orders-list">
@@ -552,6 +576,63 @@ export default {
     display: flex;
     gap: 8px;
     justify-content: flex-end;
+}
+
+/* Skeleton rows */
+.sk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.sk-customer {
+    flex: 1;
+}
+
+.sk-item-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.sk-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.sk-actions-row {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Empty state */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    gap: 8px;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 4px;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.empty-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
 }
 
 .btn-accept {

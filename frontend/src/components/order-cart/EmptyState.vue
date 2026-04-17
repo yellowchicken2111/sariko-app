@@ -24,13 +24,12 @@ export default {
 
 <style lang="scss" scoped>
 .empty-state {
+    min-height: calc(100vh - 100px);
+    padding-top: 35%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     text-align: center;
-    padding: 80px 32px;
-    min-height: calc(100vh - 72px);
     font-family: $sariko-font-family-secondary;
 }
 

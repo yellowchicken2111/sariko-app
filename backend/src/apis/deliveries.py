@@ -183,19 +183,27 @@ async def delivery_webhook(request: Request):
             logger.warning(f"Webhook: no delivery row for lalamove_order_id={lalamove_order_id}")
             return {"success": True}  # 200 — unknown order, don't retry
 
+        TERMINAL_STATUSES = {"REJECTED", "CANCELLED", "CANCELED", "EXPIRED"}
+
         update_data = {}
         if new_status:
             update_data["status"] = new_status
 
-        # Driver info present in DRIVER_ASSIGNED and some ORDER_STATUS_CHANGED events
-        if driver_data.get("name"):
-            update_data["driver_name"] = driver_data["name"]
-        if driver_data.get("phone"):
-            update_data["driver_phone"] = driver_data["phone"]
-        if driver_data.get("plateNumber"):
-            update_data["driver_plate"] = driver_data["plateNumber"]
-        if order_data.get("shareLink"):
-            update_data["share_link"] = order_data["shareLink"]
+        if new_status in TERMINAL_STATUSES:
+            update_data["driver_name"] = None
+            update_data["driver_phone"] = None
+            update_data["driver_plate"] = None
+            update_data["share_link"] = None
+        else:
+            # Driver info present in DRIVER_ASSIGNED and some ORDER_STATUS_CHANGED events
+            if driver_data.get("name"):
+                update_data["driver_name"] = driver_data["name"]
+            if driver_data.get("phone"):
+                update_data["driver_phone"] = driver_data["phone"]
+            if driver_data.get("plateNumber"):
+                update_data["driver_plate"] = driver_data["plateNumber"]
+            if order_data.get("shareLink"):
+                update_data["share_link"] = order_data["shareLink"]
 
         dao_deliveries.update_delivery(delivery["id"], update_data)
         logger.warning(f"[Webhook] {event_type} → order={lalamove_order_id} status={new_status}")

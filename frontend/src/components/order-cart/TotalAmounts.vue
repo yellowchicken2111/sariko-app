@@ -1,5 +1,5 @@
 <script>
-import { ScanBarcode } from 'lucide-vue-next';
+import { ScanBarcode, AlertCircle } from 'lucide-vue-next';
 import { mapGetters, mapState } from 'pinia';
 import { useCartStore } from '@/stores/cart/cartStore.js';
 import { useOrderStore } from '@/stores/order/orderStore.js';
@@ -9,7 +9,7 @@ import apiPayments from '@/apis/payments/apiPayments.js';
 
 export default {
     components: {
-        ScanBarcode
+        ScanBarcode, AlertCircle
     },
 
     data() {
@@ -40,14 +40,31 @@ export default {
         totalAmountText() {
             return new Intl.NumberFormat('vi-VN').format(this.totalAmount) + ' ₫'
         },
+        validationIssues() {
+            const auth = useAuthStore()
+            const issues = []
+            if (!auth.user?.phone) issues.push({ msg: this.$t('cart_page.validation.missing_phone'), route: '/account/profile' })
+            if (!auth.inputAddress) issues.push({ msg: this.$t('cart_page.validation.missing_address'), route: '/account/address' })
+            return issues
+        },
         canPlaceOrder() {
-            return this.cartItems.length > 0 && !this.submitting && !this.quotationLoading
+            return this.cartItems.length > 0 && !this.submitting && !this.quotationLoading && this.validationIssues.length === 0
         },
     },
 
+    watch: {
+        validationIssues() {
+            this.$nextTick(this._updateHeight)
+        }
+    },
+
     methods: {
+        _updateHeight() {
+            const h = this.$refs?.totalAmountsRef?.offsetHeight || 0
+            document.documentElement.style.setProperty('--total-amount-height', `${h}px`)
+        },
         async onPlaceOrder() {
-            if (this.submitting) return
+            if (this.submitting || this.validationIssues.length > 0) return
             this.submitting = true
             try {
                 const authStore = useAuthStore()
@@ -99,8 +116,7 @@ export default {
     },
 
     mounted() {
-        const heightTotalAmounts = this.$refs?.totalAmountsRef?.offsetHeight || 0
-        document.documentElement.style.setProperty('--total-amount-height', `${heightTotalAmounts}px`)
+        this._updateHeight()
 
         // Fetch delivery quotation if cart has items
         if (this.cart && this.cartItems.length > 0) {
@@ -149,6 +165,16 @@ export default {
             </div>
         </div>
 
+        <div v-if="validationIssues.length > 0" class="validation-card">
+            <AlertCircle class="validation-icon" :size="16" />
+            <div class="validation-messages">
+                <div v-for="issue in validationIssues" :key="issue.route" class="validation-item">
+                    {{ issue.msg }}
+                    <router-link :to="issue.route" class="validation-link">{{ $t('cart_page.validation.fix') }}</router-link>
+                </div>
+            </div>
+        </div>
+
         <div class="button-checkout">
             <q-btn class="button" dense no-caps :loading="submitting" :disable="!canPlaceOrder" @click="onPlaceOrder">
                 <ScanBarcode class="icon" /> Place Order · {{ totalAmountText }}
@@ -194,6 +220,47 @@ export default {
     );
     margin-top: 30px;
     margin-bottom: 15px;
+}
+
+.validation-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.validation-icon {
+    color: #f87171;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.validation-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.validation-item {
+    font-size: 13px;
+    color: #f87171;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.validation-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: $accent;
+    text-decoration: none;
+    flex-shrink: 0;
+    margin-left: 8px;
 }
 
 .button {

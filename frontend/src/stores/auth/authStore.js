@@ -203,6 +203,30 @@ export const useAuthStore = defineStore("authStore", {
                 this._setFromSession(res.session);
 
                 try {
+                    const profile = await apiUsers.getProfile()
+                    if (profile?.user && this.user) {
+                        if (profile.user.avatar_url) this.user.avatarUrl = profile.user.avatar_url
+                        if (profile.user.name) this.user.fullName = profile.user.name
+                        if (profile.user.phone) this.user.phone = profile.user.phone
+                        if (profile.user.seller_id) this.sellerId = profile.user.seller_id
+                    }
+                } catch (e) {
+                    console.error(`authStore - onClickedSignin - profile fetch failed: ${e}`);
+                }
+
+                try {
+                    const addrRes = await apiUsers.getDefaultAddress()
+                    if (addrRes?.address) {
+                        this.inputAddress = addrRes.address.address || null
+                        this.inputAddressDetails = addrRes.address.label || null
+                        this.inputLat = addrRes.address.lat || null
+                        this.inputLon = addrRes.address.lon || null
+                    }
+                } catch (e) {
+                    console.error(`authStore - onClickedSignin - address fetch failed: ${e}`);
+                }
+
+                try {
                     const cartStore = useCartStore();
                     await cartStore.getCurrentCart();
                 } catch (e) {

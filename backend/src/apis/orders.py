@@ -43,12 +43,13 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
                 if (now - created).total_seconds() < 60:
                     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Duplicate order detected. Please wait.")
 
-    # 2. Calculate total
+    # 2. Calculate total (subtotal + delivery fee)
     cart_items = cart["cart_items"]
-    total_amount = sum(
+    subtotal = sum(
         item["food_items"]["price"] * item["quantity"]
         for item in cart_items
     )
+    total_amount = subtotal + float(request.delivery_fee or 0)
     
     # 3. Get user id of seller
     dao_seller_profile = DAOSellerProfiles()

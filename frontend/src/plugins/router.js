@@ -158,6 +158,11 @@ const routes = [
         name: 'notifications',
         component: () => import('@/pages/NotificationsPage.vue'),
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: () => import('@/pages/NotFoundPage.vue'),
     }
 ]
 

@@ -11,7 +11,7 @@
     width: 100%;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    padding-top: 50%;
     justify-content: center;
     font-family: $sariko-font-family-secondary;
 }

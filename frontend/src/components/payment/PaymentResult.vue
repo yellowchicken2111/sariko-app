@@ -88,56 +88,57 @@ export default {
     },
 
     async created() {
-        try {
-            const params = new URLSearchParams(window.location.search)
-            const responseCode = params.get('vnp_ResponseCode')
-            const txnRef = params.get('vnp_TxnRef')
+        this.state = 'polling'
+        // try {
+        //     const params = new URLSearchParams(window.location.search)
+        //     const responseCode = params.get('vnp_ResponseCode')
+        //     const txnRef = params.get('vnp_TxnRef')
 
-            const orderIdNoDash = txnRef ? txnRef.split('_')[0] : ''
-            this.orderId = orderIdNoDash.length === 32
-                ? `${orderIdNoDash.slice(0,8)}-${orderIdNoDash.slice(8,12)}-${orderIdNoDash.slice(12,16)}-${orderIdNoDash.slice(16,20)}-${orderIdNoDash.slice(20)}`
-                : ''
+        //     const orderIdNoDash = txnRef ? txnRef.split('_')[0] : ''
+        //     this.orderId = orderIdNoDash.length === 32
+        //         ? `${orderIdNoDash.slice(0,8)}-${orderIdNoDash.slice(8,12)}-${orderIdNoDash.slice(12,16)}-${orderIdNoDash.slice(16,20)}-${orderIdNoDash.slice(20)}`
+        //         : ''
 
-            const vnpParams = new URLSearchParams()
-            for (const [key, value] of params) {
-                if (key.startsWith('vnp_')) vnpParams.append(key, value)
-            }
-            const queryString = vnpParams.toString()
-            const res = await apiPayments.checkVnpayReturn(queryString)
-            if (!res?.data) {
-                this.state = 'failed'
-                return
-            }
+        //     const vnpParams = new URLSearchParams()
+        //     for (const [key, value] of params) {
+        //         if (key.startsWith('vnp_')) vnpParams.append(key, value)
+        //     }
+        //     const queryString = vnpParams.toString()
+        //     const res = await apiPayments.checkVnpayReturn(queryString)
+        //     if (!res?.data) {
+        //         this.state = 'failed'
+        //         return
+        //     }
 
-            this.responseCode = res.data.response_code
-            if (!res.data.success) {
-                this.state = 'failed'
-                return
-            }
+        //     this.responseCode = res.data.response_code
+        //     if (!res.data.success) {
+        //         this.state = 'failed'
+        //         return
+        //     }
 
-            this.state = 'polling'
-            this.listenPaymentStatus()
-            this.startPolling()
+        //     this.state = 'polling'
+        //     this.listenPaymentStatus()
+        //     this.startPolling()
                         
-            this.timeoutId = setTimeout(async () => {
-                this.cleanup()
-                try {
-                    const res = await apiPayments.pollPaymentStatus(this.orderId)
-                    if (res?.data?.payment_status === 'paid') {
-                        this.state = 'success'
-                    } else {
-                        this.state = 'failed'
-                    }
-                } catch (e) {
-                    this.state = 'failed'
-                }
+        //     this.timeoutId = setTimeout(async () => {
+        //         this.cleanup()
+        //         try {
+        //             const res = await apiPayments.pollPaymentStatus(this.orderId)
+        //             if (res?.data?.payment_status === 'paid') {
+        //                 this.state = 'success'
+        //             } else {
+        //                 this.state = 'failed'
+        //             }
+        //         } catch (e) {
+        //             this.state = 'failed'
+        //         }
                 
-            }, 30000)
+        //     }, 30000)
 
-        } catch (e) {
-            console.error('Payment return error:', e)
-            this.state = 'failed'
-        }
+        // } catch (e) {
+        //     console.error('Payment return error:', e)
+        //     this.state = 'failed'
+        // }
     },
 
     async mounted() {
@@ -152,20 +153,18 @@ export default {
 
 <template>
     <div class="payment-result">
-        <!-- Verifying hash -->
+        
         <div v-if="state === 'verifying'" class="state-container">
             <Loader :size="48" class="spinner" />
             <div class="title">{{ $t('payment.verifying') }}</div>
         </div>
 
-        <!-- Polling DB for IPN confirmation -->
         <div v-else-if="state === 'polling'" class="state-container">
-            <Loader :size="48" class="spinner" />
+            <q-spinner-hourglass  color="yellow" size="5em" />
             <div class="title">{{ $t('payment.confirming') }}</div>
             <div class="subtext">{{ $t('payment.doNotClose') }}</div>
         </div>
 
-        <!-- Payment confirmed -->
         <div v-else-if="state === 'success'" class="state-container">
             <CircleCheckBig :size="64" color="#10b981" />
             <div class="title">{{ $t('payment.success') }}</div>
@@ -178,7 +177,6 @@ export default {
             </q-btn>
         </div>
 
-        <!-- Payment failed -->
         <div v-else class="state-container">
             <CircleX :size="64" color="#ef4444" />
             <div class="title">{{ $t('payment.failed') }}</div>

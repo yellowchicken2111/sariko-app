@@ -122,12 +122,25 @@ export default {
 
         <!-- Loading -->
         <div v-if="isLoading" class="skeleton-list">
-            <q-skeleton v-for="n in 3" :key="n" type="rect" height="88px" style="border-radius:16px;" animation="pulse" />
+            <div v-for="n in 4" :key="n" class="sk-card">
+                <div class="sk-row">
+                    <div class="sk-left">
+                        <q-skeleton type="text" width="130px" height="15px" animation="pulse" />
+                        <q-skeleton type="text" width="100px" height="13px" animation="pulse" style="margin-top:6px;" />
+                    </div>
+                    <div class="sk-right">
+                        <q-skeleton type="rect" width="72px" height="22px" style="border-radius:12px;" animation="pulse" />
+                        <q-skeleton type="text" width="36px" height="11px" animation="pulse" style="margin-top:6px;" />
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Empty -->
         <div v-else-if="filteredOrders.length === 0" class="empty-state">
-            <p>{{ $t('seller_orders.empty') }}</p>
+            <div class="empty-icon">🧾</div>
+            <div class="empty-title">{{ $t('seller_orders.empty') }}</div>
+            <div class="empty-subtitle">{{ $t('seller_orders.empty_subtitle') }}</div>
         </div>
 
         <!-- Grouped list -->
@@ -272,12 +285,52 @@ export default {
 .badge-done      { background: rgba(34,197,94,0.15);   color: var(--color-success); }
 .badge-cancelled { background: rgba(239,68,68,0.1);    color: #ef4444; }
 
+/* Skeleton */
+.sk-card {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.sk-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.sk-left { flex: 1; }
+
+.sk-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+/* Empty state */
 .empty-state {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 60px 0;
-    color: var(--text-secondary);
-    font-size: 14px;
+    padding: 60px 20px;
+    gap: 8px;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 4px;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.empty-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
 }
 </style>

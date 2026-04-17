@@ -131,6 +131,11 @@
             "title_total_amount": "Tổng cộng",
             "button_label_checkout": "Đặt hàng"
         },
+        "validation": {
+            "missing_phone": "Cần có số điện thoại để đặt hàng.",
+            "missing_address": "Cần có địa chỉ giao hàng.",
+            "fix": "Cập nhật →"
+        },
         "modal_cart_conflict": {
             "title_header": "Tạo giỏ hàng mới?",
             "text_message_1": "Bạn đã có sản phẩm từ",
@@ -217,7 +222,9 @@
         "status_confirmed": "Đã xác nhận",
         "status_ready": "Sẵn sàng",
         "status_done": "Hoàn thành",
-        "status_cancelled": "Đã huỷ"
+        "status_cancelled": "Đã huỷ",
+        "empty_title": "Chưa có đơn hàng",
+        "empty_subtitle": "Đơn hàng của bạn sẽ hiện ở đây sau khi đặt."
     },
     "order_detail": {
         "cancelled_reason": "Lý do"
@@ -225,6 +232,7 @@
     "seller_dashboard": {
         "section_recent_orders": "Đơn hàng gần đây",
         "empty_orders": "Chưa có đơn hàng",
+        "empty_orders_subtitle": "Đơn hàng mới sẽ tự động xuất hiện ở đây.",
         "action_accept": "Nhận đơn",
         "action_mark_ready": "Đã sẵn sàng",
         "action_ready_to_deliver": "Sẵn sàng giao",
@@ -318,7 +326,8 @@
         "status_cancelled": "Đã huỷ",
         "group_today": "Hôm nay",
         "group_yesterday": "Hôm qua",
-        "empty": "Chưa có đơn hàng"
+        "empty": "Chưa có đơn hàng",
+        "empty_subtitle": "Đơn hàng mới sẽ tự động xuất hiện ở đây."
     },
     "seller_order_detail": {
         "page_title": "Chi tiết đơn hàng",
