@@ -1,16 +1,19 @@
 <script>
-import { User, Phone, Image } from 'lucide-vue-next';
+import { User, Phone, Camera } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth/authStore';
 import apiUsers from '@/apis/users/apiUsers';
+import { supabase } from '@/lib/supabase';
 
 export default {
-    components: { User, Phone, Image },
+    components: { User, Phone, Camera },
 
     data() {
         return {
             name: '',
             phone: '',
             avatarUrl: '',
+            avatarPreview: null,
+            uploadingAvatar: false,
             saving: false,
             nameError: null,
             phoneError: null,
@@ -24,6 +27,10 @@ export default {
         user() {
             return this.authStore.user
         },
+        initials() {
+            if (!this.name) return '?'
+            return this.name.trim().charAt(0).toUpperCase()
+        },
         isDirty() {
             return (
                 this.name !== (this.user?.fullName || '') ||
@@ -32,7 +39,7 @@ export default {
             )
         },
         canSave() {
-            return this.isDirty && !this.saving && !this.nameError && !this.phoneError
+            return this.isDirty && !this.saving && !this.nameError && !this.phoneError && !this.uploadingAvatar
         }
     },
 
@@ -43,6 +50,45 @@ export default {
     },
 
     methods: {
+        triggerFileInput() {
+            this.$refs.fileInput.click()
+        },
+
+        async onFileSelected(event) {
+            const file = event.target.files[0]
+            if (!file) return
+
+            if (!file.type.startsWith('image/')) {
+                this.$q.notify({ classes: 'quasar-notify-negative', message: this.$t('edit_profile_page.error_avatar_type'), position: 'bottom', timeout: 2000 })
+                return
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                this.$q.notify({ classes: 'quasar-notify-negative', message: this.$t('edit_profile_page.error_avatar_size'), position: 'bottom', timeout: 2000 })
+                return
+            }
+
+            this.avatarPreview = URL.createObjectURL(file)
+            this.uploadingAvatar = true
+
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                const ext = file.name.split('.').pop()
+                const path = `${user.id}/${Date.now()}.${ext}`
+
+                const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+                if (error) throw error
+
+                const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+                this.avatarUrl = publicUrl
+            } catch (e) {
+                console.error('ProfileForm - avatar upload -', e)
+                this.avatarPreview = null
+                this.$q.notify({ classes: 'quasar-notify-negative', message: this.$t('edit_profile_page.error_avatar_upload'), position: 'bottom', timeout: 2000 })
+            } finally {
+                this.uploadingAvatar = false
+            }
+        },
+
         validateName() {
             if (!this.name || !this.name.trim()) {
                 this.nameError = this.$t('edit_profile_page.validation_name_required')
@@ -147,19 +193,23 @@ export default {
             />
         </div>
 
-        <!-- Avatar URL field -->
+        <!-- Avatar upload -->
         <div class="form-field">
             <label class="field-label">
-                <Image :size="16" /> {{ $t('edit_profile_page.label_avatar') }}
+                <Camera :size="16" /> {{ $t('edit_profile_page.label_avatar') }}
             </label>
-            <q-input
-                v-model="avatarUrl"
-                dense
-                outlined
-                dark
-                :placeholder="$t('edit_profile_page.placeholder_avatar')"
-                :hint="$t('edit_profile_page.helper_avatar')"
-            />
+            <div class="avatar-upload-wrap" @click="triggerFileInput">
+                <div class="avatar-upload-circle">
+                    <img v-if="avatarPreview || avatarUrl" :src="avatarPreview || avatarUrl" class="avatar-preview-img" />
+                    <span v-else class="avatar-initials-text">{{ initials }}</span>
+                </div>
+                <div class="avatar-upload-badge">
+                    <q-spinner v-if="uploadingAvatar" size="12px" color="black" />
+                    <Camera v-else :size="12" />
+                </div>
+            </div>
+            <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="onFileSelected" />
+            <span class="avatar-hint">{{ $t('edit_profile_page.helper_avatar') }}</span>
         </div>
 
         <!-- Save button -->
@@ -198,6 +248,58 @@ export default {
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.3px;
+}
+
+.avatar-upload-wrap {
+    position: relative;
+    width: 80px;
+    cursor: pointer;
+    align-self: center;
+}
+
+.avatar-upload-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(245, 166, 35, 0.15);
+    border: 1px solid rgba(245, 166, 35, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-initials-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.avatar-upload-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-main);
+}
+
+.avatar-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
 }
 
 .btn-save {
