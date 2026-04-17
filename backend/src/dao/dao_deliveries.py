@@ -12,6 +12,7 @@ class DAODeliveries(DAOBase):
         self._table_name = "deliveries"
 
     def create_delivery(self, order_id: str, provider: str, status: str,
+                        user_id: str = None, seller_user_id: str = None,
                         lalamove_order_id: str = None, share_link: str = None):
         try:
             data = {
@@ -19,6 +20,10 @@ class DAODeliveries(DAOBase):
                 "provider": provider,
                 "status": status,
             }
+            if user_id:
+                data["user_id"] = user_id
+            if seller_user_id:
+                data["seller_user_id"] = seller_user_id
             if lalamove_order_id:
                 data["lalamove_order_id"] = lalamove_order_id
             if share_link:

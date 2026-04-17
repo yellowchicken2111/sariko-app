@@ -7,6 +7,7 @@ import OrderActions from '@/components/order-details/OrderActions.vue';
 import DeliveryTracker from '@/components/order-details/DeliveryTracker.vue';
 import { useOrderStore } from '@/stores/order/orderStore.js';
 import { useDeliveryStore } from '@/stores/delivery/deliveryStore.js';
+import { supabase } from '@/lib/supabase';
 
 export default {
     components: {
@@ -22,6 +23,12 @@ export default {
         orderId: {
             required: true,
             type: String
+        }
+    },
+
+    data() {
+        return {
+            _orderChannel: null,
         }
     },
 
@@ -46,9 +53,30 @@ export default {
         }
     },
 
+    methods: {
+        listenOrder() {
+            const channelName = `order-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`
+            this._orderChannel = supabase
+                .channel(channelName)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'orders',
+                    filter: `id=eq.${this.orderId}`,
+                }, (payload) => {
+                    useOrderStore().currentOrder = { ...useOrderStore().currentOrder, ...payload.new }
+                })
+                .subscribe((status, err) => {
+                    console.log(`Realtime channel ${channelName} status: `, status)
+                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
+                })
+        },
+    },
+
     async mounted() {
         const orderStore = useOrderStore()
         await orderStore.getOrderDetail(this.orderId)
+        this.listenOrder()
 
         if (this.shouldTrackDelivery) {
             useDeliveryStore().startWatching(this.orderId)
@@ -56,6 +84,7 @@ export default {
     },
 
     beforeUnmount() {
+        if (this._orderChannel) supabase.removeChannel(this._orderChannel)
         useDeliveryStore().stopWatching()
     }
 }

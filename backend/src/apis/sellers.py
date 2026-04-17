@@ -177,6 +177,8 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                 order_id=order_id,
                 provider="lalamove",
                 status=result.status,
+                user_id=full_order.get("user_id"),
+                seller_user_id=full_order.get("seller_user_id"),
                 lalamove_order_id=result.lalamove_order_id,
                 share_link=result.share_link,
             )

@@ -57,12 +57,12 @@ export const useAuthStore = defineStore("authStore", {
                 const meta = session.user.user_metadata || {};
                 this.user = {
                     id: session.user.id,
-                    fullName: meta.fullname || '',
+                    fullName: meta.fullname || this.user?.fullName || '',
                     email: session.user.email,
-                    phone: null,
+                    phone: this.user?.phone || null,
                     isSeller: meta.is_seller || false,
-                    avatarUrl: null,
-                    sellerId: null
+                    avatarUrl: this.user?.avatarUrl || null,
+                    sellerId: this.user?.sellerId || null
                 };
                 if (this.viewMode === 'buyer' && meta.is_seller) {
                     this.viewMode = 'seller'

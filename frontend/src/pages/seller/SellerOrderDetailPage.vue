@@ -1,16 +1,24 @@
 <script>
-import { ArrowLeft } from 'lucide-vue-next';
+import { supabase } from '@/lib/supabase';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import LayoutSellerOrderDetail from '@/layouts/seller/LayoutSellerOrderDetail.vue';
 import SellerOrderDetailContent from '@/components/seller-order-detail/SellerOrderDetailContent.vue';
 import SellerOrderActionBar from '@/components/seller-order-detail/SellerOrderActionBar.vue';
+import PageBreadcrumbs from '@/components/shared/PageBreadcrumbs.vue';
 
 export default {
     name: 'SellerOrderDetailPage',
 
-    components: { ArrowLeft, LayoutSellerOrderDetail, SellerOrderDetailContent, SellerOrderActionBar },
+    components: { LayoutSellerOrderDetail, SellerOrderDetailContent, SellerOrderActionBar, PageBreadcrumbs },
 
     props: ['orderId'],
+
+    data() {
+        return {
+            orderChannel: null,
+            deliveryChannel: null,
+        }
+    },
 
     computed: {
         store()    { return useDashboardStore() },
@@ -19,12 +27,56 @@ export default {
         loading()  { return this.store.orderDetailLoading },
     },
 
-    mounted() {
-        useDashboardStore().loadOrderDetail(this.orderId)
+    async mounted() {
+        await useDashboardStore().loadOrderDetail(this.orderId)
+        this.listenOrder()
+        this.listenDelivery()
     },
 
     beforeUnmount() {
+        this.cleanup()
         useDashboardStore().clearOrderDetail()
+    },
+
+    methods: {
+        listenOrder() {
+            const store = useDashboardStore()
+            const channelName = `seller-order-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`
+            this.orderChannel = supabase
+                .channel(channelName)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'orders',
+                    filter: `id=eq.${this.orderId}`,
+                }, () => store.refreshOrderDetailSilent(this.orderId))
+                .subscribe((status, err) => {
+                    console.log(`Realtime channel ${channelName} status:`, status)
+                    if (err) console.log(`Realtime channel ${channelName} error:`, err)
+                })
+        },
+
+        listenDelivery() {
+            const store = useDashboardStore()
+            const channelName = `seller-delivery-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`
+            this.deliveryChannel = supabase
+                .channel(channelName)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'deliveries',
+                    filter: `order_id=eq.${this.orderId}`,
+                }, () => store.refreshDeliverySilent(this.orderId))
+                .subscribe((status, err) => {
+                    console.log(`Realtime channel ${channelName} status:`, status)
+                    if (err) console.log(`Realtime channel ${channelName} error:`, err)
+                })
+        },
+
+        cleanup() {
+            if (this.orderChannel) supabase.removeChannel(this.orderChannel)
+            if (this.deliveryChannel) supabase.removeChannel(this.deliveryChannel)
+        },
     },
 }
 </script>
@@ -34,10 +86,7 @@ export default {
 
         <template #Header>
             <div class="page-header">
-                <button class="back-btn" @click="$router.back()">
-                    <ArrowLeft :size="20" />
-                </button>
-                <span class="page-title">{{ $t('seller_order_detail.page_title') }}</span>
+                <PageBreadcrumbs :title="$t('seller_order_detail.page_title')" />
             </div>
         </template>
 
@@ -108,27 +157,7 @@ export default {
 
 <style lang="scss" scoped>
 .page-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
     padding: 16px;
-}
-
-.back-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-}
-
-.page-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text-primary);
-    font-family: $sariko-font-family-secondary;
 }
 
 .skeleton-list {

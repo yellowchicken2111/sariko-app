@@ -3,11 +3,17 @@ import apiSellerDashboard from "@/apis/sellers/apiSellerDashboard";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
 
 const DELIVERY_TERMINAL = ['COMPLETED', 'CANCELED', 'REJECTED', 'EXPIRED']
+const ORDER_TERMINAL = ['done', 'cancelled']
 
 let _pollTimer = null
+let _orderPollTimer = null
 
 function _stopPolling() {
     if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null }
+}
+
+function _stopOrderPolling() {
+    if (_orderPollTimer) { clearInterval(_orderPollTimer); _orderPollTimer = null }
 }
 
 export const useDashboardStore = defineStore("dashboardStore", {
@@ -121,6 +127,24 @@ export const useDashboardStore = defineStore("dashboardStore", {
                 this.orderDelivery = res?.delivery || null
             } catch (e) {
                 console.error('dashboardStore - _fetchDelivery -', e)
+            }
+        },
+
+        async refreshOrderDetailSilent(orderId) {
+            try {
+                const res = await apiSellerDashboard.getOrderDetail(orderId)
+                this.orderDetails = res.order || null
+            } catch (e) {
+                console.error('dashboardStore - refreshOrderDetailSilent -', e)
+            }
+        },
+
+        async refreshDeliverySilent(orderId) {
+            try {
+                const res = await apiDeliveries.getSellerDeliveryStatus(orderId)
+                this.orderDelivery = res?.delivery || null
+            } catch (e) {
+                console.error('dashboardStore - refreshDeliverySilent -', e)
             }
         },
 

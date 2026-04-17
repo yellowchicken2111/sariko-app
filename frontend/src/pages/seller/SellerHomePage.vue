@@ -16,6 +16,7 @@ export default {
     data() {
         return {
             channel: null,
+            deliveryChannel: null,
             fetchDebounceTimer: null,
             activeFilter: 'all',
         }
@@ -86,8 +87,34 @@ export default {
                 })
         },
 
+        listenDeliveries() {
+            const sellerUserId = useAuthStore().user?.id
+            if (!sellerUserId) return
+
+            const channelName = `seller-deliveries-${sellerUserId}-${Math.random().toString(36).slice(2, 8)}`
+            this.deliveryChannel = supabase
+                .channel(channelName)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'deliveries',
+                    filter: `seller_user_id=eq.${sellerUserId}`,
+                }, (payload) => {
+                    const d = payload.new
+                    useDashboardStore().setDeliveryStatus(d.order_id, {
+                        status: d.status,
+                        rebook_count: d.rebook_count,
+                    })
+                })
+                .subscribe((status, err) => {
+                    console.log(`Realtime channel ${channelName} status: `, status)
+                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
+                })
+        },
+
         cleanup() {
             if (this.channel) supabase.removeChannel(this.channel)
+            if (this.deliveryChannel) supabase.removeChannel(this.deliveryChannel)
             if (this.fetchDebounceTimer) clearTimeout(this.fetchDebounceTimer)
         },
     },
@@ -95,6 +122,7 @@ export default {
     async mounted() {
         await Promise.all([this.fetchOrders(), this.fetchSellerInfo()])
         this.listenOrders()
+        this.listenDeliveries()
     },
 
     beforeUnmount() {

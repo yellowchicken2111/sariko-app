@@ -81,8 +81,8 @@ export const useDeliveryStore = defineStore("deliveryStore", {
                     }
                 })
                 .subscribe((status, err) => {
-                    console.log('Delivery realtime subscribe status:', status)
-                    if (err) console.error('Delivery realtime error:', err)
+                    console.log(`Realtime channel ${channelName} status: `, status)
+                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
                 })
         },
 
