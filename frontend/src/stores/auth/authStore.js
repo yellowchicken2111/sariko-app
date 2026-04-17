@@ -119,7 +119,8 @@ export const useAuthStore = defineStore("authStore", {
                     }
                 }
 
-                const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'INITIAL_SESSION') return;
                     this._setFromSession(session);
                 });
                 this._authSub = subscription;
