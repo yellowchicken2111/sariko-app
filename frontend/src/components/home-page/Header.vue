@@ -79,6 +79,12 @@ export default {
     cursor: pointer;
 }
 
+.user-profile :deep(img) {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
 .initials-avatar {
     width: 64px;
     height: 64px;

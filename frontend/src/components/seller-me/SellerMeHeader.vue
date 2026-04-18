@@ -73,6 +73,12 @@ export default {
     margin-bottom: 14px;
 }
 
+.avatar-img :deep(img) {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
 .avatar-initials {
     width: 88px;
     height: 88px;

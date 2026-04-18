@@ -6,19 +6,24 @@ export default {
         order() {
             return useOrderStore().currentOrder
         },
+        subtotal() {
+            if (!this.order) return 0
+            return (this.order.total_amount || 0) - (this.order.delivery_fee || 0)
+        },
         totalText() {
             if (!this.order) return ''
             return new Intl.NumberFormat('vi-VN').format(this.order.total_amount) + ' ₫'
         },
         statusLabel() {
             const map = {
-                pending: 'Pending',
-                confirmed: 'Confirmed',
-                ready: 'Ready',
-                done: 'Completed',
-                cancelled: 'Cancelled',
+                pending: 'status_pending',
+                confirmed: 'status_confirmed',
+                ready: 'status_ready',
+                done: 'status_done',
+                cancelled: 'status_cancelled',
             }
-            return map[this.order?.status] || this.order?.status
+            const key = map[this.order?.status]
+            return key ? this.$t(`order_detail.${key}`) : this.order?.status
         },
         statusColor() {
             if (this.order?.payment_status === 'pending' && this.order?.status !== 'cancelled') return 'orange'
@@ -44,25 +49,25 @@ export default {
 <template>
     <div v-if="order" class="order-card">
         <div class="order-row">
-            <span class="label">Status</span>
+            <span class="label">{{ $t('order_detail.label_status') }}</span>
             <q-badge :color="statusColor" text-color="black">
                 {{ statusLabel }}
             </q-badge>
         </div>
         <div class="order-row">
-            <span class="label">Seller</span>
+            <span class="label">{{ $t('order_detail.label_seller') }}</span>
             <span>{{ order.seller_profiles?.store_name }}</span>
         </div>
         <div class="order-row">
-            <span class="label">Delivery</span>
-            <span>{{ order.delivery_method === 'delivery' ? 'Delivery' : 'Pickup' }}</span>
+            <span class="label">{{ $t('order_detail.label_delivery') }}</span>
+            <span>{{ order.delivery_method === 'delivery' ? $t('order_detail.delivery_method_delivery') : $t('order_detail.delivery_method_pickup') }}</span>
         </div>
         <div class="order-row" v-if="order.delivery_address">
-            <span class="label">Address</span>
+            <span class="label">{{ $t('order_detail.label_address') }}</span>
             <span class="address-text">{{ order.delivery_address }}</span>
         </div>
         <div class="order-row" v-if="order.note">
-            <span class="label">Note</span>
+            <span class="label">{{ $t('order_detail.label_note') }}</span>
             <span>{{ order.note }}</span>
         </div>
 
@@ -75,8 +80,16 @@ export default {
 
         <div class="dashed-line" />
 
+        <div class="order-row">
+            <span class="label">{{ $t('order_detail.label_subtotal') }}</span>
+            <span>{{ formatPrice(subtotal) }}</span>
+        </div>
+        <div class="order-row" v-if="order.delivery_fee">
+            <span class="label">{{ $t('order_detail.label_delivery_fee') }}</span>
+            <span>{{ formatPrice(order.delivery_fee) }}</span>
+        </div>
         <div class="order-row total">
-            <span>Total</span>
+            <span>{{ $t('order_detail.label_total') }}</span>
             <span>{{ totalText }}</span>
         </div>
     </div>

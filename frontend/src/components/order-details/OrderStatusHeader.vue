@@ -21,34 +21,38 @@ export default {
             return this.order?.status === 'cancelled'
         },
         statusTitle() {
-            if (this.isPaymentPending) return 'Awaiting Payment'
+            if (this.isPaymentPending) return this.$t('order_detail.status_title_awaiting_payment')
             const map = {
-                pending: 'Order Placed!',
-                confirmed: 'Order Confirmed',
-                ready: 'Order Ready!',
-                done: 'Order Completed',
-                cancelled: 'Order Cancelled',
+                pending: 'status_title_pending',
+                confirmed: 'status_title_confirmed',
+                ready: 'status_title_ready',
+                done: 'status_title_done',
+                cancelled: 'status_title_cancelled',
             }
-            return map[this.order?.status] || 'Order'
+            const key = map[this.order?.status]
+            return key ? this.$t(`order_detail.${key}`) : this.$t('order_detail.title')
         },
         cancellationReason() {
             return this.order?.cancellation_reason || null
         },
         statusSubtext() {
-            if (this.isPaymentPending) return 'Complete your payment to send this order to the seller.'
+            if (this.isPaymentPending) return this.$t('order_detail.status_subtext_awaiting_payment')
             if (this.isCancelled && this.cancellationReason) {
                 return `${this.$t('order_detail.cancelled_reason')}: ${this.cancellationReason}`
             }
             const map = {
-                pending: 'Your order has been sent. The seller will confirm shortly.',
-                confirmed: 'The seller is preparing your order.',
+                pending: 'status_subtext_pending',
+                confirmed: 'status_subtext_confirmed',
                 ready: this.order?.delivery_method === 'delivery'
-                    ? this.$t('delivery_tracker.status_subtext_ready')
-                    : 'Your order is ready! Head to the store.',
-                done: 'Enjoy your meal!',
-                cancelled: 'This order has been cancelled.',
+                    ? 'delivery_tracker.status_subtext_ready'
+                    : 'order_detail.status_subtext_ready_pickup',
+                done: 'status_subtext_done',
+                cancelled: 'status_subtext_cancelled',
             }
-            return map[this.order?.status] || ''
+            const key = map[this.order?.status]
+            if (!key) return ''
+            if (this.order?.status === 'ready') return this.$t(key)
+            return this.$t(`order_detail.${key}`)
         },
         statusIconColor() {
             if (this.isPaymentPending) return '#f97316'

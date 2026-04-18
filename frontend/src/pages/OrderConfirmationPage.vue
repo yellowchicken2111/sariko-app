@@ -36,15 +36,20 @@ export default {
         order() {
             return useOrderStore().currentOrder
         },
-        shouldTrackDelivery() {
+        shouldShowTracker() {
             if (!this.order) return false
             return this.order.delivery_method === 'delivery'
-                && (this.order.status === 'ready' || this.order.status === 'done')
+                && ['confirmed', 'ready', 'done'].includes(this.order.status)
+        },
+        shouldWatchDelivery() {
+            if (!this.order) return false
+            return this.order.delivery_method === 'delivery'
+                && ['ready', 'done'].includes(this.order.status)
         },
     },
 
     watch: {
-        shouldTrackDelivery(val) {
+        shouldWatchDelivery(val) {
             if (val) {
                 useDeliveryStore().startWatching(this.orderId)
             } else {
@@ -78,7 +83,7 @@ export default {
         await orderStore.getOrderDetail(this.orderId)
         this.listenOrder()
 
-        if (this.shouldTrackDelivery) {
+        if (this.shouldWatchDelivery) {
             useDeliveryStore().startWatching(this.orderId)
         }
     },
@@ -102,7 +107,7 @@ export default {
         </template>
 
         <template #DeliveryTracking>
-            <DeliveryTracker v-if="shouldTrackDelivery" />
+            <DeliveryTracker v-if="shouldShowTracker" :order-status="order?.status" />
         </template>
 
         <template #OrderInfo>

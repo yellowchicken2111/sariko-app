@@ -262,13 +262,19 @@ export default {
 
                 <q-separator style="background: rgba(255,255,255,0.08); margin: 10px 0;" />
 
-                <!-- Total -->
+                
+                <div v-if="order.delivery_fee > 0" class="item-row" style="opacity: 0.7;">
+                    <span class="total-label">{{ $t('seller_home.delivery_fee') }}</span>
+                    <span class="item-price">{{ fmt(order.delivery_fee) }}</span>
+                </div>
+
+                
                 <div class="total-row">
                     <span class="total-label">Total</span>
                     <span class="total-value">{{ order.totalText }}</span>
                 </div>
 
-                <!-- Inline error card -->
+                <!-- Error card -->
                 <div v-if="orderErrors[order.id]" class="error-card">
                     <div class="error-card__header">
                         <AlertTriangle :size="16" />

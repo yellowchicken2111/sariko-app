@@ -1,9 +1,10 @@
 <script>
-import { Bike, Phone, ExternalLink, Loader, Package, MapPin, CircleCheck } from 'lucide-vue-next';
+import { Bike, Phone, ExternalLink, Loader, Package, MapPin, CircleCheck, ChefHat } from 'lucide-vue-next';
 import { mapState } from 'pinia';
 import { useDeliveryStore } from '@/stores/delivery/deliveryStore';
 
 const STEPS = [
+    { key: 'PREPARING', icon: 'ChefHat' },
     { key: 'ASSIGNING_DRIVER', icon: 'Loader' },
     { key: 'ON_GOING', icon: 'Bike' },
     { key: 'PICKED_UP', icon: 'Package' },
@@ -11,7 +12,11 @@ const STEPS = [
 ]
 
 export default {
-    components: { Bike, Phone, ExternalLink, Loader, Package, MapPin, CircleCheck },
+    components: { Bike, Phone, ExternalLink, Loader, Package, MapPin, CircleCheck, ChefHat },
+
+    props: {
+        orderStatus: { type: String, default: null },
+    },
 
     computed: {
         ...mapState(useDeliveryStore, ['currentDelivery']),
@@ -20,7 +25,7 @@ export default {
             return this.currentDelivery
         },
         currentStatus() {
-            return this.delivery?.status || 'ASSIGNING_DRIVER'
+            return this.delivery?.status || 'PREPARING'
         },
         isCancelled() {
             return ['CANCELLED', 'CANCELED', 'REJECTED', 'EXPIRED'].includes(this.currentStatus)
@@ -64,7 +69,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="delivery" class="delivery-tracker">
+    <div v-if="delivery || orderStatus" class="delivery-tracker">
 
         <div class="tracker-title">{{ $t('delivery_tracker.title') }}</div>
 
@@ -90,7 +95,7 @@ export default {
         </div>
 
         <!-- Driver Card -->
-        <div v-if="hasDriver && !isCancelled" class="driver-card">
+        <div v-if="hasDriver && !isCancelled && currentStatus !== 'COMPLETED'" class="driver-card">
             <div class="driver-avatar">
                 <Bike :size="20" />
             </div>
@@ -104,7 +109,7 @@ export default {
         </div>
 
         <!-- Tracking Link -->
-        <button v-if="hasTrackingUrl && !isCancelled" class="tracking-btn" @click="openTracking">
+        <button v-if="hasTrackingUrl && !isCancelled && currentStatus !== 'COMPLETED'" class="tracking-btn" @click="openTracking">
             <MapPin :size="16" />
             {{ $t('delivery_tracker.track_rider') }}
             <ExternalLink :size="14" />
@@ -166,6 +171,22 @@ export default {
     background: var(--color-accent);
     color: #121b2f;
     box-shadow: 0 0 12px rgba(245, 166, 35, 0.4);
+    position: relative;
+}
+
+.timeline-step.current:not(:last-child) .step-dot::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--color-accent);
+    border-right-color: rgba(245, 166, 35, 0.4);
+    animation: spin-ring 1.2s linear infinite;
+}
+
+@keyframes spin-ring {
+    to { transform: rotate(360deg); }
 }
 
 .step-line {

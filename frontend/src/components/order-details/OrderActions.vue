@@ -51,10 +51,10 @@ export default {
                     window.location.href = res.data.payment_url
                     return
                 }
-                this.$q.notify({ type: 'negative', message: 'Could not create payment. Please try again.', position: 'top' })
+                this.$q.notify({ type: 'negative', message: this.$t('order_detail.error_payment_create'), position: 'top' })
             } catch (e) {
                 console.error('Pay now failed:', e)
-                this.$q.notify({ type: 'negative', message: 'Payment failed. Please try again.', position: 'top' })
+                this.$q.notify({ type: 'negative', message: this.$t('order_detail.error_payment_failed'), position: 'top' })
             } finally {
                 this.payingNow = false
             }
@@ -66,7 +66,7 @@ export default {
                 await this.orderStore.cancelOrder(this.order.id)
                 this.showCancelDialog = false
             } catch (e) {
-                this.$q.notify({ type: 'negative', message: 'Failed to cancel order', position: 'top' })
+                this.$q.notify({ type: 'negative', message: this.$t('order_detail.error_cancel_failed'), position: 'top' })
             } finally {
                 this.cancelling = false
             }
@@ -79,23 +79,23 @@ export default {
     <div v-if="hasActions" class="actions">
         <q-btn v-if="isPaymentPending" class="btn-pay-now" dense no-caps :loading="payingNow" @click="onPayNow">
             <CreditCard style="margin-right: 8px" :size="18" />
-            Pay Now · {{ totalText }}
+            {{ $t('order_detail.btn_pay_now', { amount: totalText }) }}
         </q-btn>
 
         <q-btn v-if="isPending" class="btn-cancel" flat dense no-caps @click="showCancelDialog = true">
-            Cancel Order
+            {{ $t('order_detail.btn_cancel') }}
         </q-btn>
 
         <!-- Cancel Confirmation Dialog -->
         <q-dialog v-model="showCancelDialog">
             <q-card class="cancel-dialog">
                 <q-card-section>
-                    <div class="dialog-title">Cancel this order?</div>
-                    <div class="dialog-text">This action cannot be undone.</div>
+                    <div class="dialog-title">{{ $t('order_detail.dialog_cancel_title') }}</div>
+                    <div class="dialog-text">{{ $t('order_detail.dialog_cancel_text') }}</div>
                 </q-card-section>
                 <q-card-actions align="right">
-                    <q-btn flat no-caps label="Keep Order" v-close-popup />
-                    <q-btn flat no-caps label="Cancel Order" color="negative" :loading="cancelling" @click="onCancelOrder" />
+                    <q-btn flat no-caps :label="$t('order_detail.dialog_keep')" v-close-popup />
+                    <q-btn flat no-caps :label="$t('order_detail.dialog_confirm_cancel')" color="negative" :loading="cancelling" @click="onCancelOrder" />
                 </q-card-actions>
             </q-card>
         </q-dialog>

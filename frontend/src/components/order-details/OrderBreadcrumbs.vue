@@ -7,5 +7,5 @@ export default {
 </script>
 
 <template>
-    <PageBreadcrumbs title="Order Detail" backTo="/orders" />
+    <PageBreadcrumbs :title="$t('order_detail.title')" backTo="/orders" />
 </template>

@@ -49,10 +49,11 @@ class DAODeliveries(DAOBase):
                 .table(self._table_name)
                 .select("*")
                 .eq("order_id", order_id)
-                .maybe_single()
+                .order("created_at", desc=True)
+                .limit(1)
                 .execute()
             )
-            return result.data if result else None
+            return result.data[0] if result and result.data else None
 
         except PostgrestExceptionAPIError as e:
             raise Exception(f"Supabase error - read_delivery_by_order_id: {e}")
