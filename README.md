@@ -61,7 +61,7 @@
 ## 📂 Project Structure
 
 ```
-v0-pangea/
+sariko-app/
 ├── frontend/                    # Vue 3 + Quasar PWA
 │   ├── src/
 │   │   ├── pages/              # Page components
@@ -100,8 +100,8 @@ v0-pangea/
 
 **1. Clone & install dependencies**
 ```bash
-git clone https://github.com/yourorg/v0-pangea.git
-cd v0-pangea
+git clone https://github.com/yellowchicken2111/sariko-app.git
+cd sariko-app
 
 # Frontend
 cd frontend && npm install

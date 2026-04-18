@@ -3,7 +3,7 @@ GIT_SHA=$(git rev-parse --short HEAD)
 VERSION="v1.0.0"
 
 # docker login
-cat /app/Jack/v0-pangea/backend/src/envs/.docker-creds | docker login --username sariko --password-stdin
+cat /app/Jack/sariko-app/backend/src/envs/.docker-creds | docker login --username sariko --password-stdin
 
 docker build -t sariko-backend:$VERSION .
 
