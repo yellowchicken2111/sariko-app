@@ -18,23 +18,23 @@
 
 ### Buyer App
 - 🏪 Browse sellers & food items with live inventory
-- 🛒 Smart cart (single-seller constraint, Lalamove delivery quotes)
-- 💳 VNPay integration (sandbox + live)
-- 📍 Goong Maps for address selection & reverse geocoding
+- 🛒 Smart cart with delivery cost estimation
+- 💳 Payment processing integration
+- 📍 Address selection & mapping
 - 🌐 Multi-language support (English, Vietnamese)
 - 🚀 Progressive Web App (offline-ready, installable)
-- 📱 Real-time order tracking with Lalamove integration
+- 📱 Real-time order tracking
 
 ### Seller Dashboard
-- 📊 Recent orders with accept/reject workflow
-- 📋 Order status management (pending → confirmed → ready → done)
-- 🚚 Auto-book Lalamove for delivery orders
-- 📈 Basic analytics (order count, revenue)
+- 📊 Order management & workflow
+- 📋 Order status tracking
+- 🚚 Delivery integration
+- 📈 Basic analytics
 
 ### Admin Panel (Separate Repo)
-- 💰 **Seller Payout System** — Calculate commissions, manage withdrawals, VAT configs
-- 📊 **Analytics Dashboard** — Track revenue, top items, top sellers, order funnel
-- ⚙️ **Settings** — Commission rate & VAT management
+- 💰 **Seller Payout System** — Commission management, withdrawal processing
+- 📊 **Analytics Dashboard** — Key marketplace metrics
+- ⚙️ **Settings** — Configuration management
 
 ---
 
@@ -46,23 +46,15 @@
 - **UI**: Quasar Framework
 - **State**: Pinia
 - **Routing**: Vue Router
-- **i18n**: Custom (en-PH, vi)
-- **Maps**: Goong Maps (via proxy)
+- **i18n**: Multi-language support
 - **Icons**: Lucide Vue Next
-- **PWA**: Workbox
+- **PWA**: Progressive Web App ready
 
-### Backend (Main)
+### Backend
 - **API**: FastAPI (Python 3.10+)
-- **Database**: Supabase (PostgreSQL)
-- **Auth**: Supabase JWT + JWKS verification
-- **External APIs**: VNPay, Lalamove, Goong Maps
-- **Deployment**: AWS EC2 + nginx
-
-### Backend (Admin Panel — Separate)
-- **API**: FastAPI
-- **Database**: Shared Supabase
-- **Batch Jobs**: APScheduler (payout calculation, analytics aggregation)
-- **Deployment**: Separate container
+- **Database**: PostgreSQL
+- **Auth**: JWT-based authentication
+- **Integration**: Payment processing, delivery logistics, mapping services
 
 ---
 
@@ -70,35 +62,29 @@
 
 ```
 v0-pangea/
-├── frontend/                    # Buyer app (Vue 3 + Quasar)
+├── frontend/                    # Vue 3 + Quasar PWA
 │   ├── src/
-│   │   ├── pages/              # Page components (orchestrators)
-│   │   ├── layouts/            # Layout wrappers
+│   │   ├── pages/              # Page components
 │   │   ├── components/         # Reusable components
-│   │   ├── stores/             # Pinia stores (auth, cart, orders)
-│   │   ├── router/             # Vue Router config
-│   │   ├── services/           # API client, formatters
+│   │   ├── stores/             # State management
+│   │   ├── router/             # Routing
+│   │   ├── services/           # API client & utilities
 │   │   ├── i18n/               # Translations
-│   │   └── assets/             # Styles, icons
-│   ├── .env.development
-│   ├── .env.production
+│   │   └── assets/             # Styles & resources
 │   └── vite.config.js
 │
-├── backend/                     # Main backend (FastAPI)
+├── backend/                     # FastAPI backend
 │   ├── src/
-│   │   ├── main.py             # FastAPI app + routes
-│   │   ├── apis/               # Route handlers (orders, sellers, etc.)
-│   │   ├── dao/                # Data access objects (Supabase queries)
-│   │   ├── schemas/            # Pydantic models
+│   │   ├── main.py
+│   │   ├── apis/               # API routes
+│   │   ├── dao/                # Data access layer
+│   │   ├── schemas/            # Request/response models
 │   │   ├── sql/                # Database migrations
-│   │   ├── services/           # External API clients (VNPay, Lalamove, Goong)
-│   │   └── envs/               # Environment config
-│   ├── requirements.txt
-│   └── Dockerfile
+│   │   └── services/           # Business logic
+│   └── requirements.txt
 │
 ├── CLAUDE.md                    # Development guidelines
-├── README.md                    # This file
-└── .env.example                 # Environment template
+└── README.md                    # This file
 ```
 
 ---
@@ -126,26 +112,14 @@ cd ../backend && pip install -r requirements.txt
 
 **2. Environment Setup**
 
-Create `.env.development` in `frontend/`:
-```env
-VITE_SUPABASE_URL=https://xxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyxx...
-VITE_API_BASE=/rest
+Copy `.env.example` files and fill in your configuration:
+
+```bash
+cp frontend/.env.example frontend/.env.development
+cp backend/src/envs/.env.example backend/src/envs/.env.local
 ```
 
-Create `backend/src/envs/.env.local`:
-```env
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_API_KEY=eyxx... (service role)
-SUPABASE_JWKS_URL=https://xxx.supabase.co/auth/v1/jwks
-VNPAY_TMN_CODE=xxxxx
-VNPAY_HASH_SECRET=xxxxx
-VNPAY_API_URL=https://sandbox.vnpayment.vn
-LALAMOVE_MODE=mock
-LALAMOVE_API_KEY=xxxxx
-LALAMOVE_API_SECRET=xxxxx
-GOONG_API_KEY=xxxxx
-```
+Then update with your database credentials, API keys, and service configurations. See documentation for details.
 
 **3. Database Setup**
 
@@ -176,171 +150,44 @@ Open http://localhost:8081 in your browser.
 
 ---
 
-## 📡 API Contract
+## 📡 API
 
-### Base URL
-- **Dev**: `http://localhost:5000/rest/v1/`
-- **Prod**: `https://api.sariko.store/rest/v1/`
+The backend provides a RESTful API for:
+- User authentication (signup, login)
+- Seller discovery & menu browsing
+- Order management (create, view, cancel)
+- Payment processing
+- Delivery tracking
 
-### Key Endpoints
-
-| Group | Endpoint | Method | Auth |
-|-------|----------|--------|------|
-| **Auth** | `/auth/login` | POST | No |
-| | `/auth/signup` | POST | No |
-| | `/users/me` | GET | Yes |
-| **Orders** | `/orders` | GET | Yes |
-| | `/orders` | POST | Yes |
-| | `/orders/{id}` | GET | Yes |
-| | `/orders/{id}/cancel` | PATCH | Yes |
-| **Cart** | `/cart` | GET | Yes |
-| | `/cart` | POST | Yes |
-| | `/cart/{item_id}` | DELETE | Yes |
-| **Sellers** | `/sellers/{slug}` | GET | No |
-| | `/sellers/{slug}/menu` | GET | No |
-| | `/sellers/me/orders` | GET | Yes (seller) |
-| **Payments** | `/payments/vnpay/create/{order_id}` | POST | Yes |
-| | `/payments/vnpay/return` | GET | No |
-| **Deliveries** | `/deliveries/quotation` | POST | Yes |
-| | `/deliveries/{order_id}/status` | GET | Yes |
-
-Full API docs: See `CLAUDE.md` → **API Contract** section
+API documentation is available in `CLAUDE.md` for development team members.
 
 ---
 
-## 🗄 Database Schema
+## 🗄 Database
 
-**Main Tables (12 total):**
-- `users` — Buyer & seller accounts
-- `seller_profiles` — Seller info, ratings, bank details
-- `menu_categories` — Food categories per seller
-- `food_items` — Individual menu items with pricing
-- `carts` — Active shopping carts (one per user)
-- `cart_items` — Items in cart with quantities
-- `orders` — Order headers (buyer, seller, total, status)
-- `order_items` — Items ordered (snapshot of menu at order time)
-- `reviews` — Buyer ratings for sellers
-- `payments` — Payment records (VNPay transactions)
-- `user_addresses` — Delivery addresses per buyer
-- `deliveries` — Lalamove tracking info per order
+PostgreSQL database with schema for:
+- User accounts & authentication
+- Seller information & menus
+- Shopping carts & orders
+- Payments & delivery tracking
+- Reviews & ratings
 
-**Admin-specific tables** (in separate admin-panel repo):
-- `admin_seller_payouts` — Seller balance tracking
-- `admin_withdrawal_requests` — Withdrawal request queue
-- `admin_payout_transactions` — Audit log for payouts
-- `admin_payout_settings` — Commission & VAT configs
-- `admin_analytics_snapshots` — Daily aggregated metrics
-
-Full schema: `backend/src/sql/create_tables.sql`
-
----
-
-## 🔐 Security
-
-### Authentication
-- **Frontend**: Supabase JS client (JWT in localStorage)
-- **Backend**: JWKS verification on each request via `Depends(verify_token)`
-- **Admin Panel**: Single admin email with role check
-
-### Data Protection
-- VNPay IPN validation (server-to-server only, not client)
-- CORS restricted to allowed origins (configured pre-production)
-- Seller bank details encrypted in database
-- No sensitive data in API responses beyond user's own data
-
-### Secrets
-- `.env` files never committed (use `.env.example`)
-- Environment vars configured per deployment
-- Service role key stored securely (backend only)
+Database migrations are in `backend/src/sql/`
 
 ---
 
 ## 🌍 Deployment
 
-### Frontend
+Frontend and backend are deployed to separate production environments.
+
+### Build
 ```bash
+# Frontend
 npm run build
-# Output: dist/
-# Deploy to Cloudflare Pages, Vercel, or AWS S3 + CloudFront
-```
 
-### Backend
-```bash
+# Backend
 docker build -t sariko-backend .
-docker run -p 5000:5000 --env-file .env.local sariko-backend
-# Or deploy to AWS ECS, DigitalOcean App Platform, etc.
 ```
-
-### Production Checklist
-- [ ] CORS origins restricted to `sariko.store` domains
-- [ ] HTTPS enabled (SSL certificate)
-- [ ] VNPay switched to live mode
-- [ ] Lalamove switched to live mode
-- [ ] Database backups configured
-- [ ] Error logging & monitoring set up
-- [ ] `/dev` routes disabled in backend
-- [ ] Admin email credentials secured
-
----
-
-## 📊 Status
-
-**MVP Launch**: April 18, 2026
-
-### Completed ✅
-- Buyer app (home, seller page, cart, checkout)
-- Auth (login, signup, session restore)
-- Order management (create, view, cancel, history)
-- VNPay integration (sandbox)
-- Lalamove integration (mock + live stubs)
-- Order tracking with real-time delivery status
-- Seller dashboard (recent orders, status management)
-- Address management with Goong Maps
-- Notifications (order status updates via polling)
-- Admin panel scaffolding
-
-### In Progress 🔄
-- VNPay sandbox → live transition
-- Lalamove live testing
-- Email notifications
-- Analytics refinement
-
-### Planned 📋
-- Admin payout system (batch calculation, withdrawal approvals)
-- Advanced analytics (funnel, cohort analysis)
-- Seller onboarding wizard
-- Customer support chat
-- Loyalty program
-
----
-
-## 🤝 Contributing
-
-1. Create a feature branch: `git checkout -b feature/my-feature`
-2. Commit with clear messages: `git commit -m "feat: add my feature"`
-3. Open a pull request
-4. Follow code style in `CLAUDE.md` and `.claude/rules/`
-
-Commit prefixes: `feat:`, `fix:`, `refactor:`
-
----
-
-## 📚 Documentation
-
-- **[CLAUDE.md](CLAUDE.md)** — Development guidelines, patterns, architecture
-- **[Frontend Guide](frontend/FRONTEND_GUIDE.md)** — Vue 3 patterns, Page/Layout/Component structure
-- **[Backend Guide](backend/BACKEND_GUIDE.md)** — FastAPI patterns, DAO design, API docs
-- **[Code Style](/.claude/rules/code-style.md)** — Frontend/Backend conventions
-- **[Security Rules](/.claude/rules/security.md)** — Auth, data protection, secrets
-
----
-
-## 🐛 Known Issues
-
-- `delivery_method` hardcoded to 'delivery' (no pickup option yet)
-- Cart refresh briefly shows empty state
-- CORS not yet restricted to specific origins (fix before production)
-- Admin panel in separate repo (will be integrated post-MVP)
 
 ---
 
@@ -361,13 +208,11 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) file f
 
 ## 🙏 Acknowledgments
 
-- **Quasar Framework** for excellent Vue 3 component library
-- **Supabase** for managed PostgreSQL backend
-- **VNPay** for payment processing in Vietnam
-- **Lalamove** for delivery logistics
-- **Goong Maps** for Vietnamese mapping services
+- **Quasar Framework** for Vue 3 components
+- **FastAPI** for Python backend framework
+- **Vite** for fast frontend build tooling
 
 ---
 
-**Built with ❤️ by Sariko Team**  
+**Built by Sariko Team**  
 HCMC, Vietnam 🇻 🇳
