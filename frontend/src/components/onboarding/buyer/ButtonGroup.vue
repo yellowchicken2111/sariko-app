@@ -25,9 +25,15 @@ export default {
                 console.error('Failed to save onboarding profile:', e)
             } finally {
                 this.isSaving = false
-                this.$router.push('/home')
+                const route = useAuthStore().user?.isSeller ? '/seller/home' : '/home'
+                this.$router.push(route)
             }
         },
+        skipOnboarding() {
+            const authStore = useAuthStore()
+            const route = authStore.user?.isSeller ? '/seller/home' : '/home'
+            this.$router.push(route)
+        }
     },
 }
 </script>
@@ -49,7 +55,7 @@ export default {
         class="button-skip"
         no-caps
         flat
-        to="/home"
+        @click="skipOnboarding"
         >
             {{ $t('onboarding_page.buyer.button_group.button_label_text_skip_for_now') }}
         </q-btn>

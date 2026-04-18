@@ -60,13 +60,10 @@ export const useAuthStore = defineStore("authStore", {
                     fullName: meta.fullname || this.user?.fullName || '',
                     email: session.user.email,
                     phone: this.user?.phone || null,
-                    isSeller: meta.is_seller || false,
+                    isSeller: false,
                     avatarUrl: this.user?.avatarUrl || null,
                     sellerId: this.user?.sellerId || null
                 };
-                if (this.viewMode === 'buyer' && meta.is_seller) {
-                    this.viewMode = 'seller'
-                }
             } else {
                 this.session = null;
                 this.user = null;
@@ -87,6 +84,10 @@ export const useAuthStore = defineStore("authStore", {
                             if (profile.user.name) this.user.fullName = profile.user.name
                             if (profile.user.phone) this.user.phone = profile.user.phone
                             if (profile.user.seller_id) this.sellerId = profile.user.seller_id
+                            if (profile.user.is_seller !== undefined) this.user.isSeller = profile.user.is_seller
+                            if (this.viewMode === 'buyer' && profile.user.is_seller) {
+                                this.viewMode = 'seller'
+                            }
                         }
                     } catch (e) {
                         console.error(`authStore - bootstrap - profile fetch failed: ${e}`);
@@ -210,6 +211,10 @@ export const useAuthStore = defineStore("authStore", {
                         if (profile.user.name) this.user.fullName = profile.user.name
                         if (profile.user.phone) this.user.phone = profile.user.phone
                         if (profile.user.seller_id) this.sellerId = profile.user.seller_id
+                        if (profile.user.is_seller !== undefined) this.user.isSeller = profile.user.is_seller
+                        if (this.viewMode === 'buyer' && profile.user.is_seller) {
+                            this.viewMode = 'seller'
+                        }
                     }
                 } catch (e) {
                     console.error(`authStore - onClickedSignin - profile fetch failed: ${e}`);

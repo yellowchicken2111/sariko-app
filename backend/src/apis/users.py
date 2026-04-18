@@ -29,11 +29,12 @@ def get_current_user_profile(user=Depends(verify_token)):
     try:
         dao_users = DAOUsers()
         users = dao_users.get_users(user_id=user["id"])
-        if users.get("is_seller"):
+        if users and users.get("is_seller"):
             dao = DAOSellerProfiles()
             profile = dao.read_seller_profile_by_user_id(user["id"])
-            users.update({"seller_id": profile["id"]})
-            
+            if profile:
+                users.update({"seller_id": profile["id"]})
+
         return {"success": True , "user": users}
     
     except HTTPException as e:
