@@ -196,7 +196,19 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ── Public Seller Endpoints (wildcard routes last) ──
+
+@router.get("/featured-dishes")
+def get_featured_dishes():
+    try:
+        dao = DAOFoodItems()
+        dishes = dao.read_featured_dishes()
+        print(dishes)
+        return {"success": True, "featured_dishes": dishes}
+    except Exception as e:
+        logger.exception(f"Exception in GET /sellers/featured-dishes: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 @router.get("/{slug_name}")
 def get_seller_by_slug_name(slug_name):

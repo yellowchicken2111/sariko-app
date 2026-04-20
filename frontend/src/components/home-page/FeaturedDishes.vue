@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useHomeStore } from '@/stores/homeStore';
 import FeaturedDishCard from '@/components/home-page/FeaturedDishCard.vue';
 
@@ -15,9 +15,7 @@ export default {
     },
 
     computed: {
-        ...mapState(useHomeStore, [
-            "featuredDishes"
-        ]),
+        ...mapState(useHomeStore, ['featuredDishes']),
 
         visibleDishes() {
             return this.featuredDishes.slice(0, this.maxVisible)
@@ -26,6 +24,14 @@ export default {
         hasMore() {
             return this.featuredDishes.length > this.maxVisible
         }
+    },
+
+    methods: {
+        ...mapActions(useHomeStore, ['fetchFeaturedDishes'])
+    },
+
+    created() {
+        this.fetchFeaturedDishes()
     }
 }
 
@@ -50,12 +56,23 @@ export default {
 
     </div>
     <div>
-        <div class="row q-gutter-md" style="justify-content: stretch;">
+        <!-- Skeleton -->
+        <div v-if="featuredDishes.length === 0" class="row q-gutter-md" style="justify-content: stretch;">
+            <div v-for="i in 4" :key="i" class="col-6" style="width: 45%;">
+                <q-skeleton type="rect" height="140px" animation="pulse" style="border-radius: 0.75rem;" />
+            </div>
+        </div>
+
+        <div v-else class="row q-gutter-md" style="justify-content: stretch;">
             <div v-for="(dish, index) in visibleDishes" :key="index" class="col-6" style="width: 45%;">
                 <FeaturedDishCard
+                :itemId="dish.id"
                 :name="dish.name"
                 :price="dish.price"
                 :imgSrc="dish.imgSrc"
+                :sellerSlug="dish.sellerSlug"
+                :sellerId="dish.sellerId"
+                :sellerName="dish.sellerName"
                 />
             </div>
         </div>

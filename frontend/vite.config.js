@@ -84,9 +84,9 @@ export default defineConfig({
         port: 8081,
         proxy: {
             '/rest': {
-                // target: 'http://localhost:5000',
+                target: 'http://localhost:5000',
                 // target: 'http://10.10.1.114:5000',
-                target: 'https://api.sariko.store',
+                // target: 'https://api.sariko.store',
                 changeOrigin: true,
             }
         },

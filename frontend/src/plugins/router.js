@@ -148,12 +148,6 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/account/privacy',
-        name: 'account-privacy',
-        component: () => import('@/pages/PrivacyPage.vue'),
-        meta: { requiresAuth: true }
-    },
-    {
         path: '/notifications',
         name: 'notifications',
         component: () => import('@/pages/NotificationsPage.vue'),

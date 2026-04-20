@@ -78,25 +78,10 @@ export default {
         </div>
 
         <div class="food-info">
-
-            <div class="">
-                <div class="food-name">
-                    {{ name }}
-                </div>
-
-                <div class="food-price">
-                    ₫{{ price }}
-                </div>
-            </div>
-
-            <div class="button-add-cart">
-                <q-btn
-                flat
-                dense
-                no-caps
-                :loading="loading"
-                @click="handleAddToCart"
-                >
+            <div class="food-name">{{ name }}</div>
+            <div class="price-row">
+                <div class="food-price">₫{{ price }}</div>
+                <q-btn flat dense no-caps :loading="loading" @click="handleAddToCart">
                     <q-icon name="fa-solid fa-circle-plus" style="color: #f5A623" />
                     <template #loading>
                         <q-spinner-dots color="orange" size="16px" />
@@ -121,9 +106,13 @@ export default {
 
 .food-info {
     padding: 10px;
+}
+
+.price-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 4px;
 }
 
 .food-name {
