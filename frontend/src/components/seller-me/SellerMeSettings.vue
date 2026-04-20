@@ -31,11 +31,11 @@ export default {
                 <ChevronRight size="16" class="menu-arrow" />
             </router-link>
 
-            <router-link to="/account/privacy" class="menu-item">
+            <a href="/docs/privacy-policy.html" target="_blank" class="menu-item">
                 <div class="menu-icon"><Shield size="18" /></div>
                 <span class="menu-label">{{ $t('seller_me.menu_label_privacy') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
-            </router-link>
+            </a>
 
         </div>
     </div>

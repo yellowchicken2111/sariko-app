@@ -13,6 +13,13 @@ class DAOFoodItems(DAOBase):
         super().__init__()
         self._table_name = "food_items"
         
+    def read_featured_dishes(self, limit: int = 12):
+        query = self._supabase_client.table(self._table_name)
+        query = query.select('id, name, price_text, image_url, seller_profiles(id, slug, store_name)')
+        query = query.eq('is_featured', True).eq('is_available', True).limit(limit)
+        result = query.execute()
+        return result.data if result and result.data else []
+
     def read_food_items_by_seller_id(self, seller_id: str):
         
         # query = self._supabase_client.table(self._table_name)

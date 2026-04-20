@@ -1,8 +1,8 @@
 <script>
-import { FileText, Shield, MessageCircle, ChevronRight, ExternalLink } from 'lucide-vue-next';
+import { FileText, Shield, Info, MessageCircle, ChevronRight, ExternalLink } from 'lucide-vue-next';
 
 export default {
-    components: { FileText, Shield, MessageCircle, ChevronRight, ExternalLink },
+    components: { FileText, Shield, Info, MessageCircle, ChevronRight, ExternalLink },
 
     computed: {
         supportMailto() {
@@ -28,11 +28,17 @@ export default {
                 <ChevronRight size="16" class="menu-arrow" />
             </router-link>
 
-            <router-link to="/account/privacy" class="menu-item">
+            <a href="/docs/privacy-policy.html" target="_blank" class="menu-item">
                 <div class="menu-icon"><Shield size="18" /></div>
                 <span class="menu-label">{{ $t('account_page.menu_label_privacy') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
-            </router-link>
+            </a>
+
+            <a href="/docs/about.html" target="_blank" class="menu-item">
+                <div class="menu-icon"><Info size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_about') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </a>
         </div>
         <div class="app-version">{{ $t('account_page.app_version') }}</div>
     </div>

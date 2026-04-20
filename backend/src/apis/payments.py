@@ -159,8 +159,8 @@ def vnpay_ipn(request: Request):
 
     # Idempotency: skip if already paid
     if order.get("payment_status") == "paid":
-        logger.warning(f"VNPay IPN: Order {order_id} already paid, skipping")
-        return JSONResponse(content={"RspCode": "02", "Message": "Order already confirmed"})
+            logger.warning(f"VNPay IPN: Order {order_id} already paid, skipping")
+            return JSONResponse(content={"RspCode": "02", "Message": "Order already confirmed"})
 
     if response_code == "00" and transaction_status == "00":
         # Payment successful — update status

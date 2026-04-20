@@ -21,6 +21,15 @@ export const apiSellers = {
         }
     },
 
+    getFeaturedDishes: async () => {
+        try {
+            const response = await apiClient.get(`/v1/sellers/featured-dishes`)
+            return response
+        } catch (error) {
+            throw new Error(error.response?.data?.detail || 'Failed to getFeaturedDishes')
+        }
+    },
+
     getSellerFullMenu: async (slugName) => {
         try {
             const response = await apiClient.get(`/v1/sellers/${slugName}/menu`)
