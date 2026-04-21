@@ -1,8 +1,8 @@
 <script>
-import { FileText, Shield, Info, MessageCircle, ChevronRight, ExternalLink } from 'lucide-vue-next';
+import { FileText, Shield, Info, Truck, CreditCard, MessageCircle, ChevronRight, ExternalLink } from 'lucide-vue-next';
 
 export default {
-    components: { FileText, Shield, Info, MessageCircle, ChevronRight, ExternalLink },
+    components: { FileText, Shield, Info, Truck, CreditCard, MessageCircle, ChevronRight, ExternalLink },
 
     computed: {
         supportMailto() {
@@ -22,15 +22,27 @@ export default {
                 <ExternalLink size="14" class="menu-arrow" />
             </a>
 
-            <router-link to="/account/terms" class="menu-item">
+            <a href="https://buyerdox.sariko.store/" target="_blank" class="menu-item">
                 <div class="menu-icon"><FileText size="18" /></div>
                 <span class="menu-label">{{ $t('account_page.menu_label_terms') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
-            </router-link>
+            </a>
 
             <a href="/docs/privacy-policy.html" target="_blank" class="menu-item">
                 <div class="menu-icon"><Shield size="18" /></div>
                 <span class="menu-label">{{ $t('account_page.menu_label_privacy') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </a>
+
+            <a href="/docs/sariko_shipping_policy.html" target="_blank" class="menu-item">
+                <div class="menu-icon"><Truck size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_shipping') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </a>
+
+            <a href="/docs/sariko_payment_methods.html" target="_blank" class="menu-item">
+                <div class="menu-icon"><CreditCard size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_payment_methods') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
             </a>
 

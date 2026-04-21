@@ -38,7 +38,7 @@ export default {
                         :item-id="food.id"
                         :name="food.name"
                         :price="food.price_text"
-                        :imgSrc="food.image_url"
+                        :imgSrc="food.image_url ? food.image_url : '/images/default-food-image.jpg'"
                         />
                     </div>
                 </div>

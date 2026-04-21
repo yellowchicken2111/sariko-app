@@ -105,22 +105,47 @@ class DAOSellerProfiles(DAOBase):
         
         
     def read_seller_user_id_by_seller_id(self, seller_id):
-        
+
         try:
             query = self._supabase_client.table(self._table_name)
             query = query.select("user_id").eq("id", seller_id)
-            
+
             query = query.maybe_single()
             result = query.execute()
             if result and result.data:
                 return result.data
-                
+
             return None
-        
+
         except PostgrestExceptionAPIError as e:
             raise Exception(f"Supabase error - read_seller_user_id_by_seller_id with seller_id {seller_id}: {e}")
-                
+
         except Exception as e:
             raise Exception(f"error read_seller_user_id_by_seller_id with seller_id {seller_id}: {e}")
+
+    def read_seller_order_info(self, seller_id: str):
+        """Fetch user_id + effective commission rate in one query for order creation."""
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .select("user_id, commission_rate_override, admin_tier_config(commission_rate)")
+                .eq("id", seller_id)
+                .maybe_single()
+                .execute()
+            )
+            if not result or not result.data:
+                return None
+            row = result.data
+            tier_rate = row["admin_tier_config"]["commission_rate"]
+            effective_rate = row["commission_rate_override"] if row["commission_rate_override"] is not None else tier_rate
+            return {
+                "user_id": row["user_id"],
+                "commission_rate": float(effective_rate),
+            }
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - read_seller_order_info: {e}")
+        except Exception as e:
+            raise Exception(f"error read_seller_order_info: {e}")
             
         
