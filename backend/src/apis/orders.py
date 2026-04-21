@@ -8,6 +8,7 @@ from fastapi import (
 )
 
 from core.auth import verify_token
+from dao.dao_admin_config import DAOAdminConfig
 from dao.dao_carts import DAOCarts
 from dao.dao_cart_items import DAOCartItems
 from dao.dao_orders import DAOOrders
@@ -43,25 +44,40 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
                 if (now - created).total_seconds() < 60:
                     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Duplicate order detected. Please wait.")
 
-    # 2. Calculate total (subtotal + delivery fee)
+    # 2. Calculate subtotal + commission (snapshot seller's rate at order time)
     cart_items = cart["cart_items"]
     subtotal = sum(
         item["food_items"]["price"] * item["quantity"]
         for item in cart_items
     )
     total_amount = subtotal + float(request.delivery_fee or 0)
-    
-    # 3. Get user id of seller
+
+    # 3. Get seller user_id + effective commission rate in one query
     dao_seller_profile = DAOSellerProfiles()
-    data = dao_seller_profile.read_seller_user_id_by_seller_id(cart["seller_id"])
-    seller_user_id = data["user_id"]
+    seller_info = dao_seller_profile.read_seller_order_info(cart["seller_id"])
+    if not seller_info:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Seller not found")
+
+    commission_rate = seller_info["commission_rate"]
+    commission_amount = round(subtotal * commission_rate, 2)
+
+    vat_rate = DAOAdminConfig().get_tax_rate("vat_rate")
+    vat_amount = round(commission_amount * vat_rate, 2)
+
+    payout_amount = round(subtotal - commission_amount - vat_amount, 2)
 
     # 4. Create order (include delivery fields if present)
     order = dao_orders.create_order(
         user_id=user_id,
         seller_id=cart["seller_id"],
-        seller_user_id=seller_user_id,
+        seller_user_id=seller_info["user_id"],
+        subtotal=subtotal,
         total_amount=total_amount,
+        commission_rate=commission_rate,
+        commission_amount=commission_amount,
+        vat_rate=vat_rate,
+        vat_amount=vat_amount,
+        payout_amount=payout_amount,
         delivery_method=request.delivery_method,
         delivery_address=request.delivery_address,
         note=request.note,

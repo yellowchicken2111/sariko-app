@@ -13,15 +13,17 @@ create table public.users (
   name text null,
   phone text null,
   role text null default 'customer'::text,
+  created_at timestamp without time zone null default now(),
   is_seller boolean null default false,
+  updated_at timestamp without time zone null default now(),
   avatar_url text null,
   preferred_language text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
   constraint users_pkey primary key (id),
   constraint users_email_key unique (email),
   constraint users_role_check check (
-    (role = any (array['customer'::text, 'seller'::text]))
+    (
+      role = any (array['customer'::text, 'seller'::text])
+    )
   )
 ) TABLESPACE pg_default;
 
@@ -36,7 +38,7 @@ create table public.user_addresses (
   is_default boolean not null default false,
   created_at timestamp with time zone not null default now(),
   constraint user_addresses_pkey primary key (id),
-  constraint user_addresses_user_id_fkey foreign key (user_id) references users (id) on update cascade on delete cascade
+  constraint user_addresses_user_id_fkey foreign KEY (user_id) references users (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;
 
 -- 3. SELLER PROFILES
@@ -57,12 +59,25 @@ create table public.seller_profiles (
   created_at timestamp without time zone null default now(),
   slug text not null,
   phone text null,
+  tier text not null default 'community'::text,
+  commission_rate_override numeric null,
+  bank_account_number text null,
+  bank_name text null,
+  bank_account_holder text null,
+  tax_category text not null default 'services'::text,
   constraint seller_profiles_pkey primary key (id),
   constraint seller_profiles_slug_key unique (slug),
-  constraint seller_profiles_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE
+  constraint seller_profiles_tier_fkey foreign KEY (tier) references admin_tier_config (tier),
+  constraint seller_profiles_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE,
+  constraint seller_profiles_tax_category_check check (
+    (
+      tax_category = any (array['goods'::text, 'services'::text])
+    )
+  )
 ) TABLESPACE pg_default;
 
 create index IF not exists idx_seller_location on public.seller_profiles using btree (lat, lon) TABLESPACE pg_default;
+
 
 -- 4. MENU CATEGORIES
 create table public.menu_categories (
@@ -74,7 +89,7 @@ create table public.menu_categories (
   created_at timestamp without time zone null default now(),
   updated_at timestamp without time zone null default now(),
   constraint menu_categories_pkey primary key (id),
-  constraint menu_categories_seller_id_fkey foreign key (seller_id) references seller_profiles (id) on delete cascade
+  constraint menu_categories_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 -- 5. FOOD ITEMS
@@ -108,8 +123,8 @@ create table public.carts (
   seller_id uuid null,
   created_at timestamp without time zone null default now(),
   constraint carts_pkey primary key (id),
-  constraint carts_seller_id_fkey foreign key (seller_id) references seller_profiles (id),
-  constraint carts_user_id_fkey foreign key (user_id) references users (id) on delete cascade
+  constraint carts_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
+  constraint carts_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 -- 7. CART ITEMS
@@ -119,8 +134,8 @@ create table public.cart_items (
   food_item_id uuid null,
   quantity integer not null,
   constraint cart_items_pkey primary key (id),
-  constraint cart_items_cart_id_fkey foreign key (cart_id) references carts (id) on delete cascade,
-  constraint cart_items_food_item_id_fkey foreign key (food_item_id) references food_items (id),
+  constraint cart_items_cart_id_fkey foreign KEY (cart_id) references carts (id) on delete CASCADE,
+  constraint cart_items_food_item_id_fkey foreign KEY (food_item_id) references food_items (id),
   constraint cart_items_quantity_check check ((quantity > 0))
 ) TABLESPACE pg_default;
 
@@ -143,19 +158,28 @@ create table public.orders (
   cancellation_reason text null,
   transaction_ref text null,
   seller_user_id uuid null,
+  subtotal numeric not null default 0,
+  commission_rate numeric not null default 0,
+  commission_amount numeric not null default 0,
+  payout_amount numeric not null default 0,
+  payout_status text not null default 'pending'::text,
+  payout_id uuid null,
+  vat_rate numeric not null default 0,
+  vat_amount numeric not null default 0,
   constraint orders_pkey primary key (id),
-  constraint orders_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
+  constraint orders_payout_id_fkey foreign KEY (payout_id) references admin_payouts (id) on delete set null,
   constraint orders_user_id_fkey foreign KEY (user_id) references users (id),
-  constraint orders_delivery_method_check check (
-    (
-      delivery_method = any (array['pickup'::text, 'delivery'::text])
-    )
-  ),
+  constraint orders_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
   constraint orders_payment_status_check check (
     (
       payment_status = any (
         array['pending'::text, 'paid'::text, 'failed'::text]
       )
+    )
+  ),
+  constraint orders_delivery_method_check check (
+    (
+      delivery_method = any (array['pickup'::text, 'delivery'::text])
     )
   ),
   constraint orders_status_check check (
@@ -167,6 +191,17 @@ create table public.orders (
           'ready'::text,
           'done'::text,
           'cancelled'::text
+        ]
+      )
+    )
+  ),
+  constraint orders_payout_status_check check (
+    (
+      payout_status = any (
+        array[
+          'pending'::text,
+          'processing'::text,
+          'paid_out'::text
         ]
       )
     )
@@ -187,8 +222,8 @@ create table public.order_items (
   unit_label_snapshot text null,
   quantity integer not null,
   constraint order_items_pkey primary key (id),
-  constraint order_items_food_item_id_fkey foreign key (food_item_id) references food_items (id),
-  constraint order_items_order_id_fkey foreign key (order_id) references orders (id) on delete cascade
+  constraint order_items_food_item_id_fkey foreign KEY (food_item_id) references food_items (id),
+  constraint order_items_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 -- 10. REVIEWS
@@ -201,10 +236,15 @@ create table public.reviews (
   comment text null,
   created_at timestamp without time zone null default now(),
   constraint reviews_pkey primary key (id),
-  constraint reviews_order_id_fkey foreign key (order_id) references orders (id) on delete cascade,
-  constraint reviews_seller_id_fkey foreign key (seller_id) references seller_profiles (id),
-  constraint reviews_user_id_fkey foreign key (user_id) references users (id),
-  constraint reviews_rating_check check (((rating >= 1) and (rating <= 5)))
+  constraint reviews_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE,
+  constraint reviews_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
+  constraint reviews_user_id_fkey foreign KEY (user_id) references users (id),
+  constraint reviews_rating_check check (
+    (
+      (rating >= 1)
+      and (rating <= 5)
+    )
+  )
 ) TABLESPACE pg_default;
 
 -- 11. PAYMENTS
@@ -217,7 +257,7 @@ create table public.payments (
   transaction_ref text null,
   created_at timestamp without time zone null default now(),
   constraint payments_pkey primary key (id),
-  constraint payments_order_id_fkey foreign key (order_id) references orders (id) on delete cascade
+  constraint payments_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 -- 12. DELIVERIES
@@ -235,10 +275,18 @@ create table public.deliveries (
   driver_plate text null,
   lalamove_order_id text null,
   rebook_count integer null default 0,
+  user_id uuid null,
+  seller_user_id uuid null,
   constraint deliveries_pkey primary key (id),
-  constraint deliveries_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
+  constraint deliveries_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE,
+  constraint deliveries_seller_user_id_fkey foreign KEY (seller_user_id) references users (id),
+  constraint deliveries_user_id_fkey foreign KEY (user_id) references users (id)
 ) TABLESPACE pg_default;
 
 create index IF not exists idx_deliveries_order_id on public.deliveries using btree (order_id) TABLESPACE pg_default;
 
 create index IF not exists idx_deliveries_lalamove_order_id on public.deliveries using btree (lalamove_order_id) TABLESPACE pg_default;
+
+create index IF not exists idx_deliveries_user_id on public.deliveries using btree (user_id) TABLESPACE pg_default;
+
+create index IF not exists idx_deliveries_seller_user_id on public.deliveries using btree (seller_user_id) TABLESPACE pg_default;

@@ -25,11 +25,11 @@ export default {
                 <ChevronRight size="16" class="menu-arrow" />
             </router-link>
 
-            <router-link to="/account/terms" class="menu-item">
+            <a href="https://buyerdox.sariko.store/" target="_blank" class="menu-item">
                 <div class="menu-icon"><FileText size="18" /></div>
                 <span class="menu-label">{{ $t('seller_me.menu_label_terms') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
-            </router-link>
+            </a>
 
             <a href="/docs/privacy-policy.html" target="_blank" class="menu-item">
                 <div class="menu-icon"><Shield size="18" /></div>

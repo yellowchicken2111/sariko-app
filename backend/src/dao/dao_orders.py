@@ -15,7 +15,10 @@ class DAOOrders(DAOBase):
         self._table_name = "orders"
 
     def create_order(self, user_id: str, seller_id: str, seller_user_id: str,
-        total_amount: float,
+        subtotal: float, total_amount: float,
+        commission_rate: float, commission_amount: float,
+        vat_rate: float, vat_amount: float,
+        payout_amount: float,
         delivery_method: str, delivery_address: Optional[str] = None, note: Optional[str] = None,
         delivery_lat: Optional[float] = None, delivery_lon: Optional[float] = None,
         delivery_fee: Optional[float] = None, quotation_id: Optional[str] = None
@@ -24,13 +27,19 @@ class DAOOrders(DAOBase):
             data = {
                 "user_id": user_id,
                 "seller_id": seller_id,
+                "seller_user_id": seller_user_id,
+                "subtotal": subtotal,
                 "total_amount": total_amount,
+                "commission_rate": commission_rate,
+                "commission_amount": commission_amount,
+                "vat_rate": vat_rate,
+                "vat_amount": vat_amount,
+                "payout_amount": payout_amount,
                 "delivery_method": delivery_method,
                 "delivery_address": delivery_address,
                 "note": note,
                 "status": "pending",
                 "payment_status": "pending",
-                "seller_user_id": seller_user_id
             }
             if delivery_lat is not None:
                 data["delivery_lat"] = delivery_lat

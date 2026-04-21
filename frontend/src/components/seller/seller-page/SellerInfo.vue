@@ -1,14 +1,14 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 import LayoutSellerInfo from '@/layouts/seller/LayoutSellerInfo.vue';
-import { Check, Star, Flame } from 'lucide-vue-next';
+import { User, Check, Star, Flame } from 'lucide-vue-next';
 import { useSellerStore } from '@/stores/seller/sellerStore'
 
 export default {
     
     components: {
         LayoutSellerInfo,
-        Check, Flame, Star
+        Check, Flame, Star, User
     },
 
     data() {
@@ -33,9 +33,12 @@ export default {
     <LayoutSellerInfo>
 
         <template #SellerAvatar>
-            <q-avatar size="64px">
+            <q-avatar v-if="seller?.avatarUrl" size="64px">
                 <img :src="seller?.avatar_url">
             </q-avatar>
+            <div v-else class="guest-icon">
+                <User :size="28" />
+            </div>
         </template>
 
         <template #SellerName>
@@ -80,6 +83,18 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+
+.guest-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
 .seller-name {
     font-family: $sariko-font-family-primary;
     font-size: 18px;
