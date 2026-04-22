@@ -228,6 +228,7 @@
         "status_ready": "Ready",
         "status_done": "Completed",
         "status_cancelled": "Cancelled",
+        "refund_pending": "Refund Pending",
         "empty_title": "No orders yet",
         "empty_subtitle": "Your orders will appear here once you place one."
     },
@@ -269,7 +270,11 @@
         "dialog_confirm_cancel": "Cancel Order",
         "error_payment_create": "Could not create payment. Please try again.",
         "error_payment_failed": "Payment failed. Please try again.",
-        "error_cancel_failed": "Failed to cancel order"
+        "error_cancel_failed": "Failed to cancel order",
+        "refund_pending": "Refund Processing",
+        "refund_processed": "Refund Completed",
+        "refund_failed": "Refund Failed",
+        "refund_failed_subtext": "Your refund was unsuccessful. Please contact support."
     },
     "seller_dashboard": {
         "section_recent_orders": "Recent Orders",

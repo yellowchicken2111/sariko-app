@@ -162,28 +162,53 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                 dropoff_address=dropoff_address,
             )
 
-            result = service.place_order(
-                quotation_id=quotation.quotation_id,
-                stop_id_0=quotation.stop_id_0,
-                stop_id_1=quotation.stop_id_1,
-                sender_name=seller.get("store_name", "Seller"),
-                sender_phone=_to_e164(seller.get("phone") or ""),
-                recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
-                recipient_phone=_to_e164(buyer.get("phone") or ""),
-                recipient_remarks=full_order.get("delivery_address") or "",
-            )
+            booking_result = None
+            last_booking_error = None
+            for attempt in range(1, 4):
+                try:
+                    booking_result = service.place_order(
+                        quotation_id=quotation.quotation_id,
+                        stop_id_0=quotation.stop_id_0,
+                        stop_id_1=quotation.stop_id_1,
+                        sender_name=seller.get("store_name", "Seller"),
+                        sender_phone=_to_e164(seller.get("phone") or ""),
+                        recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
+                        recipient_phone=_to_e164(buyer.get("phone") or ""),
+                        recipient_remarks=full_order.get("delivery_address") or "",
+                    )
+                    break
+                except Exception as e:
+                    last_booking_error = e
+                    logger.warning(f"[Delivery] place_order attempt {attempt}/3 failed for order={order_id}: {e}")
+
+            if booking_result is None:
+                logger.error(f"[Delivery] All 3 booking attempts failed for order={order_id}: {last_booking_error}")
+                dao_orders.update_order_status(order_id, "cancelled", "Driver booking failed after 3 attempts")
+                if order.get("payment_status") == "paid":
+                    from dao.dao_refunds import DAORefunds
+                    try:
+                        DAORefunds().create_refund(
+                            order_id=order_id,
+                            amount=order["total_amount"],
+                            reason="driver_booking_failed",
+                            original_txn_ref=order.get("transaction_ref"),
+                            ipn_data=order.get("ipn_data"),
+                        )
+                    except Exception as re:
+                        logger.warning(f"Failed to create refund record for order {order_id}: {re}")
+                raise HTTPException(status_code=503, detail="Unable to book a delivery driver. Your order has been cancelled.")
 
             dao_deliveries = DAODeliveries()
             dao_deliveries.create_delivery(
                 order_id=order_id,
                 provider="lalamove",
-                status=result.status,
+                status=booking_result.status,
                 user_id=full_order.get("user_id"),
                 seller_user_id=full_order.get("seller_user_id"),
-                lalamove_order_id=result.lalamove_order_id,
-                share_link=result.share_link,
+                lalamove_order_id=booking_result.lalamove_order_id,
+                share_link=booking_result.share_link,
             )
-            logger.info(f"[Delivery] Auto-booked order={order_id} lalamove={result.lalamove_order_id}")
+            logger.info(f"[Delivery] Auto-booked order={order_id} lalamove={booking_result.lalamove_order_id}")
 
         # Only update status after delivery booking succeeds (or if not a delivery order)
         updated = dao_orders.update_order_status(order_id, body.status, cancellation_reason)

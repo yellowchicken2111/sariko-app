@@ -166,6 +166,7 @@ create table public.orders (
   payout_id uuid null,
   vat_rate numeric not null default 0,
   vat_amount numeric not null default 0,
+  ipn_data jsonb null,
   constraint orders_pkey primary key (id),
   constraint orders_payout_id_fkey foreign KEY (payout_id) references admin_payouts (id) on delete set null,
   constraint orders_user_id_fkey foreign KEY (user_id) references users (id),
@@ -247,20 +248,8 @@ create table public.reviews (
   )
 ) TABLESPACE pg_default;
 
--- 11. PAYMENTS
-create table public.payments (
-  id uuid not null default gen_random_uuid (),
-  order_id uuid null,
-  method text null,
-  amount numeric null,
-  status text null,
-  transaction_ref text null,
-  created_at timestamp without time zone null default now(),
-  constraint payments_pkey primary key (id),
-  constraint payments_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
-) TABLESPACE pg_default;
 
--- 12. DELIVERIES
+-- 11. DELIVERIES
 create table public.deliveries (
   id uuid not null default gen_random_uuid (),
   order_id uuid null,
@@ -290,3 +279,65 @@ create index IF not exists idx_deliveries_lalamove_order_id on public.deliveries
 create index IF not exists idx_deliveries_user_id on public.deliveries using btree (user_id) TABLESPACE pg_default;
 
 create index IF not exists idx_deliveries_seller_user_id on public.deliveries using btree (seller_user_id) TABLESPACE pg_default;
+
+
+-- 12. refunds
+create table public.refunds (
+  id uuid not null default gen_random_uuid (),
+  order_id uuid not null,
+  amount numeric not null,
+  reason text not null,
+  status text not null default 'pending'::text,
+  original_txn_ref text null,
+  ipn_data jsonb null,
+  vnpay_refund_ref text null,
+  created_at timestamp with time zone null default now(),
+  processed_at timestamp with time zone null,
+  note text null,
+  constraint refunds_pkey primary key (id),
+  constraint refunds_order_id_fkey foreign KEY (order_id) references orders (id),
+  constraint refunds_reason_check check (
+    (
+      reason = any (
+        array[
+          'buyer_cancel'::text,
+          'driver_booking_failed'::text
+        ]
+      )
+    )
+  ),
+  constraint refunds_status_check check (
+    (
+      status = any (
+        array[
+          'pending'::text,
+          'processed'::text,
+          'failed'::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+
+-- 13. payments
+create table public.payments (
+  id uuid not null default gen_random_uuid (),
+  order_id uuid null,
+  method text null,
+  amount numeric null,
+  status text null,
+  transaction_ref text null,
+  created_at timestamp without time zone null default now(),
+  type text not null default 'charge'::text,
+  vnp_transaction_no text null,
+  refund_id uuid null,
+  constraint payments_pkey primary key (id),
+  constraint payments_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE,
+  constraint payments_refund_id_fkey foreign KEY (refund_id) references refunds (id) on delete set null,
+  constraint payments_type_check check (
+    (
+      type = any (array['charge'::text, 'refund'::text])
+    )
+  )
+) TABLESPACE pg_default;

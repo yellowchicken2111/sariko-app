@@ -41,6 +41,12 @@ export default {
                 cancelled: this.$t('orders_page.status_cancelled'),
             }
             return map[this.order.status] || this.order.status
+        },
+        refundStatus() {
+            return this.order.refunds?.[0]?.status || null
+        },
+        showRefundChip() {
+            return this.refundStatus === 'pending'
         }
     },
 
@@ -66,6 +72,10 @@ export default {
             <div class="status-badge" :class="statusClass">
                 {{ statusLabel }}
             </div>
+        </div>
+
+        <div v-if="showRefundChip" class="refund-chip refund-pending">
+            {{ $t('orders_page.refund_pending') }}
         </div>
 
         <div class="card-divider" />
@@ -183,6 +193,21 @@ export default {
 .status-cancelled {
     background: rgba(239, 68, 68, 0.10);
     color: $negative;
+}
+
+.refund-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.refund-pending {
+    background: rgba(245, 166, 35, 0.12);
+    color: #f5a623;
 }
 
 .card-divider {

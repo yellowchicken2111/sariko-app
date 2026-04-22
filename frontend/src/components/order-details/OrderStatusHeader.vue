@@ -64,6 +64,17 @@ export default {
                 cancelled: '#ef4444',
             }
             return map[this.order?.status] || '#ffffff'
+        },
+        refundStatus() {
+            return this.order?.refunds?.[0]?.status || null
+        },
+        refundChip() {
+            const map = {
+                pending:   { label: this.$t('order_detail.refund_pending'),   cls: 'refund-pending' },
+                processed: { label: this.$t('order_detail.refund_processed'), cls: 'refund-processed' },
+                failed:    { label: this.$t('order_detail.refund_failed'),    cls: 'refund-failed' },
+            }
+            return this.refundStatus ? map[this.refundStatus] : null
         }
     }
 }
@@ -78,6 +89,15 @@ export default {
         </div>
         <div class="status-title">{{ statusTitle }}</div>
         <div class="status-subtext">{{ statusSubtext }}</div>
+
+        <template v-if="refundChip">
+            <div class="refund-chip" :class="refundChip.cls">
+                {{ refundChip.label }}
+            </div>
+            <div v-if="refundStatus === 'failed'" class="refund-failed-subtext">
+                {{ $t('order_detail.refund_failed_subtext') }}
+            </div>
+        </template>
     </div>
 
     <div v-else class="loading-state">
@@ -106,6 +126,26 @@ export default {
 .status-subtext {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.refund-chip {
+    margin-top: 14px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.refund-pending   { background: rgba(245, 166, 35, 0.12); color: #f5a623; }
+.refund-processed { background: rgba(34, 197, 94, 0.12);  color: #22c55e; }
+.refund-failed    { background: rgba(239, 68, 68, 0.12);   color: #ef4444; }
+
+.refund-failed-subtext {
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
     text-align: center;
     line-height: 1.5;
 }

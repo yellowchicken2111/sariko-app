@@ -225,6 +225,7 @@
         "status_ready": "Sẵn sàng",
         "status_done": "Hoàn thành",
         "status_cancelled": "Đã huỷ",
+        "refund_pending": "Chờ hoàn tiền",
         "empty_title": "Chưa có đơn hàng",
         "empty_subtitle": "Đơn hàng của bạn sẽ hiện ở đây sau khi đặt."
     },
@@ -266,7 +267,11 @@
         "dialog_confirm_cancel": "Hủy đơn",
         "error_payment_create": "Không thể tạo thanh toán. Vui lòng thử lại.",
         "error_payment_failed": "Thanh toán thất bại. Vui lòng thử lại.",
-        "error_cancel_failed": "Hủy đơn thất bại"
+        "error_cancel_failed": "Hủy đơn thất bại",
+        "refund_pending": "Hoàn tiền đang xử lý",
+        "refund_processed": "Đã hoàn tiền",
+        "refund_failed": "Hoàn tiền thất bại",
+        "refund_failed_subtext": "Hoàn tiền không thành công. Vui lòng liên hệ hỗ trợ để được xử lý."
     },
     "seller_dashboard": {
         "section_recent_orders": "Đơn hàng gần đây",

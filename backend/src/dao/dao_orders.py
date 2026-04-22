@@ -67,7 +67,7 @@ class DAOOrders(DAOBase):
     def read_orders_by_user_id(self, user_id: str):
         try:
             result = self._supabase_client.table(self._table_name) \
-                .select("id, seller_id, status, total_amount, delivery_fee, payment_status, delivery_method, created_at, seller_profiles(store_name, slug, avatar_url)") \
+                .select("id, seller_id, status, total_amount, delivery_fee, payment_status, delivery_method, created_at, seller_profiles(store_name, slug, avatar_url), refunds(status)") \
                 .eq("user_id", user_id) \
                 .order("created_at", desc=True) \
                 .execute()
@@ -85,7 +85,7 @@ class DAOOrders(DAOBase):
     def read_order_by_id(self, order_id: str, user_id: str):
         try:
             result = self._supabase_client.table(self._table_name) \
-                .select("id, status, total_amount, delivery_fee, payment_status, delivery_method, delivery_address, note, cancellation_reason, created_at, seller_profiles(store_name, slug, avatar_url), order_items(id, food_item_id, name_snapshot, price_snapshot, unit_label_snapshot, quantity)") \
+                .select("id, status, total_amount, delivery_fee, payment_status, transaction_ref, ipn_data, delivery_method, delivery_address, note, cancellation_reason, created_at, seller_profiles(store_name, slug, avatar_url), order_items(id, food_item_id, name_snapshot, price_snapshot, unit_label_snapshot, quantity), refunds(status)") \
                 .eq("id", order_id) \
                 .eq("user_id", user_id) \
                 .maybe_single() \
@@ -120,7 +120,7 @@ class DAOOrders(DAOBase):
     def read_order_by_id_for_seller(self, order_id: str, seller_id: str):
         try:
             result = self._supabase_client.table(self._table_name) \
-                .select("id, user_id, status, total_amount, delivery_fee, payment_status, delivery_method, delivery_address, note, created_at, users(name, email), order_items(id, name_snapshot, price_snapshot, unit_label_snapshot, quantity)") \
+                .select("id, user_id, status, total_amount, delivery_fee, payment_status, transaction_ref, ipn_data, delivery_method, delivery_address, note, created_at, users(name, email), order_items(id, name_snapshot, price_snapshot, unit_label_snapshot, quantity)") \
                 .eq("id", order_id) \
                 .eq("seller_id", seller_id) \
                 .maybe_single() \
@@ -202,3 +202,14 @@ class DAOOrders(DAOBase):
             raise Exception(f"Supabase error - update_payment_status: {e}")
         except Exception as e:
             raise Exception(f"error update_payment_status: {e}")
+
+    def update_ipn_data(self, order_id: str, ipn_data: dict):
+        try:
+            self._supabase_client.table(self._table_name) \
+                .update({"ipn_data": ipn_data}) \
+                .eq("id", order_id) \
+                .execute()
+        except PostgrestExceptionAPIError as e:
+            raise Exception(f"Supabase error - update_ipn_data: {e}")
+        except Exception as e:
+            raise Exception(f"error update_ipn_data: {e}")

@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 
 from core.auth import verify_token
 from dao.dao_orders import DAOOrders
+from dao.dao_payments import DAOPayments
 
 router = APIRouter(prefix="/payments")
 logger = logging.getLogger(__name__)
@@ -166,6 +167,16 @@ def vnpay_ipn(request: Request):
         # Payment successful — update status
         try:
             dao_orders.update_payment_status(order_id=order_id, payment_status="paid", transaction_ref=txn_ref)
+            dao_orders.update_ipn_data(order_id=order_id, ipn_data=params)
+            DAOPayments().create_payment(
+                order_id=order_id,
+                method="vnpay",
+                amount=float(order["total_amount"]),
+                status="succeeded",
+                transaction_ref=txn_ref,
+                type="charge",
+                vnp_transaction_no=params.get("vnp_TransactionNo"),
+            )
             logger.warning(f"VNPay IPN: Payment success for order_id={order_id}, txn_ref={txn_ref}")
             return JSONResponse(content={"RspCode": "00", "Message": "Confirm Success"})
         except Exception as e:
