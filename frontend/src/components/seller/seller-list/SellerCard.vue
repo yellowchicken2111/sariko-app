@@ -1,4 +1,6 @@
 <script>
+import { User } from 'lucide-vue-next';
+
 export default {
     props: {
         sellerIndex: {
@@ -22,6 +24,10 @@ export default {
         }
     },
 
+    components: {
+        User
+    },
+
     methods: {
         onClicked() {
             this.$router.push(`/seller/${this.sellerSlugName}`)
@@ -35,9 +41,12 @@ export default {
     <div v-on:click="onClicked" :class="sellerIndex == 1 ? 'container-1st' : 'container'">
 
         <div class="seller-avatar">
-            <q-avatar size="48px">
+            <q-avatar v-if="sellerAvatarImageURL" size="48px">
                 <img :src="sellerIndex == 1 ? '/seller-avatar/seller_dummy_avatar_teresa.jpg' : sellerAvatarImageURL">
             </q-avatar>
+            <div v-else class="guest-icon">
+                <User :size="28" />
+            </div>
         </div>
 
         <div class="seller-info">
@@ -85,6 +94,17 @@ export default {
 
 .seller-avatar {
     margin-right: 10px;
+}
+
+.guest-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .seller-name {
