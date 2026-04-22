@@ -16,7 +16,6 @@ export default {
         },
         sellerAvatarImageURL: {
             type: String,
-            required: true
         },
         sellerFeaturedCategory: {
             type: String,
