@@ -2,12 +2,17 @@ import logging
 
 from dao.dao_seller_profiles import DAOSellerProfiles
 from dao.dao_food_items import DAOFoodItems
+from dao.dao_menu_categories import DAOMenuCategories
 
 from fastapi import APIRouter, HTTPException, Depends, status
 
 from core.auth import verify_token
 from dao.dao_orders import DAOOrders
-from schemas.request_schemas import RequestUpdateOrderStatus
+from schemas.request_schemas import (
+    RequestUpdateOrderStatus,
+    RequestCreateCategory, RequestUpdateCategory,
+    RequestCreateFoodItem, RequestUpdateFoodItem,
+)
 
 router = APIRouter(prefix="/sellers")
 logger = logging.getLogger(__name__)
@@ -193,6 +198,7 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                             reason="driver_booking_failed",
                             original_txn_ref=order.get("transaction_ref"),
                             ipn_data=order.get("ipn_data"),
+                            payment_create_date=order.get("payment_create_date"),
                         )
                     except Exception as re:
                         logger.warning(f"Failed to create refund record for order {order_id}: {re}")
@@ -220,6 +226,117 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
         logger.exception(f"Exception in PATCH /sellers/me/orders/{order_id}/status: {repr(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+def _make_price_text(price: float) -> str:
+    formatted = "{:,.0f}".format(price).replace(",", ".")
+    return f"{formatted} ₫"
+
+
+# ── Seller Menu Endpoints ──────────────────────────────────────────────────────
+
+@router.get("/me/menu")
+def get_seller_menu(user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        return {"success": True, "menu": DAOFoodItems().read_menu_by_seller_id(seller_id)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in GET /sellers/me/menu: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/me/menu/categories")
+def create_category(body: RequestCreateCategory, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        cat = DAOMenuCategories().create(seller_id, body.name, body.sort_order or 0)
+        return {"success": True, "category": cat}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in POST /sellers/me/menu/categories: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/me/menu/categories/{cat_id}")
+def update_category(cat_id: str, body: RequestUpdateCategory, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        fields = body.model_dump(exclude_none=True)
+        if not fields:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        cat = DAOMenuCategories().update(cat_id, seller_id, fields)
+        if not cat:
+            raise HTTPException(status_code=404, detail="Category not found")
+        return {"success": True, "category": cat}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in PATCH /sellers/me/menu/categories/{cat_id}: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/me/menu/categories/{cat_id}")
+def delete_category(cat_id: str, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        DAOMenuCategories().delete(cat_id, seller_id)
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in DELETE /sellers/me/menu/categories/{cat_id}: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/me/menu/items")
+def create_food_item(body: RequestCreateFoodItem, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        fields = body.model_dump(exclude_none=True)
+        fields["price_text"] = _make_price_text(body.price)
+        item = DAOFoodItems().create(seller_id, fields)
+        return {"success": True, "item": item}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in POST /sellers/me/menu/items: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/me/menu/items/{item_id}")
+def update_food_item(item_id: str, body: RequestUpdateFoodItem, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        fields = body.model_dump(exclude_none=True)
+        if not fields:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        if "price" in fields:
+            fields["price_text"] = _make_price_text(fields["price"])
+        item = DAOFoodItems().update(item_id, seller_id, fields)
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+        return {"success": True, "item": item}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in PATCH /sellers/me/menu/items/{item_id}: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/me/menu/items/{item_id}")
+def delete_food_item(item_id: str, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        DAOFoodItems().delete(item_id, seller_id)
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in DELETE /sellers/me/menu/items/{item_id}: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/featured-dishes")

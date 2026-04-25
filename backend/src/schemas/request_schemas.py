@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import (
     List,
     Literal,
@@ -41,6 +42,7 @@ class RequestCreateOrder(BaseModel):
     delivery_fee: Optional[float] = None
     quotation_id: Optional[str] = None
     note: Optional[str] = None
+    delivery_appointment: Optional[datetime] = None
 
     @model_validator(mode="after")
     def validate_delivery_fields(self):
@@ -55,3 +57,40 @@ class RequestCreateOrder(BaseModel):
 class RequestUpdateOrderStatus(BaseModel):
     status: Literal["confirmed", "ready", "done", "cancelled"]
     cancellation_reason: Optional[str] = None
+
+# Seller Menu — Categories
+class RequestCreateCategory(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    sort_order: Optional[int] = 0
+
+class RequestUpdateCategory(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    sort_order: Optional[int] = None
+    is_active: Optional[bool] = None
+
+# Seller Menu — Food Items
+class RequestCreateFoodItem(BaseModel):
+    category_id: Optional[str] = None
+    name: str = Field(min_length=1, max_length=200)
+    description: Optional[str] = None
+    price: float = Field(gt=0)
+    unit_label: Optional[str] = None
+    min_quantity: Optional[int] = Field(default=1, ge=1)
+    quantity_step: Optional[int] = Field(default=1, ge=1)
+    preorder_day: Optional[int] = Field(default=0, ge=0)
+    is_available: Optional[bool] = True
+    is_featured: Optional[bool] = False
+    image_url: Optional[str] = None
+
+class RequestUpdateFoodItem(BaseModel):
+    category_id: Optional[str] = None
+    name: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    description: Optional[str] = None
+    price: Optional[float] = Field(default=None, gt=0)
+    unit_label: Optional[str] = None
+    min_quantity: Optional[int] = Field(default=None, ge=1)
+    quantity_step: Optional[int] = Field(default=None, ge=1)
+    preorder_day: Optional[int] = Field(default=None, ge=0)
+    is_available: Optional[bool] = None
+    is_featured: Optional[bool] = None
+    image_url: Optional[str] = None

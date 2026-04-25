@@ -18,7 +18,7 @@ class DAOCartItems(DAOBase):
         
         try:
             result = self._supabase_client.table("carts") \
-                .select("id, seller_id, seller_profiles(slug, store_name), cart_items(quantity, food_items(id, name, price_text, price, unit_label, image_url, menu_categories(name)))") \
+                .select("id, seller_id, seller_profiles(slug, store_name), cart_items(quantity, food_items(id, name, price_text, price, unit_label, preorder_day, image_url, menu_categories(name)))") \
                 .eq("user_id", user_id) \
                 .maybe_single() \
                 .execute()

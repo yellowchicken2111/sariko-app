@@ -48,7 +48,7 @@ def _call_vnpay_refund(refund: dict) -> dict:
     txn_ref = refund.get("original_txn_ref") or ""
     amount = str(int(float(refund["amount"])) * 100)
     transaction_no = ipn_data.get("vnp_TransactionNo", "0")
-    transaction_date = ipn_data.get("vnp_PayDate", create_date)
+    transaction_date = refund.get("payment_create_date") or ipn_data.get("vnp_PayDate", create_date)
     order_info = f"Hoan tien don hang {refund['order_id'][:8]}"
 
     hash_fields = [
@@ -61,8 +61,8 @@ def _call_vnpay_refund(refund: dict) -> dict:
         amount,
         transaction_no,
         transaction_date,
-        create_date,
-        "admin",
+        "admin",       # vnp_CreateBy — must come BEFORE vnp_CreateDate per spec §2.5.5
+        create_date,   # vnp_CreateDate
         "127.0.0.1",
         order_info,
     ]

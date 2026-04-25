@@ -102,6 +102,7 @@ def create_vnpay_payment(order_id: str, request: Request, user=Depends(verify_to
         params["vnp_IpnUrl"] = VNPAY_IPN_URL
         
     payment_url = _build_vnpay_url(params)
+    dao_orders.update_payment_create_date(order_id=order_id, payment_create_date=create_date)
 
     return {"success": True, "payment_url": payment_url}
 

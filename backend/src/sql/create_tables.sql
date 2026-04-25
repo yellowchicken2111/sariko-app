@@ -167,6 +167,8 @@ create table public.orders (
   vat_rate numeric not null default 0,
   vat_amount numeric not null default 0,
   ipn_data jsonb null,
+  delivery_appointment timestamp with time zone null,
+  payment_create_date text null,
   constraint orders_pkey primary key (id),
   constraint orders_payout_id_fkey foreign KEY (payout_id) references admin_payouts (id) on delete set null,
   constraint orders_user_id_fkey foreign KEY (user_id) references users (id),
@@ -294,6 +296,7 @@ create table public.refunds (
   created_at timestamp with time zone null default now(),
   processed_at timestamp with time zone null,
   note text null,
+  payment_create_date text null,
   constraint refunds_pkey primary key (id),
   constraint refunds_order_id_fkey foreign KEY (order_id) references orders (id),
   constraint refunds_reason_check check (

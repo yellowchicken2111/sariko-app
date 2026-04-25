@@ -44,6 +44,7 @@ export default {
             loadingOrders: {},    // { [orderId]: true }
             rebookingOrders: {},  // { [orderId]: true }
             rebookErrors: {},     // { [orderId]: 'max_attempts'|'error' }
+            activeTab: 'today',
         }
     },
 
@@ -55,11 +56,23 @@ export default {
             return useDashboardStore().deliveryStatuses
         },
 
+        todayStr() {
+            return new Date().toDateString()
+        },
+        hasUpcoming() {
+            return this.orders.some(o => o.delivery_appointment && new Date(o.delivery_appointment).toDateString() !== this.todayStr)
+        },
+        filteredByTab() {
+            return this.orders.filter(order => {
+                if (!order.delivery_appointment) return this.activeTab === 'today'
+                const apptDay = new Date(order.delivery_appointment).toDateString()
+                return this.activeTab === 'today' ? apptDay === this.todayStr : apptDay !== this.todayStr
+            })
+        },
         displayOrders() {
-            return this.orders
+            return this.filteredByTab
                 .filter(order => {
                     if (order.status !== 'ready') return true
-                    // For ready orders: only show if delivery is confirmed CANCELLED (needs rebook)
                     const ds = this.deliveryStatuses[order.id]
                     return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(ds?.status)
                 })
@@ -71,6 +84,7 @@ export default {
                     totalText: new Intl.NumberFormat('vi-VN').format(order.total_amount || 0) + ' ₫',
                     time: new Date(order.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
                     nextLabel: STATUS_NEXT[order.status] === 'confirmed' ? this.$t('seller_home.action_accept') : this.$t('seller_home.action_ready_delivery'),
+                    appointmentText: order.delivery_appointment ? this.formatAppointment(order.delivery_appointment) : null,
                 }))
         },
 
@@ -191,6 +205,12 @@ export default {
             return new Intl.NumberFormat('vi-VN').format(amount || 0) + ' ₫'
         },
 
+        formatAppointment(isoStr) {
+            if (!isoStr) return ''
+            const d = new Date(isoStr)
+            return d.toLocaleString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+        },
+
         openRejectDialog(order) {
             this.rejectingOrder = order
             this.selectedReason = ''
@@ -228,6 +248,20 @@ export default {
 
 <template>
     <div>
+        <!-- Tabs Hôm nay / Sắp tới (chỉ hiện nếu có pre-order upcoming) -->
+        <div v-if="hasUpcoming" class="schedule-tabs">
+            <button
+                class="tab-btn"
+                :class="{ active: activeTab === 'today' }"
+                @click="activeTab = 'today'"
+            >Hôm nay</button>
+            <button
+                class="tab-btn"
+                :class="{ active: activeTab === 'upcoming' }"
+                @click="activeTab = 'upcoming'"
+            >Sắp tới</button>
+        </div>
+
         <!-- Empty state -->
         <div v-if="orders.length === 0" class="empty-state">
             <div class="empty-icon">🎉</div>
@@ -242,6 +276,9 @@ export default {
                     <div>
                         <div class="customer-name">{{ order.customerName }}</div>
                         <div class="order-time">{{ order.time }}</div>
+                        <div v-if="order.appointmentText" class="appointment-badge">
+                            📅 {{ order.appointmentText }}
+                        </div>
                     </div>
                     <span class="status-badge" :class="order.status === 'pending' ? 'badge-new' : 'badge-preparing'">
                         {{ order.displayStatus }}
@@ -355,6 +392,39 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.schedule-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+
+    &.active {
+        background: rgba(245, 166, 35, 0.15);
+        border-color: rgba(245, 166, 35, 0.4);
+        color: var(--color-accent);
+    }
+}
+
+.appointment-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-top: 3px;
+}
+
 .empty-state {
     text-align: center;
     padding: 40px 0;

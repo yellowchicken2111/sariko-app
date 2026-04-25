@@ -2,7 +2,7 @@ import { apiClient } from "@/lib/axiosPolicy.js"
 
 export const apiOrders = {
 
-    createOrder: async(deliveryMethod, deliveryAddress, note, deliveryOpts = {}) => {
+    createOrder: async(deliveryMethod, deliveryAddress, note, deliveryOpts = {}, deliveryAppointment = null) => {
         try {
             const payload = {
                 "delivery_method": deliveryMethod,
@@ -13,6 +13,7 @@ export const apiOrders = {
             if (deliveryOpts.delivery_lon != null) payload.delivery_lon = deliveryOpts.delivery_lon
             if (deliveryOpts.delivery_fee != null) payload.delivery_fee = deliveryOpts.delivery_fee
             if (deliveryOpts.quotation_id) payload.quotation_id = deliveryOpts.quotation_id
+            if (deliveryAppointment) payload.delivery_appointment = deliveryAppointment
             const response = await apiClient.post('/v1/orders', payload)
             return response
         } catch (error) {

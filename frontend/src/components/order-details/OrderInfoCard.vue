@@ -41,6 +41,11 @@ export default {
     methods: {
         formatPrice(value) {
             return new Intl.NumberFormat('vi-VN').format(value) + ' ₫'
+        },
+        formatAppointment(isoStr) {
+            if (!isoStr) return ''
+            const d = new Date(isoStr)
+            return d.toLocaleString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
         }
     }
 }
@@ -65,6 +70,10 @@ export default {
         <div class="order-row" v-if="order.delivery_address">
             <span class="label">{{ $t('order_detail.label_address') }}</span>
             <span class="address-text">{{ order.delivery_address }}</span>
+        </div>
+        <div class="order-row" v-if="order.delivery_appointment">
+            <span class="label">{{ $t('order_detail.label_appointment') }}</span>
+            <span class="appointment-text">{{ formatAppointment(order.delivery_appointment) }}</span>
         </div>
         <div class="order-row" v-if="order.note">
             <span class="label">{{ $t('order_detail.label_note') }}</span>
@@ -125,6 +134,11 @@ export default {
 .address-text {
     text-align: right;
     max-width: 60%;
+}
+
+.appointment-text {
+    font-weight: 600;
+    color: var(--text-active);
 }
 
 .dashed-line {

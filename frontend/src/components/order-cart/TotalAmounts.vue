@@ -1,5 +1,5 @@
 <script>
-import { ScanBarcode, AlertCircle } from 'lucide-vue-next';
+import { ScanBarcode, AlertCircle, Calendar } from 'lucide-vue-next';
 import { mapGetters, mapState } from 'pinia';
 import { useCartStore } from '@/stores/cart/cartStore.js';
 import { useOrderStore } from '@/stores/order/orderStore.js';
@@ -9,17 +9,18 @@ import apiPayments from '@/apis/payments/apiPayments.js';
 
 export default {
     components: {
-        ScanBarcode, AlertCircle
+        ScanBarcode, AlertCircle, Calendar
     },
 
     data() {
         return {
-            submitting: false
+            submitting: false,
+            deliveryAppointment: null,
         }
     },
 
     computed: {
-        ...mapGetters(useCartStore, ['subtotalText', 'subtotal']),
+        ...mapGetters(useCartStore, ['subtotalText', 'subtotal', 'maxPreorderDay']),
         ...mapState(useCartStore, ['cartItems', 'note', 'cart']),
 
         deliveryStore() {
@@ -40,15 +41,29 @@ export default {
         totalAmountText() {
             return new Intl.NumberFormat('vi-VN').format(this.totalAmount) + ' ₫'
         },
+        isPreorder() {
+            return this.maxPreorderDay > 0
+        },
+        minAppointmentDate() {
+            const d = new Date()
+            d.setDate(d.getDate() + this.maxPreorderDay)
+            return d.toISOString().slice(0, 10).replace(/-/g, '/')
+        },
         validationIssues() {
             const auth = useAuthStore()
             const issues = []
             if (!auth.user?.phone) issues.push({ msg: this.$t('cart_page.validation.missing_phone'), route: '/account/profile' })
             if (!auth.inputAddress) issues.push({ msg: this.$t('cart_page.validation.missing_address'), route: '/account/address' })
+            if (this.isPreorder && !this.deliveryAppointment) issues.push({ msg: this.$t('cart_page.validation.missing_appointment'), route: null })
             return issues
         },
         canPlaceOrder() {
             return this.cartItems.length > 0 && !this.submitting && !this.quotationLoading && this.validationIssues.length === 0
+        },
+        appointmentDateOptions() {
+            return (dateStr) => {
+                return dateStr >= this.minAppointmentDate
+            }
         },
     },
 
@@ -81,7 +96,10 @@ export default {
                 }
 
                 const orderStore = useOrderStore()
-                const order = await orderStore.placeOrder('delivery', address, this.note || null, deliveryOpts)
+                const appt = this.isPreorder && this.deliveryAppointment
+                    ? new Date(this.deliveryAppointment.replace(/\//g, '-')).toISOString()
+                    : null
+                const order = await orderStore.placeOrder('delivery', address, this.note || null, deliveryOpts, appt)
                 if (order) {
                     const cartStore = useCartStore()
                     cartStore.$reset()
@@ -165,12 +183,44 @@ export default {
             </div>
         </div>
 
+        <div v-if="isPreorder" class="appointment-section">
+            <div class="appointment-label">
+                <Calendar :size="14" />
+                <span>{{ $t('cart_page.preorder.label_delivery_date') }} <span class="required">*</span></span>
+            </div>
+            <q-input
+                v-model="deliveryAppointment"
+                dense
+                readonly
+                :placeholder="$t('cart_page.preorder.placeholder_earliest', { date: minAppointmentDate.replace(/\//g, '-') })"
+                class="appointment-input"
+            >
+                <template #append>
+                    <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy transition-show="scale" transition-hide="scale">
+                            <q-date
+                                v-model="deliveryAppointment"
+                                :options="appointmentDateOptions"
+                                minimal
+                                dark
+                                color="amber"
+                            >
+                                <div class="row items-center justify-end">
+                                    <q-btn v-close-popup flat no-caps :label="$t('cart_page.preorder.close')" color="amber" />
+                                </div>
+                            </q-date>
+                        </q-popup-proxy>
+                    </q-icon>
+                </template>
+            </q-input>
+        </div>
+
         <div v-if="validationIssues.length > 0" class="validation-card">
             <AlertCircle class="validation-icon" :size="16" />
             <div class="validation-messages">
-                <div v-for="issue in validationIssues" :key="issue.route" class="validation-item">
+                <div v-for="issue in validationIssues" :key="issue.msg" class="validation-item">
                     {{ issue.msg }}
-                    <router-link :to="issue.route" class="validation-link">{{ $t('cart_page.validation.fix') }}</router-link>
+                    <router-link v-if="issue.route" :to="issue.route" class="validation-link">{{ $t('cart_page.validation.fix') }}</router-link>
                 </div>
             </div>
         </div>
@@ -261,6 +311,46 @@ export default {
     text-decoration: none;
     flex-shrink: 0;
     margin-left: 8px;
+}
+
+.appointment-section {
+    background: rgba(245, 166, 35, 0.08);
+    border: 1px solid rgba(245, 166, 35, 0.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.appointment-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.required {
+    color: #f87171;
+}
+
+.appointment-input {
+    color: var(--text-primary);
+
+    :deep(.q-field__native),
+    :deep(.q-field__input),
+    :deep(input::placeholder) {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    :deep(.q-field__control) {
+        color: white;
+    }
+
+    :deep(.q-icon) {
+        color: rgba(255, 255, 255, 0.6);
+    }
 }
 
 .button {

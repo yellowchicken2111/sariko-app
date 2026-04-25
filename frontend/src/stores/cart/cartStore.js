@@ -32,6 +32,9 @@ export const useCartStore = defineStore("cartStore", {
         },
         currentSellerSlug(state) {
             return state.cartItems[0]?.sellerSlugName || null
+        },
+        maxPreorderDay(state) {
+            return Math.max(0, ...state.cartItems.map(i => i.preorder_day ?? 0))
         }
     },
 
@@ -55,6 +58,7 @@ export const useCartStore = defineStore("cartStore", {
                             "quantity": _cartItems[i]?.quantity,
                             "sellerStore": this.cart?.seller_profiles?.store_name,
                             "sellerSlugName": this.cart?.seller_profiles?.slug,
+                            "preorder_day": _cartItems[i]?.food_items?.preorder_day ?? 0,
                         })
                     }
                 }

@@ -17,7 +17,8 @@ export default {
         },
         priceText() {
             if (!this.food) return ''
-            return new Intl.NumberFormat('vi-VN').format(this.food.price) + ' ₫'
+            const base = new Intl.NumberFormat('vi-VN').format(this.food.price) + ' ₫'
+            return this.food.unit_label ? `${base} / ${this.food.unit_label}` : base
         }
     },
 
@@ -35,7 +36,8 @@ export default {
     <div class="food-info">
         <template v-if="food">
             <h1 class="food-name">{{ food.name }}</h1>
-            <!-- <span class="food-price">{{ priceText }}</span> -->
+            <span class="food-price">{{ priceText }}</span>
+            <q-badge v-if="food.preorder_day > 0" color="amber-8" class="preorder-badge">Pre-order: {{ food.preorder_day }} ngày</q-badge>
             <div v-if="seller" class="seller-chip" @click="goToSeller">
                 <Store :size="14" />
                 <span>{{ seller.store_name || seller.name }}</span>
@@ -72,7 +74,13 @@ export default {
     font-size: 24px;
     font-weight: 800;
     color: var(--text-active);
+    margin-bottom: 10px;
+}
+
+.preorder-badge {
+    display: inline-block;
     margin-bottom: 14px;
+    font-size: 12px;
 }
 
 .seller-chip {

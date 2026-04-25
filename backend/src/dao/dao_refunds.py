@@ -22,6 +22,7 @@ class DAORefunds(DAOBase):
         reason: str,
         original_txn_ref: Optional[str] = None,
         ipn_data: Optional[dict] = None,
+        payment_create_date: Optional[str] = None,
     ):
         try:
             data = {
@@ -34,6 +35,8 @@ class DAORefunds(DAOBase):
                 data["original_txn_ref"] = original_txn_ref
             if ipn_data:
                 data["ipn_data"] = ipn_data
+            if payment_create_date:
+                data["payment_create_date"] = payment_create_date
 
             result = self._supabase_client.table(self._table_name) \
                 .insert(data) \

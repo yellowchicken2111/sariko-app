@@ -85,6 +85,7 @@ def create_order(request: RequestCreateOrder, user=Depends(verify_token)):
         delivery_lon=request.delivery_lon,
         delivery_fee=request.delivery_fee,
         quotation_id=request.quotation_id,
+        delivery_appointment=request.delivery_appointment,
     )
 
     if not order:
@@ -141,6 +142,13 @@ def cancel_order(order_id: str, user=Depends(verify_token)):
     if order["status"] != "pending":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only pending orders can be cancelled")
 
+    if order.get("delivery_appointment"):
+        import datetime as dt
+        appt = dt.datetime.fromisoformat(order["delivery_appointment"].replace("Z", "+00:00"))
+        now = dt.datetime.now(dt.timezone.utc)
+        if (appt - now).total_seconds() < 86400:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Không thể hủy đơn trong vòng 24 giờ trước giờ hẹn")
+
     dao_orders.update_order_status(order_id=order_id, status="cancelled")
 
     if order.get("payment_status") == "paid":
@@ -152,6 +160,7 @@ def cancel_order(order_id: str, user=Depends(verify_token)):
                 reason="buyer_cancel",
                 original_txn_ref=order.get("transaction_ref"),
                 ipn_data=order.get("ipn_data"),
+                payment_create_date=order.get("payment_create_date"),
             )
         except Exception as e:
             logger.warning(f"Failed to create refund record for order {order_id}: {e}")

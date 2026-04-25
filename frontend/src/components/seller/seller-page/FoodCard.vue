@@ -21,6 +21,14 @@ export default {
         imgSrc: {
             required: true,
             type: String
+        },
+        unitLabel: {
+            type: String,
+            default: null
+        },
+        preorderDay: {
+            type: Number,
+            default: 0
         }
     },
 
@@ -79,8 +87,9 @@ export default {
 
         <div class="food-info">
             <div class="food-name">{{ name }}</div>
+            <q-badge v-if="preorderDay > 0" class="preorder-badge" color="amber-8">Pre-order: {{ preorderDay }} ngày</q-badge>
             <div class="price-row">
-                <div class="food-price">₫{{ price }}</div>
+                <div class="food-price">₫{{ price }}<span v-if="unitLabel" class="unit-label"> / {{ unitLabel }}</span></div>
                 <q-btn flat dense no-caps :loading="loading" @click="handleAddToCart">
                     <q-icon name="fa-solid fa-circle-plus" style="color: #f5A623" />
                     <template #loading>
@@ -123,6 +132,18 @@ export default {
 .food-price {
     font-weight: 600;
     color: var(--text-active);
+}
+
+.unit-label {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+.preorder-badge {
+    font-size: 10px;
+    margin-bottom: 4px;
+    display: inline-block;
 }
 
 </style>

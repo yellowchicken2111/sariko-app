@@ -33,9 +33,11 @@ export default {
     <LayoutSellerInfo>
 
         <template #SellerAvatar>
-            <q-avatar v-if="seller?.avatarUrl" size="64px">
-                <img :src="seller?.avatar_url">
-            </q-avatar>
+            <div v-if="seller.avatar_url">
+                <q-avatar  size="64px">
+                    <img :src="seller?.avatar_url">
+                </q-avatar>
+            </div>
             <div v-else class="guest-icon">
                 <User :size="28" />
             </div>

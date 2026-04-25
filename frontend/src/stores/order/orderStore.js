@@ -20,10 +20,10 @@ export const useOrderStore = defineStore("orderStore", {
     },
 
     actions: {
-        async placeOrder(deliveryMethod, deliveryAddress, note, deliveryOpts = {}) {
+        async placeOrder(deliveryMethod, deliveryAddress, note, deliveryOpts = {}, deliveryAppointment = null) {
             try {
                 this.loading = true
-                const res = await apiOrders.createOrder(deliveryMethod, deliveryAddress, note, deliveryOpts)
+                const res = await apiOrders.createOrder(deliveryMethod, deliveryAddress, note, deliveryOpts, deliveryAppointment)
                 if (res?.data?.success) {
                     this.currentOrder = res.data.order
                     return res.data.order

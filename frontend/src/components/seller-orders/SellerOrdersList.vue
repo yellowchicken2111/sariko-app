@@ -83,6 +83,9 @@ export default {
                     itemCount:     (order.order_items || []).length,
                     totalText:     new Intl.NumberFormat('vi-VN').format(order.total_amount || 0) + ' ₫',
                     timeText:      new Date(order.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                    appointmentText: order.delivery_appointment
+                        ? new Date(order.delivery_appointment).toLocaleString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+                        : null,
                 })
             }
 
@@ -157,6 +160,7 @@ export default {
                         <div class="order-info">
                             <div class="customer-name">{{ order.customerName }}</div>
                             <div class="order-meta">{{ order.itemCount }} item{{ order.itemCount !== 1 ? 's' : '' }} · {{ order.totalText }}</div>
+                            <div v-if="order.appointmentText" class="appointment-text">📅 {{ order.appointmentText }}</div>
                         </div>
                         <div class="order-right">
                             <span class="status-badge" :class="order.statusClass">{{ order.displayStatus }}</span>
@@ -257,6 +261,13 @@ export default {
 .order-meta {
     font-size: 13px;
     color: var(--text-secondary);
+}
+
+.appointment-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-top: 2px;
 }
 
 .order-right {
