@@ -105,7 +105,10 @@ export default {
                 {{ $t('seller_page.section_food_cards.lable_item_pre_order') }}: {{ preorderDay }} {{ $t('seller_page.section_food_cards.lable_item_pre_order_unit_day') }}
             </q-badge>
             <div class="price-row">
-                <div class="food-price">₫{{ price }}<span v-if="unitLabel" class="unit-label"> / {{ unitLabel }}</span></div>
+                <div class="price-row__text">
+                    <div class="food-price">₫{{ price }}</div>
+                    <div v-if="unitLabel" class="unit-label"> / {{ unitLabel }}</div>
+                </div>
                 <q-btn flat dense no-caps :loading="loading" @click="handleAddToCart">
                     <q-icon name="fa-solid fa-circle-plus" style="color: #f5A623" />
                     <template #loading>
@@ -138,6 +141,11 @@ export default {
     justify-content: space-between;
     align-items: center;
     margin-top: 4px;
+}
+
+.price-row__text {
+    display: flex;
+    flex-direction: column;
 }
 
 .food-name {
