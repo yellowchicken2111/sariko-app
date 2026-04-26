@@ -41,7 +41,7 @@ export default {
 
         <div class="seller-avatar">
             <q-avatar v-if="sellerAvatarImageURL" size="48px">
-                <img :src="sellerIndex == 1 ? '/seller-avatar/seller_dummy_avatar_teresa.jpg' : sellerAvatarImageURL">
+                <img :src="sellerAvatarImageURL">
             </q-avatar>
             <div v-else class="guest-icon">
                 <User :size="28" />

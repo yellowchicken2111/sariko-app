@@ -17,7 +17,7 @@ class DAOSellerProfiles(DAOBase):
     def read_founding_sellers(self):
         try:
             query = self._supabase_client.table(self._table_name)
-            query = query.select("id, user_id, store_name, slug, avatar_url").order("created_at")
+            query = query.select("id, user_id, store_name, slug, avatar_url").order("display_order")
             
             query = query
             result = query.execute()
