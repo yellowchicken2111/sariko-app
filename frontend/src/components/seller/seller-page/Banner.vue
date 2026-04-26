@@ -1,9 +1,16 @@
 <script>
 import { Check, Star, Flame } from 'lucide-vue-next';
-
+import { useSellerStore } from '@/stores/seller/sellerStore';
+import { mapActions, mapState } from 'pinia';
 export default {
     components: {
         Star
+    },
+
+    computed: {
+        ...mapState(useSellerStore, [
+            "totalItems"
+        ])
     }
 }
 
@@ -25,7 +32,7 @@ export default {
 
         <div class="col card-info">
             <div style="color: white; font-weight: 800;">
-                6
+                {{ totalItems }}
             </div>
             <div style="font-size: 8px; font-weight: 600; color: rgb(122, 140, 174)">
                 {{ $t('seller_page.section_banner.banner_card_orders_subtitle') }}

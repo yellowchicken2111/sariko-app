@@ -34,6 +34,7 @@ export const useSellerStore = defineStore('sellerStore', {
 
             // menu
             menus: menus,
+            totalItems: 0,
 
             // food detail
             currentFood: null,
@@ -103,6 +104,13 @@ export const useSellerStore = defineStore('sellerStore', {
                 this.menus = menus
                 this.menuCategories = menus.map(c => ({ id: c.id, name: c.name }))
                 this.selectedCategoryMenu = menus.find(menu => menu.food_items?.length > 0)?.id || null
+
+                this.totalItems = 0
+                this.menus.forEach(menu => {
+                    const itemLength = menu.food_items.length || 0
+                    this.totalItems = this.totalItems + itemLength
+                });
+
             } catch (e) {
                 console.error(`sellerStore - getSellerFullMenu - ${e}`);
                 this.menus = []

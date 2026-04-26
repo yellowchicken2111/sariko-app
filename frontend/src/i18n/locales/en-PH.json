@@ -97,7 +97,7 @@
   "seller_page": {
     "section_banner": {
       "banner_card_rating_subtitle": "Rating",
-      "banner_card_orders_subtitle": "Orders",
+      "banner_card_orders_subtitle": "Items",
       "banner_card_status_subtitle": "Status",
       "banner_card_status_text_open": "Open",
       "banner_card_status_text_close": "Closed"
