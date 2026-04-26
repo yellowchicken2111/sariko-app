@@ -35,13 +35,20 @@ export default {
 <template>
     <div class="food-info">
         <template v-if="food">
-            <h1 class="food-name">{{ food.name }}</h1>
-            <span class="food-price">{{ priceText }}</span>
-            <q-badge v-if="food.preorder_day > 0" color="amber-8" class="preorder-badge">Pre-order: {{ food.preorder_day }} ngày</q-badge>
+            <div class="food-name">{{ food.name }}</div>
+            <div class="item-badge">
+                <q-badge class="preorder-badge" color="positive"> 
+                    {{ $t('seller_page.section_food_cards.label_item_available') }}
+                </q-badge>
+                <q-badge v-if="food.preorder_day > 0" color="amber-8" class="preorder-badge">
+                    {{ $t('seller_page.section_food_cards.lable_item_pre_order') }}: {{ food.preorder_day }} {{ $t('seller_page.section_food_cards.lable_item_pre_order_unit_day') }}
+                </q-badge>
+            </div>
             <div v-if="seller" class="seller-chip" @click="goToSeller">
-                <Store :size="14" />
+                <Store :size="14" style="margin-right: 5px;" />
                 <span>{{ seller.store_name || seller.name }}</span>
             </div>
+            <span class="food-price">{{ priceText }}</span>
             <p v-if="food.description" class="food-description">{{ food.description }}</p>
         </template>
 
@@ -56,9 +63,10 @@ export default {
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .food-info {
-    font-family: "Plus Jakarta Sans", sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
 .food-name {
@@ -67,6 +75,10 @@ export default {
     color: var(--text-primary);
     line-height: 1.3;
     margin-bottom: 10px;
+}
+
+.item-badge {
+    margin-bottom: 20px;
 }
 
 .food-price {
@@ -78,14 +90,15 @@ export default {
 }
 
 .preorder-badge {
-    display: inline-block;
-    margin-bottom: 14px;
-    font-size: 12px;
+    font-size: 10px;
+    color: black; 
+    margin-right: 5px;
 }
 
 .seller-chip {
-    display: inline-flex;
-    align-items: center;
+    display: flex;
+    width: fit-content;
+    align-items: baseline;
     gap: 6px;
     font-size: 13px;
     font-weight: 600;

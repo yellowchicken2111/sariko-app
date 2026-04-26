@@ -372,6 +372,6 @@ def get_seller_menu_food_items(slug_name: str):
         raise HTTPException(status_code=404, detail="Seller not found")
 
     dao_food_items = DAOFoodItems()
-    food_items = dao_food_items.read_food_items_by_seller_id(seller_id=seller["id"])
+    food_items = dao_food_items.read_menu_by_seller_id(seller_id=seller["id"])
 
     return {"success": True, "menus": food_items or []}

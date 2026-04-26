@@ -15,7 +15,7 @@ export default {
 
 <template>
     <div class="hero">
-        <img v-if="food && food.image_url" :src="food.image_url" :alt="food.name" class="hero-image" />
+        <q-img v-if="food" :src="food.image_url || '/images/default-food-image.webp'" :alt="food.name" class="hero-image" />
         <q-skeleton v-else class="hero-skeleton" animation="pulse" />
         <div class="hero-overlay"></div>
         <button class="back-btn" :aria-label="$t('food_detail_page.button_back') || 'Go back'" @click="$router.back()">

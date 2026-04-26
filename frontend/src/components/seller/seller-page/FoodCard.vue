@@ -1,4 +1,5 @@
 <script>
+import { Star } from 'lucide-vue-next';
 import { mapState } from 'pinia';
 import { useSellerStore } from '@/stores/seller/sellerStore';
 import { useCartStore } from '@/stores/cart/cartStore';
@@ -30,6 +31,10 @@ export default {
             type: Number,
             default: 0
         }
+    },
+
+    components: {
+        Star
     },
 
     data() {
@@ -86,8 +91,19 @@ export default {
         </div>
 
         <div class="food-info">
-            <div class="food-name">{{ name }}</div>
-            <q-badge v-if="preorderDay > 0" class="preorder-badge" color="amber-8">Pre-order: {{ preorderDay }} ngày</q-badge>
+            <div class="food-name">
+                <div class="food-name__label">{{ name }}</div>
+                <div class="food-name__review">
+                    <Star size="12px" color="gold" style="margin-right: 5px;"/>
+                    <div class="text-yellow">4.9</div>
+                </div>
+            </div>
+            <q-badge class="preorder-badge" color="positive"> 
+                {{ $t('seller_page.section_food_cards.label_item_available') }}
+            </q-badge>
+            <q-badge v-if="preorderDay > 0" class="preorder-badge" color="amber-8">
+                {{ $t('seller_page.section_food_cards.lable_item_pre_order') }}: {{ preorderDay }} {{ $t('seller_page.section_food_cards.lable_item_pre_order_unit_day') }}
+            </q-badge>
             <div class="price-row">
                 <div class="food-price">₫{{ price }}<span v-if="unitLabel" class="unit-label"> / {{ unitLabel }}</span></div>
                 <q-btn flat dense no-caps :loading="loading" @click="handleAddToCart">
@@ -125,8 +141,26 @@ export default {
 }
 
 .food-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 12px;
     font-weight: 700;
+}
+
+.food-name__label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 6px;
+}
+
+.food-name__review {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
 .food-price {
@@ -142,8 +176,8 @@ export default {
 
 .preorder-badge {
     font-size: 10px;
-    margin-bottom: 4px;
-    display: inline-block;
+    color: black; 
+    margin-right: 5px;
 }
 
 </style>

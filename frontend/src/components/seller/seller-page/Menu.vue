@@ -39,7 +39,7 @@ export default {
                         :name="food.name"
                         :price="food.price_text"
                         :imgSrc="food.image_url ? food.image_url : '/images/default-food-image.webp'"
-                        :unit-label="food.unit_label"
+                        :unit-label="food.unit_label || 'pcs'"
                         :preorder-day="food.preorder_day || 0"
                         />
                     </div>
