@@ -130,6 +130,21 @@ export const useAuthStore = defineStore("authStore", {
             }
         },
 
+        async refreshProfile() {
+            try {
+                const profile = await apiUsers.getProfile()
+                if (profile?.user && this.user) {
+                    if (profile.user.avatar_url) this.user.avatarUrl = profile.user.avatar_url
+                    if (profile.user.name) this.user.fullName = profile.user.name
+                    if (profile.user.phone) this.user.phone = profile.user.phone
+                    if (profile.user.seller_id) this.sellerId = profile.user.seller_id
+                    if (profile.user.is_seller !== undefined) this.user.isSeller = profile.user.is_seller
+                }
+            } catch (e) {
+                console.error(`authStore - refreshProfile - ${e}`)
+            }
+        },
+
         async getValidAccessToken() {
             const res = await apiAuth.authGetSession();
             if (!res?.session) return null;

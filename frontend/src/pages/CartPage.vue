@@ -6,6 +6,7 @@ import CartItems from '@/components/order-cart/CartItems.vue';
 import NoteInput from '@/components/order-cart/NoteInput.vue';
 import TotalAmounts from '@/components/order-cart/TotalAmounts.vue';
 import EmptyState from '@/components/order-cart/EmptyState.vue';
+import { useAuthStore } from '@/stores/auth/authStore.js';
 
 export default {
     components: {
@@ -16,6 +17,9 @@ export default {
         NoteInput,
         TotalAmounts,
         EmptyState
+    },
+    mounted() {
+        useAuthStore().refreshProfile()
     }
 }
 </script>
