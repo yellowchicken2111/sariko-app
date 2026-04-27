@@ -146,7 +146,6 @@ export default {
             <div class="section-header">
                 <div class="section-title">
                     {{ $t('seller_home.section_needs_action') }}
-                    <span v-if="actionDisplayCount > 0" class="count-badge">{{ actionDisplayCount }}</span>
                 </div>
                 <q-btn-dropdown
                     flat dense no-caps

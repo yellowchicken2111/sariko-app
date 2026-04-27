@@ -1,5 +1,5 @@
 <script>
-import { Check, X, AlertTriangle, RefreshCw } from 'lucide-vue-next';
+import { Check, X, AlertTriangle, RefreshCw, Copy, User, Phone, MapPin } from 'lucide-vue-next';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
 import apiDeliveries from '@/apis/deliveries/apiDeliveries';
@@ -24,7 +24,7 @@ const REJECT_REASONS = [
 export default {
     name: 'ActionOrdersList',
 
-    components: { Check, X, AlertTriangle, RefreshCw },
+    components: { Check, X, AlertTriangle, RefreshCw, Copy, User, Phone, MapPin },
 
     props: {
         orders: {
@@ -45,6 +45,7 @@ export default {
             rebookingOrders: {},  // { [orderId]: true }
             rebookErrors: {},     // { [orderId]: 'max_attempts'|'error' }
             activeTab: 'today',
+            copiedKey: null,
         }
     },
 
@@ -61,6 +62,22 @@ export default {
         },
         hasUpcoming() {
             return this.orders.some(o => o.delivery_appointment && new Date(o.delivery_appointment).toDateString() !== this.todayStr)
+        },
+        todayCount() {
+            return this.orders.filter(o => {
+                const isToday = !o.delivery_appointment || new Date(o.delivery_appointment).toDateString() === this.todayStr
+                if (!isToday) return false
+                if (o.status !== 'ready') return true
+                return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(this.deliveryStatuses[o.id]?.status)
+            }).length
+        },
+        upcomingCount() {
+            return this.orders.filter(o => {
+                if (!o.delivery_appointment) return false
+                if (new Date(o.delivery_appointment).toDateString() === this.todayStr) return false
+                if (o.status !== 'ready') return true
+                return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(this.deliveryStatuses[o.id]?.status)
+            }).length
         },
         filteredByTab() {
             return this.orders.filter(order => {
@@ -82,7 +99,7 @@ export default {
                     customerName: order.users?.name || order.users?.email || 'Customer',
                     items: order.order_items || [],
                     totalText: new Intl.NumberFormat('vi-VN').format(order.total_amount || 0) + ' ₫',
-                    time: new Date(order.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                    time: new Date(/[Z+]/.test(order.created_at) ? order.created_at : order.created_at + 'Z').toLocaleString(this.$i18n.locale === 'vi' ? 'vi-VN' : 'en-PH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh', hour12: false }),
                     nextLabel: STATUS_NEXT[order.status] === 'confirmed' ? this.$t('seller_home.action_accept') : this.$t('seller_home.action_ready_delivery'),
                     appointmentText: order.delivery_appointment ? this.formatAppointment(order.delivery_appointment) : null,
                 }))
@@ -131,6 +148,23 @@ export default {
             if (!this.sellerInfo?.has_address) missing.push(this.t('seller_home.missing_address', 'Store address is missing'))
             if (!this.sellerInfo?.has_phone) missing.push(this.t('seller_home.missing_phone', 'Phone number is missing'))
             return missing
+        },
+
+        async copyToClipboard(text, key) {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text)
+            } else {
+                const el = document.createElement('textarea')
+                el.value = text
+                el.style.position = 'fixed'
+                el.style.opacity = '0'
+                document.body.appendChild(el)
+                el.select()
+                document.execCommand('copy')
+                document.body.removeChild(el)
+            }
+            this.copiedKey = key
+            setTimeout(() => { this.copiedKey = null }, 1500)
         },
 
         clearError(orderId) {
@@ -208,7 +242,8 @@ export default {
         formatAppointment(isoStr) {
             if (!isoStr) return ''
             const d = new Date(isoStr)
-            return d.toLocaleString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+            const locale = this.$i18n.locale === 'vi' ? 'vi-VN' : 'en-PH'
+            return d.toLocaleString(locale, { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh', hour12: false })
         },
 
         openRejectDialog(order) {
@@ -254,35 +289,47 @@ export default {
                 class="tab-btn"
                 :class="{ active: activeTab === 'today' }"
                 @click="activeTab = 'today'"
-            >Hôm nay</button>
+            >
+                <span class="tab-label">{{ $t('seller_home.tab_today') }}</span>
+                <span v-if="todayCount > 0" class="tab-count">{{ todayCount }}</span>
+            </button>
             <button
                 class="tab-btn"
                 :class="{ active: activeTab === 'upcoming' }"
                 @click="activeTab = 'upcoming'"
-            >Sắp tới</button>
+            >
+                <span class="tab-label">{{ $t('seller_home.tab_upcoming') }}</span>
+                <span v-if="upcomingCount > 0" class="tab-count">{{ upcomingCount }}</span>
+            </button>
         </div>
 
         <!-- Empty state -->
-        <div v-if="orders.length === 0" class="empty-state">
+        <div v-if="displayOrders.length === 0" class="empty-state">
             <div class="empty-icon">🎉</div>
-            <div class="empty-text">{{ $t('seller_home.empty_all_caught_up') }}</div>
-            <div class="empty-sub">{{ $t('seller_home.empty_all_caught_up_sub') }}</div>
+            <template v-if="activeTab === 'today'">
+                <div class="empty-text">{{ $t('seller_home.empty_all_caught_up') }}</div>
+                <div class="empty-sub">{{ $t('seller_home.empty_all_caught_up_sub') }}</div>
+            </template>
+            <template v-else>
+                <div class="empty-text">{{ $t('seller_home.empty_tab_upcoming') }}</div>
+                <div class="empty-sub">{{ $t('seller_home.empty_tab_upcoming_sub') }}</div>
+            </template>
         </div>
 
         <!-- Order cards -->
         <div v-else class="orders-list">
             <div v-for="order in displayOrders" :key="order.id" class="order-card">
                 <div class="order-header">
-                    <div>
-                        <div class="customer-name">{{ order.customerName }}</div>
-                        <div class="order-time">{{ order.time }}</div>
-                        <div v-if="order.appointmentText" class="appointment-badge">
-                            📅 {{ order.appointmentText }}
-                        </div>
-                    </div>
+                    <div class="customer-name">{{ order.customerName }}</div>
                     <span class="status-badge" :class="order.status === 'pending' ? 'badge-new' : 'badge-preparing'">
                         {{ order.displayStatus }}
                     </span>
+                </div>
+                <div class="order-meta">
+                    <div class="order-time"><span class="order-time-label">{{ $t('seller_home.label_ordered_at') }}</span> {{ order.time }}</div>
+                    <div v-if="order.appointmentText" class="appointment-badge">
+                        📅 <span class="order-time-label">{{ $t('seller_home.label_deliver_at') }}</span> {{ order.appointmentText }}
+                    </div>
                 </div>
 
                 <q-separator style="background: rgba(255,255,255,0.08); margin: 10px 0;" />
@@ -307,7 +354,7 @@ export default {
 
                 
                 <div class="total-row">
-                    <span class="total-label">Total</span>
+                    <span class="total-label">{{ $t('seller_home.order_total') }}</span>
                     <span class="total-value">{{ order.totalText }}</span>
                 </div>
 
@@ -346,12 +393,48 @@ export default {
                 </template>
 
                 <div v-else class="order-actions">
-                    <q-btn flat dense no-caps class="btn-reject" :disable="!!loadingOrders[order.id]" @click="openRejectDialog(order)">
-                        <X :size="14" style="margin-right: 4px;" /> {{ $t('seller_home.action_reject') }}
+                    <q-btn flat dense no-caps class="btn-contact">
+                        <q-icon name="person" size="14px" style="margin-right:4px;" />
+                        {{ $t('seller_home.action_contact_buyer') }}
+                        <q-popup-proxy>
+                            <div class="buyer-info-popup">
+                                <div class="buyer-info-row">
+                                    <span class="buyer-info-label"><User :size="11" /> {{ $t('seller_home.buyer_name') }}</span>
+                                    <span>{{ order.customerName }}</span>
+                                </div>
+                                <div class="buyer-info-row">
+                                    <span class="buyer-info-label"><Phone :size="11" /> {{ $t('seller_home.buyer_phone') }}</span>
+                                    <div v-if="order.users?.phone" class="buyer-info-value">
+                                        <span>{{ order.users.phone }}</span>
+                                        <button class="btn-copy" @click.stop="copyToClipboard(order.users.phone, order.id + '_phone')">
+                                            <Check v-if="copiedKey === order.id + '_phone'" :size="12" style="color:#4ade80" />
+                                            <Copy v-else :size="12" />
+                                        </button>
+                                    </div>
+                                    <span v-else class="buyer-info-na">N/A</span>
+                                </div>
+                                <div class="buyer-info-row">
+                                    <span class="buyer-info-label"><MapPin :size="11" /> {{ $t('seller_home.buyer_address') }}</span>
+                                    <div v-if="order.delivery_address" class="buyer-info-value">
+                                        <span>{{ order.delivery_address }}</span>
+                                        <button class="btn-copy" @click.stop="copyToClipboard(order.delivery_address, order.id + '_addr')">
+                                            <Check v-if="copiedKey === order.id + '_addr'" :size="12" style="color:#4ade80" />
+                                            <Copy v-else :size="12" />
+                                        </button>
+                                    </div>
+                                    <span v-else class="buyer-info-na">N/A</span>
+                                </div>
+                            </div>
+                        </q-popup-proxy>
                     </q-btn>
-                    <q-btn unelevated dense no-caps class="btn-accept" :loading="!!loadingOrders[order.id]" @click="onAccept(order)">
-                        <Check :size="14" style="margin-right: 4px;" /> {{ order.nextLabel }}
-                    </q-btn>
+                    <div class="order-actions-right">
+                        <q-btn flat dense no-caps class="btn-reject" :disable="!!loadingOrders[order.id]" @click="openRejectDialog(order)">
+                            <X :size="14" style="margin-right: 4px;" /> {{ $t('seller_home.action_reject') }}
+                        </q-btn>
+                        <q-btn unelevated dense no-caps class="btn-accept" :loading="!!loadingOrders[order.id]" @click="onAccept(order)">
+                            <Check :size="14" style="margin-right: 4px;" /> {{ order.nextLabel }}
+                        </q-btn>
+                    </div>
                 </div>
             </div>
         </div>
@@ -405,17 +488,35 @@ export default {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.04);
     color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 600;
     cursor: pointer;
     font-family: inherit;
     transition: all 0.15s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 
     &.active {
         background: rgba(245, 166, 35, 0.15);
         border-color: rgba(245, 166, 35, 0.4);
         color: var(--color-accent);
     }
+}
+
+.tab-label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tab-count {
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--color-accent);
+    color: #121b2f;
+    border-radius: 10px;
+    padding: 1px 7px;
+    line-height: 1.6;
 }
 
 .appointment-badge {
@@ -471,10 +572,21 @@ export default {
     color: var(--text-primary);
 }
 
+.order-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+
 .order-time {
     font-size: 11px;
     color: var(--text-muted);
-    margin-top: 2px;
+}
+
+.order-time-label {
+    opacity: 0.6;
 }
 
 .status-badge {
@@ -627,8 +739,72 @@ export default {
 
 .order-actions {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.order-actions-right {
+    display: flex;
     gap: 8px;
-    justify-content: flex-end;
+}
+
+.btn-contact {
+    color: var(--text-secondary);
+    font-size: 12px;
+    border-radius: 8px;
+    padding: 6px 10px;
+}
+
+.buyer-info-popup {
+    background: #1f2940;
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.buyer-info-row {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.buyer-info-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.buyer-info-value {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.buyer-info-na {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.btn-copy {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 1px;
+
+    &:hover {
+        color: var(--text-primary);
+    }
 }
 
 .btn-accept {

@@ -139,13 +139,15 @@
         "validation": {
             "missing_phone": "Phone number is required to place an order.",
             "missing_address": "Delivery address is required.",
-            "missing_appointment": "Please select a delivery date.",
+            "missing_appointment": "Please select a delivery date and time.",
             "fix": "Fix →"
         },
         "preorder": {
-            "label_delivery_date": "Delivery Date",
+            "label_delivery_date": "Delivery Date & Time",
+            "placeholder_date": "Select date",
+            "placeholder_time": "Select time",
             "placeholder_earliest": "Earliest: {date}",
-            "close": "Close"
+            "close": "OK"
         },
         "modal_cart_conflict": {
             "title_header": "Start a new cart?",
@@ -371,7 +373,18 @@
         "action_rebook": "Re-book",
         "toast_rebook_success": "Delivery re-booked!",
         "contact_admin_notice": "Delivery error — if this keeps happening, please contact admin",
-        "driver_assigning": "Driver is being assigned, please wait"
+        "driver_assigning": "Driver is being assigned, please wait",
+        "action_contact_buyer": "Contact Buyer",
+        "buyer_name": "Name",
+        "buyer_phone": "Phone",
+        "buyer_address": "Address",
+        "label_ordered_at": "Ordered:",
+        "label_deliver_at": "Deliver:",
+        "tab_today": "Today",
+        "tab_upcoming": "Upcoming",
+        "order_total": "Total",
+        "empty_tab_upcoming": "No pre-orders yet",
+        "empty_tab_upcoming_sub": "Pre-orders from customers will appear here."
     },
     "seller_orders": {
         "filter_all": "All",

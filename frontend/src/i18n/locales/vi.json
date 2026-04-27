@@ -139,13 +139,15 @@
         "validation": {
             "missing_phone": "Cần có số điện thoại để đặt hàng.",
             "missing_address": "Cần có địa chỉ giao hàng.",
-            "missing_appointment": "Vui lòng chọn ngày nhận hàng.",
+            "missing_appointment": "Vui lòng chọn ngày và giờ nhận hàng.",
             "fix": "Cập nhật →"
         },
         "preorder": {
-            "label_delivery_date": "Ngày nhận hàng",
+            "label_delivery_date": "Ngày & giờ nhận hàng",
+            "placeholder_date": "Chọn ngày",
+            "placeholder_time": "Chọn giờ",
             "placeholder_earliest": "Sớm nhất: {date}",
-            "close": "Đóng"
+            "close": "OK"
         },
         "modal_cart_conflict": {
             "title_header": "Tạo giỏ hàng mới?",
@@ -368,7 +370,18 @@
         "action_rebook": "Đặt lại",
         "toast_rebook_success": "Đã đặt lại giao hàng!",
         "contact_admin_notice": "Lỗi giao hàng — nếu lỗi tiếp tục xảy ra, hãy liên hệ admin",
-        "driver_assigning": "Đang tìm tài xế, vui lòng chờ"
+        "driver_assigning": "Đang tìm tài xế, vui lòng chờ",
+        "action_contact_buyer": "Liên hệ buyer",
+        "buyer_name": "Tên",
+        "buyer_phone": "SĐT",
+        "buyer_address": "Địa chỉ",
+        "label_ordered_at": "Đặt lúc:",
+        "label_deliver_at": "Giao lúc:",
+        "tab_today": "Hôm nay",
+        "tab_upcoming": "Sắp tới",
+        "order_total": "Tổng",
+        "empty_tab_upcoming": "Chưa có đơn đặt trước",
+        "empty_tab_upcoming_sub": "Đơn đặt trước của khách sẽ hiển thị ở đây."
     },
     "seller_orders": {
         "filter_all": "Tất cả",

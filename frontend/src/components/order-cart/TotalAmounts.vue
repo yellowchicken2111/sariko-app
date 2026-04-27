@@ -15,7 +15,8 @@ export default {
     data() {
         return {
             submitting: false,
-            deliveryAppointment: null,
+            deliveryDate: null,
+            deliveryTime: null,
         }
     },
 
@@ -44,10 +45,17 @@ export default {
         isPreorder() {
             return this.maxPreorderDay > 0
         },
-        minAppointmentDate() {
+        deliveryAppointment() {
+            if (!this.deliveryDate || !this.deliveryTime) return null
+            return `${this.deliveryDate} ${this.deliveryTime}`
+        },
+        minAppointmentDatetime() {
             const d = new Date()
             d.setDate(d.getDate() + this.maxPreorderDay)
-            return d.toISOString().slice(0, 10).replace(/-/g, '/')
+            return d
+        },
+        minAppointmentDate() {
+            return this.minAppointmentDatetime.toISOString().slice(0, 10).replace(/-/g, '/')
         },
         validationIssues() {
             const auth = useAuthStore()
@@ -61,8 +69,18 @@ export default {
             return this.cartItems.length > 0 && !this.submitting && !this.quotationLoading && this.validationIssues.length === 0
         },
         appointmentDateOptions() {
-            return (dateStr) => {
-                return dateStr >= this.minAppointmentDate
+            return (dateStr) => dateStr >= this.minAppointmentDate
+        },
+        appointmentTimeOptions() {
+            return (hr, min) => {
+                if (!this.deliveryDate) return false
+                if (this.deliveryDate.replace(/\//g, '-') > this.minAppointmentDate.replace(/\//g, '-')) return true
+                const minHr = this.minAppointmentDatetime.getHours()
+                const minMin = this.minAppointmentDatetime.getMinutes()
+                if (min === null) return hr >= minHr
+                if (hr > minHr) return true
+                if (hr === minHr) return min >= minMin
+                return false
             }
         },
     },
@@ -70,7 +88,10 @@ export default {
     watch: {
         validationIssues() {
             this.$nextTick(this._updateHeight)
-        }
+        },
+        deliveryDate() {
+            this.deliveryTime = null
+        },
     },
 
     methods: {
@@ -96,8 +117,8 @@ export default {
                 }
 
                 const orderStore = useOrderStore()
-                const appt = this.isPreorder && this.deliveryAppointment
-                    ? new Date(this.deliveryAppointment.replace(/\//g, '-')).toISOString()
+                const appt = this.isPreorder && this.deliveryDate && this.deliveryTime
+                    ? new Date(`${this.deliveryDate.replace(/\//g, '-')}T${this.deliveryTime}:00`).toISOString()
                     : null
                 const order = await orderStore.placeOrder('delivery', address, this.note || null, deliveryOpts, appt)
                 if (order) {
@@ -188,31 +209,53 @@ export default {
                 <Calendar :size="14" />
                 <span>{{ $t('cart_page.preorder.label_delivery_date') }} <span class="required">*</span></span>
             </div>
-            <q-input
-                v-model="deliveryAppointment"
-                dense
-                readonly
-                :placeholder="$t('cart_page.preorder.placeholder_earliest', { date: minAppointmentDate.replace(/\//g, '-') })"
-                class="appointment-input"
-            >
-                <template #append>
-                    <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy transition-show="scale" transition-hide="scale">
-                            <q-date
-                                v-model="deliveryAppointment"
-                                :options="appointmentDateOptions"
-                                minimal
-                                dark
-                                color="amber"
-                            >
-                                <div class="row items-center justify-end">
-                                    <q-btn v-close-popup flat no-caps :label="$t('cart_page.preorder.close')" color="amber" />
-                                </div>
-                            </q-date>
-                        </q-popup-proxy>
-                    </q-icon>
-                </template>
-            </q-input>
+            <div class="appointment-inputs">
+                <q-input
+                    v-model="deliveryDate"
+                    dense readonly
+                    :placeholder="$t('cart_page.preorder.placeholder_date')"
+                    class="appointment-input"
+                >
+                    <template #append>
+                        <q-icon name="event" class="cursor-pointer">
+                            <q-popup-proxy transition-show="scale" transition-hide="scale">
+                                <q-date
+                                    v-model="deliveryDate"
+                                    :options="appointmentDateOptions"
+                                    minimal dark color="amber"
+                                >
+                                    <div class="row items-center justify-end">
+                                        <q-btn v-close-popup flat no-caps :label="$t('cart_page.preorder.close')" color="amber" />
+                                    </div>
+                                </q-date>
+                            </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+                <q-input
+                    v-model="deliveryTime"
+                    dense readonly
+                    :placeholder="$t('cart_page.preorder.placeholder_time')"
+                    :disable="!deliveryDate"
+                    class="appointment-input"
+                >
+                    <template #append>
+                        <q-icon name="access_time" class="cursor-pointer">
+                            <q-popup-proxy transition-show="scale" transition-hide="scale">
+                                <q-time
+                                    v-model="deliveryTime"
+                                    :options="appointmentTimeOptions"
+                                    format24h dark color="amber"
+                                >
+                                    <div class="row items-center justify-end">
+                                        <q-btn v-close-popup flat no-caps :label="$t('cart_page.preorder.close')" color="amber" />
+                                    </div>
+                                </q-time>
+                            </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+            </div>
         </div>
 
         <div v-if="validationIssues.length > 0" class="validation-card">
@@ -319,6 +362,15 @@ export default {
     border-radius: 12px;
     padding: 12px 14px;
     margin-bottom: 12px;
+}
+
+.appointment-inputs {
+    display: flex;
+    gap: 8px;
+
+    .appointment-input {
+        flex: 1;
+    }
 }
 
 .appointment-label {
