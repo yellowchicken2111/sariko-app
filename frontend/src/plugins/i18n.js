@@ -4,7 +4,7 @@ import vi from '@/i18n/locales/vi.json'
 
 const savedLang = localStorage.getItem("lang") || "en_ph";
 
-const i18n = createI18n({
+export const i18n = createI18n({
     legacy: true,
     locale: savedLang,
     fallbackLocale: "en_ph",

@@ -12,6 +12,12 @@ export default {
         async saveAndContinue() {
             const authStore = useAuthStore()
             this.isSaving = true
+
+            const langMap = { 'Tiếng Việt': 'vi', 'English': 'en_ph', 'Fillipino': 'en_ph' }
+            const locale = langMap[authStore.selectedPreferedLanguage] || 'en_ph'
+            this.$i18n.locale = locale
+            localStorage.setItem('lang', locale)
+
             try {
                 await apiUsers.updateProfile({
                     phone: authStore.inputPhoneNumber,

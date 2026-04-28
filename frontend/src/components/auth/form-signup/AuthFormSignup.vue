@@ -173,6 +173,10 @@ export default {
         <div class="button-signup">
             <ButtonSignup />
         </div>
+
+        <router-link to="/home" class="link-home">
+            {{ $t('auth_page.link_back_to_home') }}
+        </router-link>
     </q-form>
 
 </template>
@@ -288,6 +292,17 @@ export default {
 
 .button-signup {
     width: 100%;
+}
+
+.link-home {
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
 }
 
 .spinner {

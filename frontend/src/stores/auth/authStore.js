@@ -6,6 +6,16 @@ import apiAuth from "@/apis/auth/apiAuth";
 import apiUsers from "@/apis/users/apiUsers";
 import { useCartStore } from "@/stores/cart/cartStore";
 import { useOrderStore } from "@/stores/order/orderStore";
+import { i18n } from "@/plugins/i18n";
+
+const LANG_MAP = { 'Tiếng Việt': 'vi', 'English': 'en_ph', 'Fillipino': 'en_ph' };
+
+function applyLocale(preferredLanguage) {
+    if (!preferredLanguage) return;
+    const locale = LANG_MAP[preferredLanguage] || 'en_ph';
+    i18n.global.locale = locale;
+    localStorage.setItem('lang', locale);
+}
 
 export const useAuthStore = defineStore("authStore", {
     state() {
@@ -88,6 +98,7 @@ export const useAuthStore = defineStore("authStore", {
                             if (this.viewMode === 'buyer' && profile.user.is_seller) {
                                 this.viewMode = 'seller'
                             }
+                            applyLocale(profile.user.preferred_language)
                         }
                     } catch (e) {
                         console.error(`authStore - bootstrap - profile fetch failed: ${e}`);
@@ -230,6 +241,7 @@ export const useAuthStore = defineStore("authStore", {
                         if (this.viewMode === 'buyer' && profile.user.is_seller) {
                             this.viewMode = 'seller'
                         }
+                        applyLocale(profile.user.preferred_language)
                     }
                 } catch (e) {
                     console.error(`authStore - onClickedSignin - profile fetch failed: ${e}`);

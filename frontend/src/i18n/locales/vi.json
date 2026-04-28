@@ -5,8 +5,12 @@
         "edit_profile_page": "Chỉnh sửa hồ sơ",
         "language_page": "Ngôn ngữ",
         "delivery_address_page": "Địa chỉ giao hàng",
+        "store_address_page": "Địa chỉ cửa hàng",
         "terms_page": "Điều khoản dịch vụ",
-        "privacy_page": "Chính sách bảo mật"
+        "privacy_page": "Chính sách bảo mật",
+        "change_password_page": "Đổi mật khẩu",
+        "forgot_password_page": "Quên mật khẩu",
+        "reset_password_page": "Mật khẩu mới"
     },
     "common": {
         "button_label_cancel": "Hủy",
@@ -25,6 +29,7 @@
     },
     "auth_page": {
         "subtitle_text_header": "CHỢ FILIPINO · HỒ CHÍ MINH",
+        "link_back_to_home": "Tiếp tục xem mà không cần đăng nhập",
         "auth_button_group": {
             "label_signin": "Đăng nhập",
             "label_signout": "Đăng ký"
@@ -168,8 +173,12 @@
         "menu_label_edit_profile": "Chỉnh sửa hồ sơ",
         "menu_label_delivery_address": "Địa chỉ giao hàng",
         "menu_label_language": "Ngôn ngữ",
+        "menu_label_change_password": "Đổi mật khẩu",
         "menu_label_terms": "Điều khoản dịch vụ",
         "menu_label_privacy": "Chính sách bảo mật",
+        "menu_label_about": "Giới thiệu Sariko",
+        "menu_label_shipping": "Chính sách vận chuyển",
+        "menu_label_payment_methods": "Phương thức thanh toán",
         "menu_label_contact_support": "Liên hệ hỗ trợ",
         "menu_label_switch_to_buyer": "Chuyển sang chế độ Người mua",
         "menu_label_switch_to_seller": "Chuyển sang chế độ Người bán",
@@ -198,6 +207,16 @@
         "error_avatar_upload": "Tải ảnh thất bại, vui lòng thử lại",
         "validation_name_required": "Vui lòng nhập tên",
         "validation_phone_invalid": "Số điện thoại không hợp lệ"
+    },
+    "change_password_page": {
+        "label_new": "Mật khẩu mới",
+        "placeholder_new": "Ít nhất 6 ký tự",
+        "label_confirm": "Xác nhận mật khẩu",
+        "placeholder_confirm": "Nhập lại mật khẩu mới",
+        "error_required": "Vui lòng nhập mật khẩu",
+        "error_min_length": "Mật khẩu phải có ít nhất 6 ký tự",
+        "error_mismatch": "Mật khẩu không khớp",
+        "success": "Đổi mật khẩu thành công"
     },
     "language_page": {
         "title": "Chọn ngôn ngữ",
@@ -469,6 +488,7 @@
         "edit_profile": "Chỉnh sửa hồ sơ",
         "section_title_settings": "Cài đặt",
         "menu_label_profile": "Hồ sơ của tôi",
+        "menu_label_store_address": "Địa chỉ cửa hàng",
         "menu_label_language": "Ngôn ngữ",
         "menu_label_terms": "Điều khoản dịch vụ",
         "menu_label_privacy": "Chính sách bảo mật",
@@ -538,5 +558,34 @@
         "toast_item_deleted": "Đã xóa món",
         "toast_save_failed": "Lưu thất bại. Thử lại.",
         "toast_delete_failed": "Xóa thất bại. Thử lại."
+    },
+    "forgot_password_page": {
+        "greeting_text": "Quên mật khẩu?",
+        "greeting_subtext": "Nhập email và chúng tôi sẽ gửi link đặt lại mật khẩu",
+        "label_email": "EMAIL",
+        "placeholder_email": "Nhập địa chỉ email của bạn",
+        "error_required": "Vui lòng nhập email",
+        "error_invalid": "Email không hợp lệ",
+        "error_failed": "Có lỗi xảy ra, vui lòng thử lại",
+        "button_send": "Gửi link đặt lại",
+        "button_sending": "Đang gửi...",
+        "success_title": "Kiểm tra hộp thư!",
+        "success_text": "Chúng tôi đã gửi link đặt lại mật khẩu đến",
+        "link_back_to_signin": "Quay lại đăng nhập",
+        "link_forgot_password": "Quên mật khẩu?"
+    },
+    "reset_password_page": {
+        "greeting_text": "Đặt mật khẩu mới",
+        "greeting_subtext": "Chọn mật khẩu mạnh cho tài khoản của bạn",
+        "label_new": "Mật khẩu mới",
+        "placeholder_new": "Ít nhất 6 ký tự",
+        "label_confirm": "Xác nhận mật khẩu",
+        "placeholder_confirm": "Nhập lại mật khẩu mới",
+        "error_required": "Vui lòng nhập mật khẩu",
+        "error_min_length": "Mật khẩu phải có ít nhất 6 ký tự",
+        "error_mismatch": "Mật khẩu không khớp",
+        "button_save": "Cập nhật mật khẩu",
+        "success": "Đặt lại mật khẩu thành công",
+        "invalid_link": "Link không hợp lệ hoặc đã hết hạn"
     }
 }

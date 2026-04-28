@@ -1,8 +1,8 @@
 <script>
-import { User, MapPin, Globe, ChevronRight } from 'lucide-vue-next';
+import { User, MapPin, Globe, Lock, ChevronRight } from 'lucide-vue-next';
 
 export default {
-    components: { User, MapPin, Globe, ChevronRight }
+    components: { User, MapPin, Globe, Lock, ChevronRight }
 }
 </script>
 
@@ -20,6 +20,12 @@ export default {
             <router-link to="/account/language" class="menu-item">
                 <div class="menu-icon"><Globe size="18" /></div>
                 <span class="menu-label">{{ $t('account_page.menu_label_language') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
+
+            <router-link to="/account/change-password" class="menu-item">
+                <div class="menu-icon"><Lock size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_change_password') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
             </router-link>
         </div>

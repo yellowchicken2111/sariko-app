@@ -76,8 +76,11 @@ export default {
             </q-input>
         </div>
 
-        <div class="input-label">
-            {{ $t('auth_page.auth_input_fields.common.input_label_password') }}
+        <div class="input-label-row">
+            <span>{{ $t('auth_page.auth_input_fields.common.input_label_password') }}</span>
+            <router-link to="/forgot-password" class="link-forgot">
+                {{ $t('forgot_password_page.link_forgot_password') }}
+            </router-link>
         </div>
 
         <div class="input-container">
@@ -106,6 +109,10 @@ export default {
         <div class="button-signin">
             <ButtonSignin />
         </div>
+
+        <router-link to="/home" class="link-home">
+            {{ $t('auth_page.link_back_to_home') }}
+        </router-link>
     </q-form>
 
 </template>
@@ -171,6 +178,34 @@ export default {
 .button-signin {
     margin-top: 5px;
     width: 100%;
+}
+
+.input-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-weight: 700;
+    font-size: 10px;
+    margin-bottom: 5px;
+}
+
+.link-forgot {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-accent, #f5A623);
+    text-decoration: none;
+}
+
+.link-home {
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
 }
 
 :deep(.q-field__native::placeholder) {

@@ -31,6 +31,17 @@ const routes = [
         meta: { guestOnly: true }
     },
     {
+        path: '/forgot-password',
+        name: 'forgot-password',
+        component: () => import('@/pages/ForgotPasswordPage.vue'),
+        meta: { guestOnly: true }
+    },
+    {
+        path: '/reset-password',
+        name: 'reset-password',
+        component: () => import('@/pages/ResetPasswordPage.vue'),
+    },
+    {
         path: '/onboarding',
         name: 'onboarding',
         component: () => import('@/pages/Onboarding.vue'),
@@ -139,6 +150,12 @@ const routes = [
         path: '/account/language',
         name: 'account-language',
         component: () => import('@/pages/LanguagePage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/account/change-password',
+        name: 'account-change-password',
+        component: () => import('@/pages/ChangePasswordPage.vue'),
         meta: { requiresAuth: true }
     },
     {

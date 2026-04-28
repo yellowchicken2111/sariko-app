@@ -5,8 +5,12 @@
         "edit_profile_page": "Edit Profile",
         "language_page": "Language",
         "delivery_address_page": "Delivery Address",
+        "store_address_page": "Store Address",
         "terms_page": "Terms of Service",
-        "privacy_page": "Privacy Policy"
+        "privacy_page": "Privacy Policy",
+        "change_password_page": "Change Password",
+        "forgot_password_page": "Forgot Password",
+        "reset_password_page": "New Password"
     },
     "common": {
         "button_label_cancel": "Cancel",
@@ -25,6 +29,7 @@
     },
     "auth_page": {
         "subtitle_text_header": "FILIPINO MARKETPLACE · HCMC NODE",
+        "link_back_to_home": "Continue browsing without signing in",
         "auth_button_group": {
             "label_signin": "Sign in",
             "label_signout": "Sign up"
@@ -168,6 +173,7 @@
         "menu_label_edit_profile": "Edit Profile",
         "menu_label_delivery_address": "Delivery Address",
         "menu_label_language": "Language",
+        "menu_label_change_password": "Change Password",
         "menu_label_terms": "Terms of Service",
         "menu_label_privacy": "Privacy Policy",
         "menu_label_about": "About Sariko",
@@ -201,6 +207,16 @@
         "error_avatar_upload": "Failed to upload photo, please try again",
         "validation_name_required": "Please enter your name",
         "validation_phone_invalid": "Invalid phone number format"
+    },
+    "change_password_page": {
+        "label_new": "New password",
+        "placeholder_new": "At least 6 characters",
+        "label_confirm": "Confirm password",
+        "placeholder_confirm": "Re-enter new password",
+        "error_required": "Please enter a password",
+        "error_min_length": "Password must be at least 6 characters",
+        "error_mismatch": "Passwords do not match",
+        "success": "Password updated successfully"
     },
     "language_page": {
         "title": "Choose your language",
@@ -472,6 +488,7 @@
         "edit_profile": "Edit Profile",
         "section_title_settings": "Settings",
         "menu_label_profile": "My Profile",
+        "menu_label_store_address": "Store Address",
         "menu_label_language": "Language",
         "menu_label_terms": "Terms of Service",
         "menu_label_privacy": "Privacy Policy",
@@ -538,5 +555,34 @@
         "toast_item_deleted": "Item deleted",
         "toast_save_failed": "Failed to save. Please try again.",
         "toast_delete_failed": "Failed to delete. Please try again."
+    },
+    "forgot_password_page": {
+        "greeting_text": "Forgot your password?",
+        "greeting_subtext": "Enter your email and we'll send you a reset link",
+        "label_email": "EMAIL",
+        "placeholder_email": "Enter your email address",
+        "error_required": "Please enter your email",
+        "error_invalid": "Please enter a valid email",
+        "error_failed": "Something went wrong, please try again",
+        "button_send": "Send Reset Link",
+        "button_sending": "Sending...",
+        "success_title": "Check your inbox!",
+        "success_text": "We sent a password reset link to",
+        "link_back_to_signin": "Back to Sign In",
+        "link_forgot_password": "Forgot password?"
+    },
+    "reset_password_page": {
+        "greeting_text": "Set a new password",
+        "greeting_subtext": "Choose a strong password for your account",
+        "label_new": "New password",
+        "placeholder_new": "At least 6 characters",
+        "label_confirm": "Confirm password",
+        "placeholder_confirm": "Re-enter new password",
+        "error_required": "Please enter a password",
+        "error_min_length": "Password must be at least 6 characters",
+        "error_mismatch": "Passwords do not match",
+        "button_save": "Update Password",
+        "success": "Password updated successfully",
+        "invalid_link": "This link is invalid or has expired"
     }
 }

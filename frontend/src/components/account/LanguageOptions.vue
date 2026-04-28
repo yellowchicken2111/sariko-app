@@ -48,12 +48,6 @@ export default {
                 await apiUsers.updateProfile({
                     preferred_language: option.backendValue,
                 })
-                this.$q.notify({
-                    classes: 'quasar-notify-positive',
-                    message: `✔️ ${this.$t('common.toast_update_success')}`,
-                    position: 'bottom',
-                    timeout: 1200,
-                })
             } catch (e) {
                 console.warn('LanguageOptions - persist failed, keeping local change:', e)
             }

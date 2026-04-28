@@ -36,6 +36,8 @@ def get_current_user_profile(user=Depends(verify_token)):
                 users.update({"seller_id": profile["id"]})
                 if profile.get("avatar_url"):
                     users["avatar_url"] = profile["avatar_url"]
+                if profile.get("phone"):
+                    users["phone"] = profile["phone"]
 
         return {"success": True , "user": users}
     

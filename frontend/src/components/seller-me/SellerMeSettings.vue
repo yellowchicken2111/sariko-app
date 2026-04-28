@@ -1,10 +1,10 @@
 <script>
-import { User, Globe, FileText, Shield, ChevronRight } from 'lucide-vue-next';
+import { User, MapPin, Globe, FileText, Shield, Lock, ChevronRight } from 'lucide-vue-next';
 
 export default {
     name: 'SellerMeSettings',
 
-    components: { User, Globe, FileText, Shield, ChevronRight },
+    components: { User, MapPin, Globe, FileText, Shield, Lock, ChevronRight },
 }
 </script>
 
@@ -19,9 +19,21 @@ export default {
                 <ChevronRight size="16" class="menu-arrow" />
             </router-link>
 
+            <router-link to="/account/address" class="menu-item">
+                <div class="menu-icon"><MapPin size="18" /></div>
+                <span class="menu-label">{{ $t('seller_me.menu_label_store_address') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
+
             <router-link to="/account/language" class="menu-item">
                 <div class="menu-icon"><Globe size="18" /></div>
                 <span class="menu-label">{{ $t('seller_me.menu_label_language') }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
+
+            <router-link to="/account/change-password" class="menu-item">
+                <div class="menu-icon"><Lock size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_change_password') }}</span>
                 <ChevronRight size="16" class="menu-arrow" />
             </router-link>
 
