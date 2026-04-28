@@ -56,6 +56,7 @@ export const useAuthStore = defineStore("authStore", {
 
             // auth subscription
             _authSub: null,
+            isPasswordRecovery: false,
         }
     },
 
@@ -133,6 +134,7 @@ export const useAuthStore = defineStore("authStore", {
 
                 const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
                     if (event === 'INITIAL_SESSION') return;
+                    if (event === 'PASSWORD_RECOVERY') this.isPasswordRecovery = true;
                     this._setFromSession(session);
                 });
                 this._authSub = subscription;

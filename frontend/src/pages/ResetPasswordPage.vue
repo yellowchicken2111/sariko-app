@@ -1,6 +1,7 @@
 <script>
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm.vue';
 import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     name: 'ResetPasswordPage',
@@ -14,6 +15,14 @@ export default {
     },
 
     async created() {
+        const authStore = useAuthStore()
+
+        // Event may have already fired before this component mounted (race with bootstrap)
+        if (authStore.isPasswordRecovery) {
+            this.ready = true
+            return
+        }
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
             if (event === 'PASSWORD_RECOVERY') {
                 this.ready = true
@@ -23,11 +32,12 @@ export default {
 
         setTimeout(() => {
             if (!this.ready) this.invalid = true
-        }, 3000)
+        }, 5000)
     },
 
     beforeUnmount() {
         this._authSubscription?.unsubscribe()
+        useAuthStore().isPasswordRecovery = false
     }
 }
 </script>
