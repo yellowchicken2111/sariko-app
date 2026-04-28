@@ -19,6 +19,8 @@ export default {
             deliveryChannel: null,
             fetchDebounceTimer: null,
             activeFilter: 'all',
+            newOrderAudio: null,
+            unlockAudioHandler: null,
         }
     },
 
@@ -55,6 +57,10 @@ export default {
         isLoading() {
             return useDashboardStore().isLoading
         },
+        showSkeleton() {
+            const s = useDashboardStore()
+            return s.isLoading && !s.hasLoadedOrders
+        },
     },
 
     methods: {
@@ -63,9 +69,41 @@ export default {
         debouncedFetch() {
             if (this.fetchDebounceTimer) return
             this.fetchDebounceTimer = setTimeout(async () => {
+                const prevIds = new Set(useDashboardStore().orders.map(o => o.id))
                 await this.fetchOrders()
+                const hasNew = useDashboardStore().orders.some(o => !prevIds.has(o.id))
+                if (hasNew) this.playNewOrderSound()
                 this.fetchDebounceTimer = null
             }, 500)
+        },
+
+        playNewOrderSound() {
+            if (!this.newOrderAudio) {
+                this.newOrderAudio = new Audio('/sounds/new-order.mp3')
+            }
+            this.newOrderAudio.currentTime = 0
+            this.newOrderAudio.play().catch(err => {
+                console.warn('SellerHomePage - playNewOrderSound -', err)
+            })
+        },
+
+        setupAudioUnlock() {
+            this.unlockAudioHandler = () => {
+                if (!this.newOrderAudio) {
+                    this.newOrderAudio = new Audio('/sounds/new-order.mp3')
+                }
+                this.newOrderAudio.play().then(() => {
+                    this.newOrderAudio.pause()
+                    this.newOrderAudio.currentTime = 0
+                }).catch(() => {})
+                window.removeEventListener('pointerdown', this.unlockAudioHandler)
+                window.removeEventListener('keydown', this.unlockAudioHandler)
+                window.removeEventListener('touchstart', this.unlockAudioHandler)
+                this.unlockAudioHandler = null
+            }
+            window.addEventListener('pointerdown', this.unlockAudioHandler)
+            window.addEventListener('keydown', this.unlockAudioHandler)
+            window.addEventListener('touchstart', this.unlockAudioHandler)
         },
 
         listenOrders() {
@@ -116,10 +154,16 @@ export default {
             if (this.channel) supabase.removeChannel(this.channel)
             if (this.deliveryChannel) supabase.removeChannel(this.deliveryChannel)
             if (this.fetchDebounceTimer) clearTimeout(this.fetchDebounceTimer)
+            if (this.unlockAudioHandler) {
+                window.removeEventListener('pointerdown', this.unlockAudioHandler)
+                window.removeEventListener('keydown', this.unlockAudioHandler)
+                window.removeEventListener('touchstart', this.unlockAudioHandler)
+            }
         },
     },
 
     async mounted() {
+        this.setupAudioUnlock()
         await Promise.all([this.fetchOrders(), this.fetchSellerInfo()])
         this.listenOrders()
         this.listenDeliveries()
@@ -171,7 +215,7 @@ export default {
                 </q-btn-dropdown>
             </div>
 
-            <div v-if="isLoading" class="skeleton-list">
+            <div v-if="showSkeleton" class="skeleton-list">
                 <div v-for="n in 2" :key="n" class="skeleton-card">
                     <div class="sk-row">
                         <div>

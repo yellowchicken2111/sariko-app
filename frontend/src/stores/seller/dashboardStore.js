@@ -26,6 +26,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
             orderDelivery: null,
             deliveryStatuses: {}, // { [orderId]: { status, rebook_count } | 'loading' | 'error' }
             isLoading: false,
+            hasLoadedOrders: false,
             orderDetailLoading: false,
             selectedFilter: 'new',
         }
@@ -103,6 +104,7 @@ export const useDashboardStore = defineStore("dashboardStore", {
                 console.error('dashboardStore - fetchOrders -', e)
             } finally {
                 this.isLoading = false
+                this.hasLoadedOrders = true
             }
         },
 

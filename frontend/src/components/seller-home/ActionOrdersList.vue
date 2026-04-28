@@ -283,7 +283,6 @@ export default {
 
 <template>
     <div>
-        <!-- Tabs Hôm nay / Sắp tới (chỉ hiện nếu có pre-order upcoming) -->
         <div v-if="hasUpcoming" class="schedule-tabs">
             <button
                 class="tab-btn"
@@ -303,7 +302,6 @@ export default {
             </button>
         </div>
 
-        <!-- Empty state -->
         <div v-if="displayOrders.length === 0" class="empty-state">
             <div class="empty-icon">🎉</div>
             <template v-if="activeTab === 'today'">

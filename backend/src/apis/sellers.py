@@ -1,4 +1,5 @@
 import logging
+import re
 
 from dao.dao_seller_profiles import DAOSellerProfiles
 from dao.dao_food_items import DAOFoodItems
@@ -18,15 +19,20 @@ router = APIRouter(prefix="/sellers")
 logger = logging.getLogger(__name__)
 
 def _to_e164(phone: str) -> str:
-    """Convert Vietnamese phone number to E.164 format (+84...)."""
+    """Convert Vietnamese phone number to E.164 format (+84...).
+
+    Raises ValueError if the input cannot be normalized to a valid VN mobile.
+    """
     if not phone:
-        return "+84900000000"
-    phone = phone.strip().replace(" ", "").replace("-", "")
-    if phone.startswith("+"):
-        return phone
-    if phone.startswith("0"):
-        return "+84" + phone[1:]
-    return "+84" + phone
+        raise ValueError("Phone is required")
+    digits = re.sub(r"\D", "", phone)
+    if digits.startswith("84"):
+        digits = digits[2:]
+    elif digits.startswith("0"):
+        digits = digits[1:]
+    if not re.fullmatch(r"\d{9,10}", digits):
+        raise ValueError(f"Invalid VN phone: {phone!r}")
+    return "+84" + digits
 
 
 VALID_STATUS_TRANSITIONS = {
@@ -167,6 +173,17 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                 dropoff_address=dropoff_address,
             )
 
+            try:
+                sender_phone = _to_e164(seller.get("phone") or "")
+            except ValueError as e:
+                raise HTTPException(status_code=400, detail=f"Seller phone invalid: {e}. Update store phone in settings.")
+            try:
+                recipient_phone = _to_e164(buyer.get("phone") or "")
+            except ValueError as e:
+                raise HTTPException(status_code=400, detail=f"Buyer phone invalid: {e}. Buyer must update phone before delivery.")
+
+            logger.info(f"[Delivery] order={order_id} sender_phone={sender_phone} recipient_phone={recipient_phone}")
+
             booking_result = None
             last_booking_error = None
             for attempt in range(1, 4):
@@ -176,9 +193,9 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                         stop_id_0=quotation.stop_id_0,
                         stop_id_1=quotation.stop_id_1,
                         sender_name=seller.get("store_name", "Seller"),
-                        sender_phone=_to_e164(seller.get("phone") or ""),
+                        sender_phone=sender_phone,
                         recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
-                        recipient_phone=_to_e164(buyer.get("phone") or ""),
+                        recipient_phone=recipient_phone,
                         recipient_remarks=full_order.get("delivery_address") or "",
                     )
                     break
