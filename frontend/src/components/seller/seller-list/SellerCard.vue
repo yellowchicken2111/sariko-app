@@ -41,7 +41,7 @@ export default {
 
         <div class="seller-avatar">
             <q-avatar v-if="sellerAvatarImageURL" size="48px">
-                <img :src="sellerAvatarImageURL">
+                <img :src="sellerAvatarImageURL" class="avatar-img">
             </q-avatar>
             <div v-else class="guest-icon">
                 <User :size="28" />
@@ -95,9 +95,15 @@ export default {
     margin-right: 10px;
 }
 
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .guest-icon {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;

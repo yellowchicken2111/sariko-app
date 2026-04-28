@@ -25,6 +25,7 @@ export default {
 <style lang="scss" scoped>
 .empty-state {
     min-height: calc(100vh - 100px);
+    min-height: calc(100dvh - 100px);
     padding-top: 35%;
     display: flex;
     flex-direction: column;

@@ -10,6 +10,7 @@
 .payment-return-page {
     width: 100%;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     padding-top: 50%;
     justify-content: center;

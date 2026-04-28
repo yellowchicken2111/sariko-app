@@ -17,6 +17,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     background: var(--bg-main);
     font-family: $sariko-font-family-secondary;
 }

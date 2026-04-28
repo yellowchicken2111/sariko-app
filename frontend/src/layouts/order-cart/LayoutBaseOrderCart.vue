@@ -63,6 +63,7 @@ export default {
 
 .background {
     height: 100vh;
+    height: 100dvh;
 }
 
 .breadcrumbs {
@@ -71,6 +72,7 @@ export default {
 
 .container {
     height: calc(100vh - var(--cart-page-breadcrumbs-height));
+    height: calc(100dvh - var(--cart-page-breadcrumbs-height));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -101,6 +103,7 @@ export default {
 .section-total-amount {
     width: 100%;
     flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 </style>

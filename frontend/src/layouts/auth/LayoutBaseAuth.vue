@@ -27,6 +27,7 @@
 
 .background {
     min-height: 100vh;
+    min-height: 100dvh;
     height: fit-content;
     display: flex;
     flex-direction: column;

@@ -26,6 +26,7 @@ export default {}
 <style lang="scss" scoped>
 .background {
     height: 100vh;
+    height: 100dvh;
     font-family: $sariko-font-family-secondary;
     background: var(--bg-main);
     display: flex;

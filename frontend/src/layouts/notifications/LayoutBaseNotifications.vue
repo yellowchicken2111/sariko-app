@@ -15,6 +15,7 @@
 <style scoped>
 .notifications-page {
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--bg-main);
     padding: 16px;
     padding-top: calc(24px + env(safe-area-inset-top, 0));

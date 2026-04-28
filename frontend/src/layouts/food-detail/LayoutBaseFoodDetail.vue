@@ -22,6 +22,7 @@
 .food-detail-page {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     font-family: $sariko-font-family-secondary;
     max-width: 430px;
     margin: 0 auto;

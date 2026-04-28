@@ -24,6 +24,7 @@
 <style lang="scss" scoped>
 .seller-home-page {
     height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow: hidden;

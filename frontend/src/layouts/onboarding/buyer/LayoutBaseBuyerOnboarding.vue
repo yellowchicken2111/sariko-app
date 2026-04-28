@@ -41,6 +41,7 @@
 .background {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background-color: #121b2f;
 
     font-family: $sariko-font-family-secondary;

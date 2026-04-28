@@ -34,8 +34,8 @@ export default {
 
         <template #SellerAvatar>
             <div v-if="seller.avatar_url">
-                <q-avatar  size="64px">
-                    <img :src="seller?.avatar_url">
+                <q-avatar size="64px">
+                    <img :src="seller?.avatar_url" class="avatar-img">
                 </q-avatar>
             </div>
             <div v-else class="guest-icon">
@@ -85,6 +85,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .guest-icon {
     width: 64px;
