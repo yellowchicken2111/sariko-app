@@ -187,7 +187,15 @@ router.beforeEach(async (to) => {
     }
 
     if (to.meta.guestOnly && isLoggedIn) {
-        return { name: 'home' }
+        return { name: authStore.user?.isSeller ? 'seller-home' : 'home' }
+    }
+
+    if (to.name === 'home' && isLoggedIn && authStore.user?.isSeller) {
+        return { name: 'seller-home' }
+    }
+
+    if (to.name === 'account' && isLoggedIn && authStore.user?.isSeller) {
+        return { name: 'seller-me' }
     }
 
     if (to.meta.requiresSeller && (!authStore.user?.isSeller)) {

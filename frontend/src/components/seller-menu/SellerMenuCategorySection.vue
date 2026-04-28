@@ -20,6 +20,7 @@ export default {
             expanded: true,
         }
     },
+
 }
 </script>
 
@@ -48,11 +49,13 @@ export default {
             <div v-if="(category.food_items || []).length === 0" class="empty-cat">
                 {{ $t('seller_menu.category_empty') }}
             </div>
-            <SellerMenuFoodItem
-                v-for="item in category.food_items"
-                :key="item.id"
-                :item="item"
-            />
+            <div v-else class="items-scroll">
+                <SellerMenuFoodItem
+                    v-for="item in category.food_items"
+                    :key="item.id"
+                    :item="item"
+                />
+            </div>
         </div>
 
         <ModalEditCategory v-model="showEditCategory" :category="category" />
@@ -98,6 +101,7 @@ export default {
 }
 
 .category-name {
+    min-width: 0;
     font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
@@ -116,6 +120,7 @@ export default {
     display: flex;
     gap: 6px;
     flex-shrink: 0;
+    margin-left: 10px;
 }
 
 .btn-cat-action {
@@ -146,6 +151,12 @@ export default {
 
 .items-list {
     padding: 0 14px 12px;
+}
+
+.items-scroll {
+    max-height: 308px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .empty-cat {

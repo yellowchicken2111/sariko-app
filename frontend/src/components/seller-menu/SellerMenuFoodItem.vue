@@ -1,11 +1,12 @@
 <script>
 import { useMenuStore } from '@/stores/seller/menuStore'
+import { Pencil } from 'lucide-vue-next'
 import ModalEditItem from './ModalEditItem.vue'
 
 export default {
     name: 'SellerMenuFoodItem',
 
-    components: { ModalEditItem },
+    components: { ModalEditItem, Pencil },
 
     props: {
         item: { type: Object, required: true },
@@ -47,6 +48,9 @@ export default {
             <div v-if="item.unit_label" class="food-unit">/ {{ item.unit_label }}</div>
         </div>
         <div class="food-actions">
+            <button class="btn-edit" @click="showEditModal = true">
+                <Pencil :size="13" />
+            </button>
             <q-toggle
                 :model-value="item.is_available"
                 color="positive"
@@ -54,9 +58,6 @@ export default {
                 :disable="toggling"
                 @update:model-value="onToggleAvailable"
             />
-            <button class="btn-edit" @click="showEditModal = true">
-                {{ $t('seller_menu.item_edit') }}
-            </button>
         </div>
 
         <ModalEditItem
@@ -112,21 +113,23 @@ export default {
 
 .food-actions {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
 }
 
 .btn-edit {
-    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
     color: var(--text-secondary);
     background: rgba(255,255,255,0.07);
     border: none;
-    border-radius: 6px;
-    padding: 3px 10px;
+    border-radius: 8px;
     cursor: pointer;
-    font-family: inherit;
+    flex-shrink: 0;
     &:active { background: rgba(255,255,255,0.12); }
 }
 </style>

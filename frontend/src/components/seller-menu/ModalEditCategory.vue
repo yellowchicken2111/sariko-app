@@ -22,8 +22,9 @@ export default {
     },
 
     computed: {
-        isEdit() { return !!this.category },
-        canSave() { return this.name.trim().length > 0 && !this.saving },
+        isEdit()    { return !!this.category },
+        canSave()   { return this.name.trim().length > 0 && !this.saving },
+        itemCount() { return (this.category?.food_items || []).length },
     },
 
     watch: {
@@ -34,6 +35,14 @@ export default {
 
     methods: {
         close() { this.$emit('update:modelValue', false) },
+
+        onDeleteClick() {
+            if (this.itemCount > 0) {
+                this.$q.notify({ type: 'warning', message: this.$t('seller_menu.category_delete_has_items', { count: this.itemCount }), position: 'bottom' })
+                return
+            }
+            this.showDeleteConfirm = true
+        },
 
         async save() {
             if (!this.canSave) return
@@ -94,7 +103,7 @@ export default {
                     flat no-caps
                     class="btn-delete"
                     :loading="deleting"
-                    @click="showDeleteConfirm = true"
+                    @click="onDeleteClick"
                 >
                     {{ $t('seller_menu.category_delete') }}
                 </q-btn>

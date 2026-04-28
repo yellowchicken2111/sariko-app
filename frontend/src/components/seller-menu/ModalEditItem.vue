@@ -31,7 +31,7 @@ export default {
 
     computed: {
         isEdit() { return !!this.item },
-        canSave() { return this.form.name.trim() && this.form.price > 0 && !this.saving },
+        canSave() { return this.form.name.trim() && this.form.price > 0 && this.form.category_id && !this.saving },
         categoryOptions() {
             return useMenuStore().categories.map(c => ({ label: c.name, value: c.id }))
         },

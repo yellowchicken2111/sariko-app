@@ -34,6 +34,8 @@ def get_current_user_profile(user=Depends(verify_token)):
             profile = dao.read_seller_profile_by_user_id(user["id"])
             if profile:
                 users.update({"seller_id": profile["id"]})
+                if profile.get("avatar_url"):
+                    users["avatar_url"] = profile["avatar_url"]
 
         return {"success": True , "user": users}
     
@@ -58,7 +60,15 @@ def update_current_user_profile(body: RequestUpdateProfile, user=Depends(verify_
     try:
         user_id = user["id"]
         dao_users = DAOUsers()
-        updated_user = dao_users.update_user_profile(user_id, body.model_dump(exclude_none=True))
+        data = body.model_dump(exclude_none=True)
+
+        if data.get("avatar_url"):
+            dao_seller = DAOSellerProfiles()
+            seller_profile = dao_seller.read_seller_profile_by_user_id(user_id)
+            if seller_profile:
+                dao_seller.update_avatar_url(user_id, data.pop("avatar_url"))
+
+        updated_user = dao_users.update_user_profile(user_id, data)
 
         if body.address:
             dao_addresses = DAOUserAddresses()

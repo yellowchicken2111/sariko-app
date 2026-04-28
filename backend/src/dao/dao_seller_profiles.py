@@ -123,6 +123,19 @@ class DAOSellerProfiles(DAOBase):
         except Exception as e:
             raise Exception(f"error read_seller_user_id_by_seller_id with seller_id {seller_id}: {e}")
 
+    def update_avatar_url(self, user_id: str, avatar_url: str):
+        try:
+            result = (
+                self._supabase_client
+                .table(self._table_name)
+                .update({"avatar_url": avatar_url})
+                .eq("user_id", user_id)
+                .execute()
+            )
+            return result.data[0] if result and result.data else None
+        except Exception as e:
+            raise Exception(f"error update_avatar_url: {e}")
+
     def read_seller_order_info(self, seller_id: str):
         """Fetch user_id + effective commission rate in one query for order creation."""
         try:

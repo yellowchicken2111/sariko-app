@@ -1,9 +1,12 @@
 <script>
+import { User } from 'lucide-vue-next';
 import { mapState } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
 
 export default {
     name: 'SellerGreeting',
+
+    components: { User },
 
     data() {
         return {
@@ -15,12 +18,20 @@ export default {
     computed: {
         ...mapState(useAuthStore, ['user']),
 
-        greeting() {
+        greetingPrefix() {
             const hour = this.now.getHours()
-            const name = this.user?.fullName?.split(' ').pop() || '...'
-            if (hour < 12) return this.$t('seller_home.greeting_morning', { name })
-            if (hour < 18) return this.$t('seller_home.greeting_afternoon', { name })
-            return this.$t('seller_home.greeting_evening', { name })
+            if (hour < 12) return this.$t('seller_home.greeting_morning_prefix')
+            if (hour < 18) return this.$t('seller_home.greeting_afternoon_prefix')
+            return this.$t('seller_home.greeting_evening_prefix')
+        },
+
+        storeName() {
+            return (this.user?.fullName || '...') + ' 👋'
+        },
+
+        initials() {
+            if (!this.user?.fullName) return ''
+            return this.user.fullName.trim().charAt(0).toUpperCase()
         },
 
         dateLocale() {
@@ -55,26 +66,57 @@ export default {
 </script>
 
 <template>
-    <div class="greeting-wrap">
-        <div class="greeting">{{ greeting }}</div>
-        <div class="datetime">
-            <span class="date-text">{{ dateText }}</span>
-            <span class="time-text">{{ timeText }}</span>
+    <div class="greeting-header">
+        <div class="greeting-wrap">
+            <div class="greeting-prefix">{{ greetingPrefix }}</div>
+            <div class="greeting">{{ storeName }}</div>
+            <div class="datetime">
+                <span class="date-text">{{ dateText }}</span>
+                <span class="time-text">{{ timeText }}</span>
+            </div>
+        </div>
+
+        <div class="avatar-wrap" @click="$router.push('/seller/me')">
+            <q-avatar v-if="user?.avatarUrl" size="64px">
+                <img :src="user.avatarUrl" :alt="user.fullName">
+            </q-avatar>
+            <div v-else-if="user" class="initials-avatar">
+                {{ initials }}
+            </div>
+            <div v-else class="guest-icon">
+                <User :size="24" />
+            </div>
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
+.greeting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items:center;
+    gap: 12px;
+}
+
 .greeting-wrap {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.greeting-prefix {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-family: $sariko-font-family-secondary;
 }
 
 .greeting {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .datetime {
@@ -93,5 +135,42 @@ export default {
     font-size: 13px;
     font-weight: 600;
     color: var(--color-accent);
+}
+
+.avatar-wrap {
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.avatar-wrap :deep(img) {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.initials-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(245, 166, 35, 0.2);
+    border: 1px solid rgba(245, 166, 35, 0.3);
+    color: #f5a623;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: $sariko-font-family-primary;
+}
+
+.guest-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
 }
 </style>
