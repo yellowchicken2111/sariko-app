@@ -208,9 +208,14 @@ async def delivery_webhook(request: Request):
         dao_deliveries.update_delivery(delivery["id"], update_data)
         logger.warning(f"[Webhook] {event_type} → order={lalamove_order_id} status={new_status}")
 
+        dao_orders = DAOOrders()
         if new_status == "COMPLETED":
-            dao_orders = DAOOrders()
             dao_orders.update_order_status(delivery["order_id"], "done")
+        elif new_status in TERMINAL_STATUSES:
+            order = dao_orders.read_order_by_id_raw(delivery["order_id"])
+            if order and order["status"] == "ready":
+                dao_orders.update_order_status(delivery["order_id"], "delivery_failed")
+                logger.info(f"[Webhook] order={delivery['order_id']} → delivery_failed (lalamove={new_status})")
 
         return {"success": True}
 
@@ -275,8 +280,8 @@ def rebook_delivery(order_id: str, user=Depends(verify_token)):
         order = dao_orders.read_order_by_id_for_seller(order_id, profile["id"])
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
-        if order["status"] != "ready" or order.get("delivery_method") != "delivery":
-            raise HTTPException(status_code=400, detail="Order must be ready with delivery method")
+        if order["status"] not in ("ready", "delivery_failed") or order.get("delivery_method") != "delivery":
+            raise HTTPException(status_code=400, detail="Order must be ready or delivery_failed with delivery method")
 
         dao_deliveries = DAODeliveries()
         delivery = dao_deliveries.read_delivery_by_order_id(order_id)
@@ -323,6 +328,10 @@ def rebook_delivery(order_id: str, user=Depends(verify_token)):
             "driver_plate": None,
             "rebook_count": rebook_count + 1,
         })
+
+        if order["status"] == "delivery_failed":
+            dao_orders.update_order_status(order_id, "ready")
+
         logger.warning(f"[Delivery] Re-booked order={order_id} attempt={rebook_count + 1} lalamove={result.lalamove_order_id}")
 
         return {"success": True}

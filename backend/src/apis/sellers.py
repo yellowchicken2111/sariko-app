@@ -36,9 +36,10 @@ def _to_e164(phone: str) -> str:
 
 
 VALID_STATUS_TRANSITIONS = {
-    "pending": ["confirmed", "cancelled"],
-    "confirmed": ["ready", "cancelled"],
-    "ready": ["done"],
+    "pending":          ["confirmed", "cancelled"],
+    "confirmed":        ["ready", "cancelled"],
+    "ready":            ["done", "cancelled"],  # delivery_failed is set by webhook only, not by seller
+    "delivery_failed":  ["done", "cancelled"],
 }
 
 

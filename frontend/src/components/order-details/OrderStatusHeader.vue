@@ -20,6 +20,9 @@ export default {
         isCancelled() {
             return this.order?.status === 'cancelled'
         },
+        isDeliveryFailed() {
+            return this.order?.status === 'delivery_failed'
+        },
         statusTitle() {
             if (this.isPaymentPending) return this.$t('order_detail.status_title_awaiting_payment')
             const map = {
@@ -28,6 +31,7 @@ export default {
                 ready: 'status_title_ready',
                 done: 'status_title_done',
                 cancelled: 'status_title_cancelled',
+                delivery_failed: 'status_title_delivery_failed',
             }
             const key = map[this.order?.status]
             return key ? this.$t(`order_detail.${key}`) : this.$t('order_detail.title')
@@ -48,6 +52,7 @@ export default {
                     : 'order_detail.status_subtext_ready_pickup',
                 done: 'status_subtext_done',
                 cancelled: 'status_subtext_cancelled',
+                delivery_failed: 'status_subtext_delivery_failed',
             }
             const key = map[this.order?.status]
             if (!key) return ''
@@ -62,6 +67,7 @@ export default {
                 ready: '#10b981',
                 done: '#10b981',
                 cancelled: '#ef4444',
+                delivery_failed: '#f59e0b',
             }
             return map[this.order?.status] || '#ffffff'
         },
@@ -84,7 +90,7 @@ export default {
     <div v-if="order" class="status-header">
         <div class="status-icon">
             <CircleX v-if="isCancelled" :size="64" :color="statusIconColor" />
-            <Clock v-else-if="isPending" :size="64" :color="statusIconColor" />
+            <Clock v-else-if="isPending || isDeliveryFailed" :size="64" :color="statusIconColor" />
             <CircleCheckBig v-else :size="64" :color="statusIconColor" />
         </div>
         <div class="status-title">{{ statusTitle }}</div>

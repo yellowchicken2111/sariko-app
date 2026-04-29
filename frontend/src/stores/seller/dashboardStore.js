@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import apiSellerDashboard from "@/apis/sellers/apiSellerDashboard";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
 
-const DELIVERY_TERMINAL = ['COMPLETED', 'CANCELED', 'REJECTED', 'EXPIRED']
+const DELIVERY_TERMINAL = ['COMPLETED', 'CANCELED', 'CANCELLED', 'REJECTED', 'EXPIRED']
 const ORDER_TERMINAL = ['done', 'cancelled']
 
 let _pollTimer = null
@@ -52,15 +52,9 @@ export const useDashboardStore = defineStore("dashboardStore", {
         },
         // Count of orders that actually appear in the "Need Your Action" list
         actionDisplayCount(state) {
-            const CANCELLED = ['CANCELED', 'REJECTED', 'EXPIRED']
-            return state.orders.filter(order => {
-                if (order.status === 'pending' || order.status === 'confirmed') return true
-                if (order.status === 'ready' && order.delivery_method === 'delivery') {
-                    const ds = state.deliveryStatuses[order.id]
-                    return ds && ds !== 'loading' && ds !== 'error' && CANCELLED.includes(ds.status)
-                }
-                return false
-            }).length
+            return state.orders.filter(order =>
+                ['pending', 'confirmed', 'delivery_failed'].includes(order.status)
+            ).length
         },
 
         filteredOrders(state) {
@@ -183,6 +177,8 @@ export const useDashboardStore = defineStore("dashboardStore", {
         async doRebookDelivery(orderId) {
             await apiDeliveries.rebookDelivery(orderId)
             await this._fetchDelivery(orderId)
+            this.updateOrderLocally(orderId, 'ready')
+            if (this.orderDetails?.id === orderId) this.orderDetails.status = 'ready'
             this._startPolling(orderId)
         },
 

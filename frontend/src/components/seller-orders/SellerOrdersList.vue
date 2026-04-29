@@ -2,22 +2,24 @@
 import { mapState, mapActions } from 'pinia';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 
-const FILTER_KEYS = ['all', 'new', 'preparing', 'ready', 'done', 'cancelled']
+const FILTER_KEYS = ['all', 'new', 'preparing', 'ready', 'delivery_failed', 'done', 'cancelled']
 
 const STATUS_DISPLAY_KEY = {
-    pending:   'seller_orders.status_new',
-    confirmed: 'seller_orders.status_preparing',
-    ready:     'seller_orders.status_ready',
-    done:      'seller_orders.status_done',
-    cancelled: 'seller_orders.status_cancelled',
+    pending:          'seller_orders.status_new',
+    confirmed:        'seller_orders.status_preparing',
+    ready:            'seller_orders.status_ready',
+    done:             'seller_orders.status_done',
+    cancelled:        'seller_orders.status_cancelled',
+    delivery_failed:  'seller_orders.status_delivery_failed',
 }
 
 const STATUS_CLASS = {
-    pending:   'badge-new',
-    confirmed: 'badge-preparing',
-    ready:     'badge-ready',
-    done:      'badge-done',
-    cancelled: 'badge-cancelled',
+    pending:          'badge-new',
+    confirmed:        'badge-preparing',
+    ready:            'badge-ready',
+    done:             'badge-done',
+    cancelled:        'badge-cancelled',
+    delivery_failed:  'badge-delivery-failed',
 }
 
 export default {
@@ -42,23 +44,25 @@ export default {
         filterCounts() {
             const o = this.orders
             return {
-                all:       o.length,
-                new:       o.filter(x => x.status === 'pending').length,
-                preparing: o.filter(x => x.status === 'confirmed').length,
-                ready:     o.filter(x => x.status === 'ready').length,
-                done:      o.filter(x => x.status === 'done').length,
-                cancelled: o.filter(x => x.status === 'cancelled').length,
+                all:              o.length,
+                new:              o.filter(x => x.status === 'pending').length,
+                preparing:        o.filter(x => x.status === 'confirmed').length,
+                ready:            o.filter(x => x.status === 'ready').length,
+                delivery_failed:  o.filter(x => x.status === 'delivery_failed').length,
+                done:             o.filter(x => x.status === 'done').length,
+                cancelled:        o.filter(x => x.status === 'cancelled').length,
             }
         },
 
         filteredOrders() {
             const f = this.activeFilter
-            if (f === 'all')       return this.orders
-            if (f === 'new')       return this.orders.filter(o => o.status === 'pending')
-            if (f === 'preparing') return this.orders.filter(o => o.status === 'confirmed')
-            if (f === 'ready')     return this.orders.filter(o => o.status === 'ready')
-            if (f === 'done')      return this.orders.filter(o => o.status === 'done')
-            if (f === 'cancelled') return this.orders.filter(o => o.status === 'cancelled')
+            if (f === 'all')              return this.orders
+            if (f === 'new')              return this.orders.filter(o => o.status === 'pending')
+            if (f === 'preparing')        return this.orders.filter(o => o.status === 'confirmed')
+            if (f === 'ready')            return this.orders.filter(o => o.status === 'ready')
+            if (f === 'delivery_failed')  return this.orders.filter(o => o.status === 'delivery_failed')
+            if (f === 'done')             return this.orders.filter(o => o.status === 'done')
+            if (f === 'cancelled')        return this.orders.filter(o => o.status === 'cancelled')
             return this.orders
         },
 
@@ -290,11 +294,12 @@ export default {
     border-radius: 12px;
 }
 
-.badge-new       { background: rgba(245,158,11,0.15); color: var(--color-warning); }
-.badge-preparing { background: rgba(59,130,246,0.15);  color: var(--color-info); }
-.badge-ready     { background: rgba(139,92,246,0.15);  color: #a78bfa; }
-.badge-done      { background: rgba(34,197,94,0.15);   color: var(--color-success); }
-.badge-cancelled { background: rgba(239,68,68,0.1);    color: #ef4444; }
+.badge-new             { background: rgba(245,158,11,0.15); color: var(--color-warning); }
+.badge-preparing       { background: rgba(59,130,246,0.15);  color: var(--color-info); }
+.badge-ready           { background: rgba(139,92,246,0.15);  color: #a78bfa; }
+.badge-done            { background: rgba(34,197,94,0.15);   color: var(--color-success); }
+.badge-cancelled       { background: rgba(239,68,68,0.1);    color: #ef4444; }
+.badge-delivery-failed { background: rgba(245,158,11,0.15);  color: #f59e0b; }
 
 /* Skeleton */
 .sk-card {

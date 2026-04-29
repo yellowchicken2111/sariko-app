@@ -39,6 +39,7 @@ export default {
                 ready: this.$t('orders_page.status_ready'),
                 done: this.$t('orders_page.status_done'),
                 cancelled: this.$t('orders_page.status_cancelled'),
+                delivery_failed: this.$t('orders_page.status_delivery_failed'),
             }
             return map[this.order.status] || this.order.status
         },
@@ -193,6 +194,11 @@ export default {
 .status-cancelled {
     background: rgba(239, 68, 68, 0.10);
     color: $negative;
+}
+
+.status-delivery_failed {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
 }
 
 .refund-chip {

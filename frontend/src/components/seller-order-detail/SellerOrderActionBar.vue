@@ -32,28 +32,14 @@ export default {
     },
 
     computed: {
-        isDeliveryCancelled() {
-            return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(this.delivery?.status)
-        },
-        canAccept() {
-            if (this.order.status === 'ready'
-                && this.order.delivery_method === 'delivery'
-                && this.isDeliveryCancelled) return false
-            return !!STATUS_NEXT[this.order.status]
-        },
+        canAccept() { return !!STATUS_NEXT[this.order.status] },
         canReject()  { return ['pending', 'confirmed'].includes(this.order.status) },
         rebookCount() { return this.delivery?.rebook_count || 0 },
         canRebook() {
-            return this.order.status === 'ready'
-                && this.order.delivery_method === 'delivery'
-                && this.isDeliveryCancelled
-                && this.rebookCount < 3
+            return this.order.status === 'delivery_failed' && this.rebookCount < 3
         },
         maxRebookReached() {
-            return this.order.status === 'ready'
-                && this.order.delivery_method === 'delivery'
-                && this.isDeliveryCancelled
-                && this.rebookCount >= 3
+            return this.order.status === 'delivery_failed' && this.rebookCount >= 3
         },
 
         isDeliveryStuck() {
@@ -64,10 +50,7 @@ export default {
         },
 
         showContactAdmin() {
-            const autoBookFailed = this.order.status === 'ready'
-                && this.order.delivery_method === 'delivery'
-                && !this.delivery
-            return autoBookFailed || this.rebookError || this.isDeliveryStuck
+            return this.rebookError || this.isDeliveryStuck
         },
 
         acceptLabel() {
@@ -116,6 +99,19 @@ export default {
                 this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_order_detail.toast_order_updated'), position: 'bottom', timeout: 1500 })
             } catch (e) {
                 console.error('SellerOrderActionBar - onAccept -', e)
+                this.$q.notify({ type: 'negative', message: this.$t('seller_order_detail.toast_update_failed'), position: 'bottom' })
+            } finally {
+                this.accepting = false
+            }
+        },
+
+        async onSelfDeliver() {
+            this.accepting = true
+            try {
+                await useDashboardStore().setOrderStatus(this.order.id, 'done')
+                this.$q.notify({ classes: 'quasar-notify-positive', message: this.$t('seller_order_detail.toast_order_updated'), position: 'bottom', timeout: 1500 })
+            } catch (e) {
+                console.error('SellerOrderActionBar - onSelfDeliver -', e)
                 this.$q.notify({ type: 'negative', message: this.$t('seller_order_detail.toast_update_failed'), position: 'bottom' })
             } finally {
                 this.accepting = false
@@ -186,7 +182,7 @@ export default {
                     {{ acceptLabel }}
                 </q-btn>
             </template>
-            <template v-else-if="order.status === 'ready'">
+            <template v-else-if="order.status === 'delivery_failed'">
                 <template v-if="canRebook">
                     <q-btn unelevated no-caps class="btn-rebook" :loading="rebooking" @click="onRebook">
                         {{ $t('seller_order_detail.action_rebook_delivery') }} ({{ rebookCount + 1 }}/3)
@@ -195,16 +191,20 @@ export default {
                 <template v-else-if="maxRebookReached">
                     <div class="cancel-block">
                         <div class="no-driver-notice">{{ $t('seller_order_detail.no_driver_notice') }}</div>
-                        <q-btn unelevated no-caps class="btn-cancel-order" :loading="rejecting" @click="onCancelDueToNoDriver">
-                            {{ $t('seller_order_detail.action_cancel_order') }}
-                        </q-btn>
+                        <div class="cancel-block-actions">
+                            <q-btn unelevated no-caps class="btn-cancel-order" :loading="rejecting" @click="onCancelDueToNoDriver">
+                                {{ $t('seller_order_detail.action_cancel_order') }}
+                            </q-btn>
+                            <q-btn unelevated no-caps class="btn-self-deliver" :loading="accepting" @click="onSelfDeliver">
+                                {{ $t('seller_order_detail.action_self_deliver') }}
+                            </q-btn>
+                        </div>
                     </div>
                 </template>
-                <!-- delivery null = auto-book failed; contact-admin notice handles messaging -->
-                <div v-else-if="delivery || order.delivery_method !== 'delivery'" class="status-message">
-                    {{ $t('seller_order_detail.action_bar_driver_on_way') }}
-                </div>
             </template>
+            <div v-else-if="order.status === 'ready'" class="status-message">
+                {{ $t('seller_order_detail.action_bar_driver_on_way') }}
+            </div>
             <div v-else-if="order.status === 'done'"      class="status-message">{{ $t('seller_order_detail.action_bar_completed') }}</div>
             <div v-else-if="order.status === 'cancelled'" class="status-message cancelled">{{ $t('seller_order_detail.action_bar_cancelled') }}</div>
         </div>
@@ -289,6 +289,7 @@ export default {
 }
 
 .cancelled { color: #ef4444; }
+.delivery-failed { color: #f59e0b; }
 
 .btn-rebook {
     flex: 1;
@@ -314,10 +315,26 @@ export default {
     text-align: center;
 }
 
+.cancel-block-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .btn-cancel-order {
-    width: 100%;
-    background: #ef4444;
-    color: #fff;
+    flex: 1;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.btn-self-deliver {
+    flex: 1;
+    background: var(--color-accent);
+    color: #121b2f;
     font-weight: 700;
     font-size: 14px;
     border-radius: 12px;

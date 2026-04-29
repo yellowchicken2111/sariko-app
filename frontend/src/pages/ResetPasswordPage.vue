@@ -17,7 +17,8 @@ export default {
     async created() {
         const authStore = useAuthStore()
 
-        // Event may have already fired before this component mounted (race with bootstrap)
+        console.log(authStore.isPasswordRecovery)
+
         if (authStore.isPasswordRecovery) {
             this.ready = true
             return

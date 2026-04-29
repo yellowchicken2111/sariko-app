@@ -5,8 +5,9 @@ import apiSellerDashboard from '@/apis/sellers/apiSellerDashboard';
 import apiDeliveries from '@/apis/deliveries/apiDeliveries';
 
 const STATUS_DISPLAY_KEY = {
-    pending: 'seller_home.status_new',
-    confirmed: 'seller_home.status_preparing',
+    pending:          'seller_home.status_new',
+    confirmed:        'seller_home.status_preparing',
+    delivery_failed:  'seller_home.status_delivery_failed',
 }
 
 const STATUS_NEXT = {
@@ -66,17 +67,14 @@ export default {
         todayCount() {
             return this.orders.filter(o => {
                 const isToday = !o.delivery_appointment || new Date(o.delivery_appointment).toDateString() === this.todayStr
-                if (!isToday) return false
-                if (o.status !== 'ready') return true
-                return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(this.deliveryStatuses[o.id]?.status)
+                return isToday && ['pending', 'confirmed', 'delivery_failed'].includes(o.status)
             }).length
         },
         upcomingCount() {
             return this.orders.filter(o => {
                 if (!o.delivery_appointment) return false
                 if (new Date(o.delivery_appointment).toDateString() === this.todayStr) return false
-                if (o.status !== 'ready') return true
-                return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(this.deliveryStatuses[o.id]?.status)
+                return ['pending', 'confirmed', 'delivery_failed'].includes(o.status)
             }).length
         },
         filteredByTab() {
@@ -88,11 +86,7 @@ export default {
         },
         displayOrders() {
             return this.filteredByTab
-                .filter(order => {
-                    if (order.status !== 'ready') return true
-                    const ds = this.deliveryStatuses[order.id]
-                    return ['CANCELED', 'REJECTED', 'EXPIRED'].includes(ds?.status)
-                })
+                .filter(order => ['pending', 'confirmed', 'delivery_failed'].includes(order.status))
                 .map(order => ({
                     ...order,
                     displayStatus: STATUS_DISPLAY_KEY[order.status] ? this.$t(STATUS_DISPLAY_KEY[order.status]) : order.status,
@@ -128,7 +122,7 @@ export default {
         orders: {
             handler(newOrders) {
                 newOrders
-                    .filter(o => o.status === 'ready' && o.delivery_method === 'delivery')
+                    .filter(o => o.status === 'delivery_failed' && o.delivery_method === 'delivery')
                     .forEach(o => {
                         if (!this.deliveryStatuses[o.id]) this.fetchDeliveryStatus(o.id)
                     })
@@ -319,7 +313,7 @@ export default {
             <div v-for="order in displayOrders" :key="order.id" class="order-card">
                 <div class="order-header">
                     <div class="customer-name">{{ order.customerName }}</div>
-                    <span class="status-badge" :class="order.status === 'pending' ? 'badge-new' : 'badge-preparing'">
+                    <span class="status-badge" :class="order.status === 'pending' ? 'badge-new' : order.status === 'delivery_failed' ? 'badge-delivery-failed' : 'badge-preparing'">
                         {{ order.displayStatus }}
                     </span>
                 </div>
@@ -367,30 +361,8 @@ export default {
                     </ul>
                 </div>
 
-                <!-- ready + delivery CANCELLED: rebook action -->
-                <template v-if="order.status === 'ready'">
-                    <div v-if="rebookErrors[order.id] === 'max_attempts' || rebookErrors[order.id] === 'error'" class="rebook-admin-notice">
-                        {{ $t('seller_home.contact_admin_notice') }}
-                    </div>
-                    <div class="delivery-rebook-row">
-                        <button class="btn-delivery-issue" @click="$router.push({ name: 'seller-order-detail', params: { orderId: order.id } })">
-                            <AlertTriangle :size="13" />
-                            {{ $t('seller_home.delivery_issue_details') }}
-                        </button>
-                        <q-btn
-                            v-if="(deliveryStatuses[order.id]?.rebook_count || 0) < 3 && rebookErrors[order.id] !== 'max_attempts'"
-                            unelevated dense no-caps
-                            class="btn-rebook"
-                            :loading="!!rebookingOrders[order.id]"
-                            @click="onRebook(order)"
-                        >
-                            <RefreshCw :size="12" style="margin-right:4px;" />
-                            {{ $t('seller_home.action_rebook') }}
-                        </q-btn>
-                    </div>
-                </template>
-
-                <div v-else class="order-actions">
+                <!-- Contact buyer — always visible -->
+                <div class="order-actions">
                     <q-btn flat dense no-caps class="btn-contact">
                         <q-icon name="person" size="14px" style="margin-right:4px;" />
                         {{ $t('seller_home.action_contact_buyer') }}
@@ -425,7 +397,9 @@ export default {
                             </div>
                         </q-popup-proxy>
                     </q-btn>
-                    <div class="order-actions-right">
+
+                    <!-- Non-ready: reject/accept on the right -->
+                    <div v-if="order.status !== 'delivery_failed'" class="order-actions-right">
                         <q-btn flat dense no-caps class="btn-reject" :disable="!!loadingOrders[order.id]" @click="openRejectDialog(order)">
                             <X :size="14" style="margin-right: 4px;" /> {{ $t('seller_home.action_reject') }}
                         </q-btn>
@@ -434,6 +408,29 @@ export default {
                         </q-btn>
                     </div>
                 </div>
+
+                <!-- delivery_failed: rebook action (below contact row) -->
+                <template v-if="order.status === 'delivery_failed'">
+                    <div v-if="rebookErrors[order.id] === 'max_attempts' || rebookErrors[order.id] === 'error'" class="rebook-admin-notice">
+                        {{ $t('seller_home.contact_admin_notice') }}
+                    </div>
+                    <div class="delivery-rebook-row">
+                        <button class="btn-delivery-issue" @click="$router.push({ name: 'seller-order-detail', params: { orderId: order.id } })">
+                            <AlertTriangle :size="13" />
+                            {{ $t('seller_home.delivery_issue_details') }}
+                        </button>
+                        <q-btn
+                            v-if="(deliveryStatuses[order.id]?.rebook_count || 0) < 3 && rebookErrors[order.id] !== 'max_attempts'"
+                            unelevated dense no-caps
+                            class="btn-rebook"
+                            :loading="!!rebookingOrders[order.id]"
+                            @click="onRebook(order)"
+                        >
+                            <RefreshCw :size="12" style="margin-right:4px;" />
+                            {{ $t('seller_home.action_rebook') }}
+                        </q-btn>
+                    </div>
+                </template>
             </div>
         </div>
 
@@ -603,6 +600,11 @@ export default {
 .badge-preparing {
     background: rgba(59, 130, 246, 0.15);
     color: var(--color-info);
+}
+
+.badge-delivery-failed {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
 }
 
 .item-row {
