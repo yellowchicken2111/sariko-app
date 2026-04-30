@@ -1,0 +1,14 @@
+on:
+  push:
+    branches:
+      - feature/cicd
+jobs:
+  test:
+    name: job name
+    runs-on:
+      labels: ec2-sariko-app
+    steps:
+    - run: echo "testing pipeline"
+
+
+    
