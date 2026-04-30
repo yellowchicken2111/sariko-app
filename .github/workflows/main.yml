@@ -19,4 +19,4 @@ jobs:
       - name: Run pytest
         run: |
           source /home/ubuntu/venv-app-sariko/bin/activate
-          pytest backend/src/tests/ -v
+          pytest tests/backend -v
