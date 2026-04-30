@@ -1,16 +1,18 @@
 """
 Lalamove Live Integration Test
 ================================
-Chạy lệnh (từ backend/src):
+Manual script — hits the REAL Lalamove API. Not run by pytest.
+
+Run from project root:
     LALAMOVE_MODE=live \
     LALAMOVE_API_KEY=your_key \
     LALAMOVE_API_SECRET=your_secret \
     LALAMOVE_BASE_URL=https://rest.lalamove.com \
     LALAMOVE_MARKET=VN \
-    python tests/test_lalamove_live.py
+    python tests/manual/test_lalamove_live.py
 
-Hoặc set creds vào .env.local rồi chạy:
-    python tests/test_lalamove_live.py
+Or set creds in backend/src/envs/.env.local then:
+    python tests/manual/test_lalamove_live.py
 
 Test flow:
   1. get_quotation  — lấy báo giá từ pickup → dropoff
@@ -25,16 +27,19 @@ import time
 from pathlib import Path
 from datetime import datetime, timezone
 
+# Resolve repo root from this file's location: tests/manual/<file> → ../../
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+BACKEND_SRC = REPO_ROOT / "backend" / "src"
+
 # Load .env.local nếu có
-env_path = os.path.join("..", "envs", ".env.local")
-print(env_path)
-if os.path.exists(env_path):
+env_path = BACKEND_SRC / "envs" / ".env.local"
+if env_path.exists():
     from dotenv import load_dotenv
     load_dotenv(env_path)
     print(f"Loaded env from {env_path}\n")
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add backend/src to path so we can import services.*
+sys.path.insert(0, str(BACKEND_SRC))
 
 from services.lalamove_service import LalamoveService
 

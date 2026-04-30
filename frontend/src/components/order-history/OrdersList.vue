@@ -1,8 +1,6 @@
 <script>
 import { mapState } from 'pinia';
-import { supabase } from '@/lib/supabase';
 import { useOrderStore } from '@/stores/order/orderStore';
-import { useAuthStore } from '@/stores/auth/authStore';
 import OrderCard from '@/components/order-history/OrderCard.vue';
 
 const STATUS_DISPLAY = {
@@ -19,15 +17,11 @@ export default {
     },
 
     data() {
-        return {
-            channel: null,
-            fetchDebounceTimer: null,
-        }
+        return {}
     },
 
     computed: {
         ...mapState(useOrderStore, ['orders', 'selectedFilter', 'loading']),
-        ...mapState(useAuthStore, { authUser: 'user' }),
 
         filteredOrders() {
             if (this.selectedFilter === 'all') return this.orders
@@ -48,14 +42,6 @@ export default {
     },
 
     methods: {
-        debouncedFetchOrders() {
-            if (this.fetchDebounceTimer) return
-            this.fetchDebounceTimer = setTimeout(async () => {
-                await useOrderStore().getOrders()
-                this.fetchDebounceTimer = null
-            }, 500)
-        },
-
         notifyStatusChange(newStatus, oldStatus) {
             if (newStatus === oldStatus) return
             const message = STATUS_DISPLAY[newStatus]
@@ -70,40 +56,17 @@ export default {
                 timeout: 2500,
             })
         },
+    },
 
-        listenOrders() {
-            const userId = this.authUser?.id || useAuthStore().session?.user?.id
-            if (!userId) return
-            
-            const channelName = `buyer-orders-${userId}-${Math.random().toString(36).slice(2, 8)}`
-            this.channel = supabase
-                .channel(channelName)
-                .on('postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'orders',
-                        filter: `user_id=eq.${userId}`
-                    },
-                    (payload) => {
-                        console.log('[buyer realtime]', payload)
-                        const newStatus = payload.new?.status
-                        const oldStatus = payload.old?.status
-                        this.notifyStatusChange(newStatus, oldStatus)
-                        this.debouncedFetchOrders()
-                    }
-                )
-                .subscribe((status, err) => {
-                    console.log(`Realtime channel ${channelName} status: `, status)
-                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
-                })
-        },
-
-        cleanup() {
-            if (this.channel) supabase.removeChannel(this.channel)
-            if (this.fetchDebounceTimer) {
-                clearTimeout(this.fetchDebounceTimer)
-                this.fetchDebounceTimer = null
+    watch: {
+        // Detect order status transitions on each poll → toast notification
+        orders(newOrders, oldOrders) {
+            if (!oldOrders || oldOrders.length === 0) return
+            for (const newO of newOrders) {
+                const oldO = oldOrders.find(o => o.id === newO.id)
+                if (oldO && oldO.status !== newO.status) {
+                    this.notifyStatusChange(newO.status, oldO.status)
+                }
             }
         },
     },
@@ -111,11 +74,11 @@ export default {
     mounted() {
         const orderStore = useOrderStore()
         orderStore.getOrders()
-        this.listenOrders()
+        orderStore.startWatchingOrders()
     },
 
     beforeUnmount() {
-        this.cleanup()
+        useOrderStore().stopWatchingOrders()
     }
 }
 </script>

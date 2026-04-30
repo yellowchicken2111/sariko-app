@@ -1,14 +1,18 @@
 import { defineStore } from "pinia";
-import { supabase } from "@/lib/supabase";
+import { createPoller } from "@/composables/createPoller";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
+
+const DELIVERY_TERMINAL = ['COMPLETED', 'CANCELED', 'CANCELLED', 'REJECTED', 'EXPIRED']
+const DELIVERY_POLL_MS = 10_000
 
 export const useDeliveryStore = defineStore("deliveryStore", {
     state() {
         return {
-            quotation: null,         // { quotation_id, total_fee, currency, distance_km }
-            currentDelivery: null,   // { status, driver_name, driver_phone, driver_plate, tracking_url, share_link }
+            quotation: null,
+            currentDelivery: null,
             quotationLoading: false,
-            _channel: null,
+            _poller: null,
+            _watchedOrderId: null,
         }
     },
 
@@ -47,50 +51,44 @@ export const useDeliveryStore = defineStore("deliveryStore", {
             }
         },
 
-        // Load initial delivery state from backend, then subscribe to realtime
-        async startWatching(orderId) {
-            this.stopWatching()
-
-            // Initial fetch from DB
+        async _fetchDelivery(orderId) {
             try {
                 const res = await apiDeliveries.getDeliveryStatus(orderId)
                 if (res?.success && res.delivery) {
                     this.currentDelivery = res.delivery
                 }
             } catch (e) {
-                console.error('deliveryStore - startWatching initial fetch -', e)
+                console.error('deliveryStore - fetchDelivery -', e)
             }
-            // Supabase realtime: listen for changes on deliveries table for this order
-            const channelName = `delivery-${orderId}-${Math.random().toString(36).slice(2, 8)}`
-            this._channel = supabase
-                .channel(channelName)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'deliveries',
-                    filter: `order_id=eq.${orderId}`,
-                }, (payload) => {
-                    const d = payload.new
-                    this.currentDelivery = {
-                        status:       d.status,
-                        driver_name:  d.driver_name,
-                        driver_phone: d.driver_phone,
-                        driver_plate: d.driver_plate,
-                        tracking_url: d.tracking_url,
-                        share_link:   d.share_link,
+        },
+
+        async startWatching(orderId) {
+            this.stopWatching()
+            this._watchedOrderId = orderId
+
+            await this._fetchDelivery(orderId)
+
+            this._poller = createPoller({
+                name: `delivery-${orderId}`,
+                intervalMs: DELIVERY_POLL_MS,
+                fetch: async () => {
+                    if (DELIVERY_TERMINAL.includes(this.currentDelivery?.status)) {
+                        // Terminal state — no need to keep polling
+                        this.stopWatching()
+                        return
                     }
-                })
-                .subscribe((status, err) => {
-                    console.log(`Realtime channel ${channelName} status: `, status)
-                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
-                })
+                    await this._fetchDelivery(orderId)
+                },
+            })
+            this._poller.start()
         },
 
         stopWatching() {
-            if (this._channel) {
-                supabase.removeChannel(this._channel)
-                this._channel = null
+            if (this._poller) {
+                this._poller.stop()
+                this._poller = null
             }
+            this._watchedOrderId = null
         },
 
         reset() {

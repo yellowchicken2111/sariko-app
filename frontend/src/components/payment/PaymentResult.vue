@@ -1,7 +1,6 @@
 <script>
 import { CircleCheckBig, CircleX, Loader } from 'lucide-vue-next';
 import apiPayments from '@/apis/payments/apiPayments';
-import { supabase } from '@/lib/supabase';
 
 const POLL_INTERVAL = 3000;
 const POLL_TIMEOUT = 60000;
@@ -53,35 +52,7 @@ export default {
             }
         },
 
-        listenPaymentStatus() {
-            this.channel = supabase
-            .channel(`payment-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'orders',
-                    filter: `id=eq.${this.orderId}`
-                },
-                (payload) => {
-                    if (payload.new.payment_status === 'paid') {
-                        this.state = 'success'
-                        this.cleanup()
-                    } else if (payload.new.payment_status === 'failed') {
-                        this.state = 'failed'
-                        this.cleanup()
-                    }
-                }
-            )
-            .subscribe((status, err) => {
-                console.log('Status:', status)
-                if (err) console.error('Seller realtime error:', err)
-            })
-        },
-
         cleanup() {
-            if (this.channel) supabase.removeChannel(this.channel)
             if (this.timeoutId) clearTimeout(this.timeoutId)
             this.stopPolling()
         },
@@ -116,7 +87,6 @@ export default {
             }
 
             this.state = 'polling'
-            this.listenPaymentStatus()
             this.startPolling()
                         
             this.timeoutId = setTimeout(async () => {
