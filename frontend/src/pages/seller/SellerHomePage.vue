@@ -1,8 +1,6 @@
 <script>
 import { mapActions } from 'pinia';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
-import { useAuthStore } from '@/stores/auth/authStore';
-import { supabase } from '@/lib/supabase';
 import LayoutSellerHome from '@/layouts/seller/LayoutSellerHome.vue';
 import SellerGreeting from '@/components/seller-home/SellerGreeting.vue';
 import SellerStatsGrid from '@/components/seller-home/SellerStatsGrid.vue';
@@ -15,9 +13,6 @@ export default {
 
     data() {
         return {
-            channel: null,
-            deliveryChannel: null,
-            fetchDebounceTimer: null,
             activeFilter: 'all',
             newOrderAudio: null,
             unlockAudioHandler: null,
@@ -64,18 +59,7 @@ export default {
     },
 
     methods: {
-        ...mapActions(useDashboardStore, ['fetchOrders', 'fetchSellerInfo']),
-
-        debouncedFetch() {
-            if (this.fetchDebounceTimer) return
-            this.fetchDebounceTimer = setTimeout(async () => {
-                const prevIds = new Set(useDashboardStore().orders.map(o => o.id))
-                await this.fetchOrders()
-                const hasNew = useDashboardStore().orders.some(o => !prevIds.has(o.id))
-                if (hasNew) this.playNewOrderSound()
-                this.fetchDebounceTimer = null
-            }, 500)
-        },
+        ...mapActions(useDashboardStore, ['fetchOrders', 'fetchSellerInfo', 'startWatchingOrders', 'stopWatchingOrders']),
 
         playNewOrderSound() {
             if (!this.newOrderAudio) {
@@ -106,54 +90,8 @@ export default {
             window.addEventListener('touchstart', this.unlockAudioHandler)
         },
 
-        listenOrders() {
-            const sellerId = useAuthStore().sellerId
-            if (!sellerId) return
-            
-            const channelName = `seller-home-${sellerId}-${Math.random().toString(36).slice(2, 8)}`
-            this.channel = supabase
-                .channel(channelName)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'orders',
-                    filter: `seller_id=eq.${sellerId}`
-                }, () => this.debouncedFetch())
-                .subscribe((status, err) => {
-                    console.log(`Realtime channel ${channelName} status: `, status)
-                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
-                })
-        },
-
-        listenDeliveries() {
-            const sellerUserId = useAuthStore().user?.id
-            if (!sellerUserId) return
-
-            const channelName = `seller-deliveries-${sellerUserId}-${Math.random().toString(36).slice(2, 8)}`
-            this.deliveryChannel = supabase
-                .channel(channelName)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'deliveries',
-                    filter: `seller_user_id=eq.${sellerUserId}`,
-                }, (payload) => {
-                    const d = payload.new
-                    useDashboardStore().setDeliveryStatus(d.order_id, {
-                        status: d.status,
-                        rebook_count: d.rebook_count,
-                    })
-                })
-                .subscribe((status, err) => {
-                    console.log(`Realtime channel ${channelName} status: `, status)
-                    if (err) console.log(`Realtime channel ${channelName} error: `, err)
-                })
-        },
-
         cleanup() {
-            if (this.channel) supabase.removeChannel(this.channel)
-            if (this.deliveryChannel) supabase.removeChannel(this.deliveryChannel)
-            if (this.fetchDebounceTimer) clearTimeout(this.fetchDebounceTimer)
+            this.stopWatchingOrders()
             if (this.unlockAudioHandler) {
                 window.removeEventListener('pointerdown', this.unlockAudioHandler)
                 window.removeEventListener('keydown', this.unlockAudioHandler)
@@ -162,11 +100,20 @@ export default {
         },
     },
 
+    watch: {
+        // Detect new orders appearing in the action list → play sound
+        allActionOrders(newOrders, oldOrders) {
+            if (!oldOrders || oldOrders.length === 0) return
+            const oldIds = new Set(oldOrders.map(o => o.id))
+            const hasNew = newOrders.some(o => !oldIds.has(o.id))
+            if (hasNew) this.playNewOrderSound()
+        },
+    },
+
     async mounted() {
         this.setupAudioUnlock()
         await Promise.all([this.fetchOrders(), this.fetchSellerInfo()])
-        this.listenOrders()
-        this.listenDeliveries()
+        this.startWatchingOrders()
     },
 
     beforeUnmount() {

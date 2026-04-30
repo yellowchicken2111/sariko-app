@@ -1,5 +1,4 @@
 <script>
-import { supabase } from '@/lib/supabase';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
 import LayoutSellerOrderDetail from '@/layouts/seller/LayoutSellerOrderDetail.vue';
 import SellerOrderDetailContent from '@/components/seller-order-detail/SellerOrderDetailContent.vue';
@@ -13,13 +12,6 @@ export default {
 
     props: ['orderId'],
 
-    data() {
-        return {
-            orderChannel: null,
-            deliveryChannel: null,
-        }
-    },
-
     computed: {
         store()    { return useDashboardStore() },
         order()    { return this.store.orderDetails },
@@ -28,55 +20,15 @@ export default {
     },
 
     async mounted() {
-        await useDashboardStore().loadOrderDetail(this.orderId)
-        this.listenOrder()
-        this.listenDelivery()
+        const store = useDashboardStore()
+        await store.loadOrderDetail(this.orderId)
+        store.startWatchingOrderDetail(this.orderId)
     },
 
     beforeUnmount() {
-        this.cleanup()
-        useDashboardStore().clearOrderDetail()
-    },
-
-    methods: {
-        listenOrder() {
-            const store = useDashboardStore()
-            const channelName = `seller-order-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`
-            this.orderChannel = supabase
-                .channel(channelName)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'orders',
-                    filter: `id=eq.${this.orderId}`,
-                }, () => store.refreshOrderDetailSilent(this.orderId))
-                .subscribe((status, err) => {
-                    console.log(`Realtime channel ${channelName} status:`, status)
-                    if (err) console.log(`Realtime channel ${channelName} error:`, err)
-                })
-        },
-
-        listenDelivery() {
-            const store = useDashboardStore()
-            const channelName = `seller-delivery-${this.orderId}-${Math.random().toString(36).slice(2, 8)}`
-            this.deliveryChannel = supabase
-                .channel(channelName)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'deliveries',
-                    filter: `order_id=eq.${this.orderId}`,
-                }, () => store.refreshDeliverySilent(this.orderId))
-                .subscribe((status, err) => {
-                    console.log(`Realtime channel ${channelName} status:`, status)
-                    if (err) console.log(`Realtime channel ${channelName} error:`, err)
-                })
-        },
-
-        cleanup() {
-            if (this.orderChannel) supabase.removeChannel(this.orderChannel)
-            if (this.deliveryChannel) supabase.removeChannel(this.deliveryChannel)
-        },
+        const store = useDashboardStore()
+        store.stopWatchingOrderDetail()
+        store.clearOrderDetail()
     },
 }
 </script>

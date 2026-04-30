@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
 import apiOrders from "@/apis/orders/apiOrders";
+import { createPoller } from "@/composables/createPoller";
+
+const ORDER_LIST_POLL_MS = 15_000
+const ORDER_DETAIL_POLL_MS = 10_000
 
 export const useOrderStore = defineStore("orderStore", {
     state() {
@@ -8,6 +12,11 @@ export const useOrderStore = defineStore("orderStore", {
             currentOrder: null,
             loading: false,
             selectedFilter: 'all',
+
+            _ordersPoller: null,
+            _ordersWatchers: 0,
+            _orderDetailPoller: null,
+            _orderDetailWatchedId: null,
         }
     },
 
@@ -37,9 +46,9 @@ export const useOrderStore = defineStore("orderStore", {
             }
         },
 
-        async getOrders() {
+        async getOrders({ silent = false } = {}) {
             try {
-                this.loading = true
+                if (!silent) this.loading = true
                 const res = await apiOrders.getOrders()
                 if (res?.data?.success) {
                     this.orders = res.data.orders
@@ -47,13 +56,13 @@ export const useOrderStore = defineStore("orderStore", {
             } catch (e) {
                 console.error(`orderStore - getOrders - ${e}`)
             } finally {
-                this.loading = false
+                if (!silent) this.loading = false
             }
         },
 
-        async getOrderDetail(orderId) {
+        async getOrderDetail(orderId, { silent = false } = {}) {
             try {
-                this.loading = true
+                if (!silent) this.loading = true
                 const res = await apiOrders.getOrderDetail(orderId)
                 if (res?.data?.success) {
                     this.currentOrder = res.data.order
@@ -61,7 +70,7 @@ export const useOrderStore = defineStore("orderStore", {
             } catch (e) {
                 console.error(`orderStore - getOrderDetail - ${e}`)
             } finally {
-                this.loading = false
+                if (!silent) this.loading = false
             }
         },
 
@@ -79,6 +88,51 @@ export const useOrderStore = defineStore("orderStore", {
                 console.error(`orderStore - cancelOrder - ${e}`)
                 throw e
             }
-        }
+        },
+
+        // ─── Polling: buyer orders list (refcount) ─────────────────────────
+        startWatchingOrders() {
+            this._ordersWatchers += 1
+            if (this._ordersPoller) return
+            this._ordersPoller = createPoller({
+                name: 'buyer-orders',
+                intervalMs: ORDER_LIST_POLL_MS,
+                fetch: () => this.getOrders({ silent: true }),
+            })
+            this._ordersPoller.start()
+        },
+
+        stopWatchingOrders() {
+            this._ordersWatchers = Math.max(0, this._ordersWatchers - 1)
+            if (this._ordersWatchers === 0 && this._ordersPoller) {
+                this._ordersPoller.stop()
+                this._ordersPoller = null
+            }
+        },
+
+        // ─── Polling: buyer order detail (single page only) ────────────────
+        startWatchingOrderDetail(orderId) {
+            if (this._orderDetailPoller && this._orderDetailWatchedId !== orderId) {
+                this._orderDetailPoller.stop()
+                this._orderDetailPoller = null
+            }
+            if (this._orderDetailPoller) return
+
+            this._orderDetailWatchedId = orderId
+            this._orderDetailPoller = createPoller({
+                name: `buyer-order-${orderId}`,
+                intervalMs: ORDER_DETAIL_POLL_MS,
+                fetch: () => this.getOrderDetail(orderId, { silent: true }),
+            })
+            this._orderDetailPoller.start()
+        },
+
+        stopWatchingOrderDetail() {
+            if (this._orderDetailPoller) {
+                this._orderDetailPoller.stop()
+                this._orderDetailPoller = null
+                this._orderDetailWatchedId = null
+            }
+        },
     }
 })

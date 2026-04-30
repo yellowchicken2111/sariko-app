@@ -1,34 +1,30 @@
 import { defineStore } from "pinia";
 import apiSellerDashboard from "@/apis/sellers/apiSellerDashboard";
 import apiDeliveries from "@/apis/deliveries/apiDeliveries";
+import { createPoller } from "@/composables/createPoller";
 
-const DELIVERY_TERMINAL = ['COMPLETED', 'CANCELED', 'CANCELLED', 'REJECTED', 'EXPIRED']
+const ORDER_LIST_POLL_MS = 10_000
+const ORDER_DETAIL_POLL_MS = 10_000
 const ORDER_TERMINAL = ['done', 'cancelled']
-
-let _pollTimer = null
-let _orderPollTimer = null
-
-function _stopPolling() {
-    if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null }
-}
-
-function _stopOrderPolling() {
-    if (_orderPollTimer) { clearInterval(_orderPollTimer); _orderPollTimer = null }
-}
 
 export const useDashboardStore = defineStore("dashboardStore", {
     state() {
         return {
             sellerId: null,
-            sellerInfo: null,   // { slug, store_name, address, phone, has_address, has_phone }
+            sellerInfo: null,
             orders: [],
             orderDetails: null,
             orderDelivery: null,
-            deliveryStatuses: {}, // { [orderId]: { status, rebook_count } | 'loading' | 'error' }
+            deliveryStatuses: {},
             isLoading: false,
             hasLoadedOrders: false,
             orderDetailLoading: false,
             selectedFilter: 'new',
+
+            _ordersPoller: null,
+            _ordersWatchers: 0,
+            _orderDetailPoller: null,
+            _orderDetailWatchedId: null,
         }
     },
 
@@ -42,7 +38,6 @@ export const useDashboardStore = defineStore("dashboardStore", {
                 .reduce((sum, o) => sum + (o.total_amount || 0), 0)
             if (!value) return '—'
             return new Intl.NumberFormat('vi-VN').format(value) + ' ₫'
-
         },
         pendingOrders(state) {
             return state.orders.filter(o => o.status === 'pending').length
@@ -50,7 +45,6 @@ export const useDashboardStore = defineStore("dashboardStore", {
         recentOrders(state) {
             return state.orders.slice(0, 20)
         },
-        // Count of orders that actually appear in the "Need Your Action" list
         actionDisplayCount(state) {
             return state.orders.filter(order =>
                 ['pending', 'confirmed', 'delivery_failed'].includes(order.status)
@@ -88,16 +82,16 @@ export const useDashboardStore = defineStore("dashboardStore", {
             }
         },
 
-        async fetchOrders() {
+        async fetchOrders({ silent = false } = {}) {
             if (this.isLoading) return
-            this.isLoading = true
+            if (!silent) this.isLoading = true
             try {
                 const res = await apiSellerDashboard.getOrders()
                 this.orders = res.orders || []
             } catch (e) {
                 console.error('dashboardStore - fetchOrders -', e)
             } finally {
-                this.isLoading = false
+                if (!silent) this.isLoading = false
                 this.hasLoadedOrders = true
             }
         },
@@ -107,9 +101,9 @@ export const useDashboardStore = defineStore("dashboardStore", {
             try {
                 const res = await apiSellerDashboard.getOrderDetail(orderId)
                 this.orderDetails = res.order || null
-                if (this.orderDetails?.status === 'ready' && this.orderDetails?.delivery_method === 'delivery') {
+                if (this.orderDetails?.delivery_method === 'delivery'
+                    && ['ready', 'done'].includes(this.orderDetails?.status)) {
                     await this._fetchDelivery(orderId)
-                    this._startPolling(orderId)
                 }
             } catch (e) {
                 console.error('dashboardStore - loadOrderDetail -', e)
@@ -145,24 +139,64 @@ export const useDashboardStore = defineStore("dashboardStore", {
             }
         },
 
-        _startPolling(orderId) {
-            _stopPolling()
-            _pollTimer = setInterval(async () => {
-                if (DELIVERY_TERMINAL.includes(this.orderDelivery?.status)) {
-                    _stopPolling()
-                    return
-                }
-                await this._fetchDelivery(orderId)
-            }, 10_000)
+        // ─── Polling: seller orders list (refcount) ────────────────────────
+        startWatchingOrders() {
+            this._ordersWatchers += 1
+            if (this._ordersPoller) return
+            this._ordersPoller = createPoller({
+                name: 'seller-orders',
+                intervalMs: ORDER_LIST_POLL_MS,
+                fetch: () => this.fetchOrders({ silent: true }),
+            })
+            this._ordersPoller.start()
+        },
+
+        stopWatchingOrders() {
+            this._ordersWatchers = Math.max(0, this._ordersWatchers - 1)
+            if (this._ordersWatchers === 0 && this._ordersPoller) {
+                this._ordersPoller.stop()
+                this._ordersPoller = null
+            }
+        },
+
+        // ─── Polling: seller order detail + delivery (single page only) ────
+        startWatchingOrderDetail(orderId) {
+            // Switching to a different order: tear down previous poller
+            if (this._orderDetailPoller && this._orderDetailWatchedId !== orderId) {
+                this._orderDetailPoller.stop()
+                this._orderDetailPoller = null
+            }
+            if (this._orderDetailPoller) return
+
+            this._orderDetailWatchedId = orderId
+            this._orderDetailPoller = createPoller({
+                name: `seller-order-detail-${orderId}`,
+                intervalMs: ORDER_DETAIL_POLL_MS,
+                fetch: async () => {
+                    await this.refreshOrderDetailSilent(orderId)
+                    const status = this.orderDetails?.status
+                    const isDelivery = this.orderDetails?.delivery_method === 'delivery'
+                    if (isDelivery && status && !ORDER_TERMINAL.includes(status)) {
+                        await this.refreshDeliverySilent(orderId)
+                    }
+                },
+            })
+            this._orderDetailPoller.start()
+        },
+
+        stopWatchingOrderDetail() {
+            if (this._orderDetailPoller) {
+                this._orderDetailPoller.stop()
+                this._orderDetailPoller = null
+                this._orderDetailWatchedId = null
+            }
         },
 
         clearOrderDetail() {
-            _stopPolling()
             this.orderDetails = null
             this.orderDelivery = null
         },
 
-        // Calls API, updates orderDetails + orders list, stops polling if no longer ready
         async setOrderStatus(orderId, newStatus, reason = null) {
             await apiSellerDashboard.updateOrderStatus(orderId, newStatus, reason)
             if (this.orderDetails?.id === orderId) {
@@ -170,16 +204,13 @@ export const useDashboardStore = defineStore("dashboardStore", {
                 if (reason) this.orderDetails.cancellation_reason = reason
             }
             this.updateOrderLocally(orderId, newStatus)
-            if (newStatus !== 'ready') _stopPolling()
         },
 
-        // Calls rebook API, refreshes delivery state + restarts polling
         async doRebookDelivery(orderId) {
             await apiDeliveries.rebookDelivery(orderId)
             await this._fetchDelivery(orderId)
             this.updateOrderLocally(orderId, 'ready')
             if (this.orderDetails?.id === orderId) this.orderDetails.status = 'ready'
-            this._startPolling(orderId)
         },
 
         async fetchDeliveryStatus(orderId) {
