@@ -9,18 +9,14 @@ jobs:
       labels: ec2-sariko-app
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
-      - name: Install dependecies
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
         run: |
-          deactivate
           source /home/ubuntu/venv-app-sariko/bin/activate
-          pip install -r /home/ubuntu/app-sariko/backend/requirements.txt
+          pip install -r backend/requirements.txt
+
       - name: Run pytest
         run: |
-          cd /home/ubuntu/app-sariko/tests/backend
-          pytest -v
-
-      
-
-
-    
+          source /home/ubuntu/venv-app-sariko/bin/activate
+          pytest backend/src/tests/ -v
