@@ -8,7 +8,19 @@ jobs:
     runs-on:
       labels: ec2-sariko-app
     steps:
-    - run: echo "testing pipeline"
+      - name: Check out repo
+        uses: actions/checkout@v6
+      - name: Install dependecies
+        run: |
+          deactivate
+          source /home/ubuntu/venv-app-sariko/bin/activate
+          pip install -r /home/ubuntu/app-sariko/backend/requirements.txt
+      - name: Run pytest
+        run: |
+          cd /home/ubuntu/app-sariko/tests/backend
+          pytest -v
+
+      
 
 
     
