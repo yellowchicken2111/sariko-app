@@ -87,8 +87,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:8081",
         "http://127.0.0.1:8081",
-        "http://localhost:5173",
         "https://sariko.pages.dev",
+        "https://app.sariko.store",
         os.getenv("CORS_EXTRA_ORIGIN", ""),  # set to ngrok URL if needed
     ],
     allow_credentials=True,

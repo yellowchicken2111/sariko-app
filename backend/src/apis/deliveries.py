@@ -6,6 +6,7 @@ import os
 from fastapi import APIRouter, HTTPException, Depends, Request
 
 from core.auth import verify_token
+from core.phone import to_e164_vn
 from dao.dao_deliveries import DAODeliveries
 from dao.dao_orders import DAOOrders
 from dao.dao_seller_profiles import DAOSellerProfiles
@@ -14,18 +15,6 @@ from services.lalamove_service import get_lalamove_service
 
 router = APIRouter(prefix="/deliveries")
 logger = logging.getLogger(__name__)
-
-
-def _to_e164(phone: str) -> str:
-    """Convert Vietnamese phone number to E.164 format (+84...)."""
-    if not phone:
-        return "+84900000000"
-    phone = phone.strip().replace(" ", "").replace("-", "")
-    if phone.startswith("+"):
-        return phone
-    if phone.startswith("0"):
-        return "+84" + phone[1:]
-    return "+84" + phone
 
 
 # --------------------------------------------------------------------------
@@ -123,48 +112,52 @@ async def delivery_webhook(request: Request):
         event_type = body.get("eventType", "")
         data       = body.get("data", {})
 
-        # Signature validation — extract raw data substring to avoid re-serialize issues
+        # Signature validation — fail-closed: missing secret means we cannot verify, so reject.
         api_secret = os.getenv("LALAMOVE_API_SECRET", "")
-        if api_secret:
-            if api_key != os.getenv("LALAMOVE_API_KEY", ""):
-                logger.warning(f"Webhook: apiKey mismatch ({api_key[:10]}...)")
-                return {"success": False, "detail": "Invalid apiKey"}
+        api_key_env = os.getenv("LALAMOVE_API_KEY", "")
+        if not api_secret or not api_key_env:
+            logger.error("Webhook: LALAMOVE_API_SECRET/API_KEY not configured — rejecting")
+            raise HTTPException(status_code=503, detail="Webhook not configured")
 
-            # Extract the raw "data" value from the original body bytes
-            # so we sign exactly what Lalamove signed (no re-serialization risk)
-            raw_str   = raw_body.decode("utf-8")
-            data_start = raw_str.index('"data"') + len('"data"')
-            # skip whitespace and ':'
-            i = data_start
-            while i < len(raw_str) and raw_str[i] in ' \t\r\n:':
-                i += 1
-            # extract balanced JSON object/array
-            depth, in_str, escape = 0, False, False
-            start = i
-            while i < len(raw_str):
-                c = raw_str[i]
-                if escape:
-                    escape = False
-                elif c == '\\' and in_str:
-                    escape = True
-                elif c == '"':
-                    in_str = not in_str
-                elif not in_str:
-                    if c in '{[':
-                        depth += 1
-                    elif c in '}]':
-                        depth -= 1
-                        if depth == 0:
-                            break
-                i += 1
-            raw_data_str = raw_str[start:i + 1]
+        if api_key != api_key_env:
+            logger.warning(f"Webhook: apiKey mismatch ({api_key[:10]}...)")
+            raise HTTPException(status_code=401, detail="Invalid apiKey")
 
-            path = request.url.path
-            raw  = f"{timestamp}\r\nPOST\r\n{path}\r\n\r\n{raw_data_str}"
-            expected = hmac.new(api_secret.encode(), raw.encode(), hashlib.sha256).hexdigest()
-            if not hmac.compare_digest(expected, signature):
-                logger.warning(f"Webhook: signature mismatch. path={path}")
-                return {"success": False, "detail": "Invalid signature"}
+        # Extract the raw "data" value from the original body bytes
+        # so we sign exactly what Lalamove signed (no re-serialization risk)
+        raw_str   = raw_body.decode("utf-8")
+        data_start = raw_str.index('"data"') + len('"data"')
+        # skip whitespace and ':'
+        i = data_start
+        while i < len(raw_str) and raw_str[i] in ' \t\r\n:':
+            i += 1
+        # extract balanced JSON object/array
+        depth, in_str, escape = 0, False, False
+        start = i
+        while i < len(raw_str):
+            c = raw_str[i]
+            if escape:
+                escape = False
+            elif c == '\\' and in_str:
+                escape = True
+            elif c == '"':
+                in_str = not in_str
+            elif not in_str:
+                if c in '{[':
+                    depth += 1
+                elif c in '}]':
+                    depth -= 1
+                    if depth == 0:
+                        break
+            i += 1
+        raw_data_str = raw_str[start:i + 1]
+
+        path = request.url.path
+        raw  = f"{timestamp}\r\nPOST\r\n{path}\r\n\r\n{raw_data_str}"
+        expected = hmac.new(api_secret.encode(), raw.encode(), hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(expected, signature):
+            logger.warning(f"Webhook: signature mismatch. path={path}")
+            raise HTTPException(status_code=401, detail="Invalid signature")
 
         # v3 payload: data.order holds the order fields
         order_data  = data.get("order", {})
@@ -215,10 +208,13 @@ async def delivery_webhook(request: Request):
             order = dao_orders.read_order_by_id_raw(delivery["order_id"])
             if order and order["status"] == "ready":
                 dao_orders.update_order_status(delivery["order_id"], "delivery_failed")
-                logger.info(f"[Webhook] order={delivery['order_id']} → delivery_failed (lalamove={new_status})")
+                logger.warning(f"[Webhook] order={delivery['order_id']} → delivery_failed (lalamove={new_status})")
 
         return {"success": True}
 
+    except HTTPException:
+        # Auth/signature failures — propagate proper status to Lalamove
+        raise
     except Exception as e:
         logger.exception(f"Exception in POST /deliveries/webhook: {e}")
         # Still return 200 to avoid Lalamove retry storms on our own bugs
@@ -300,6 +296,15 @@ def rebook_delivery(order_id: str, user=Depends(verify_token)):
         buyer   = full_order.get("users") or {}
         service = get_lalamove_service()
 
+        try:
+            sender_phone = to_e164_vn(seller.get("phone") or "")
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=f"Seller phone invalid: {e}")
+        try:
+            recipient_phone = to_e164_vn(buyer.get("phone") or "")
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=f"Buyer phone invalid: {e}")
+
         quotation = service.get_quotation(
             pickup_lat=float(seller.get("lat") or 0),
             pickup_lon=float(seller.get("lon") or 0),
@@ -313,21 +318,30 @@ def rebook_delivery(order_id: str, user=Depends(verify_token)):
             stop_id_0=quotation.stop_id_0,
             stop_id_1=quotation.stop_id_1,
             sender_name=seller.get("store_name", "Seller"),
-            sender_phone=_to_e164(seller.get("phone") or ""),
+            sender_phone=sender_phone,
             recipient_name=buyer.get("name") or buyer.get("email") or "Customer",
-            recipient_phone=_to_e164(buyer.get("phone") or ""),
+            recipient_phone=recipient_phone,
             recipient_remarks=full_order.get("delivery_address") or "",
         )
 
-        dao_deliveries.update_delivery(delivery["id"], {
-            "status": result.status,
-            "lalamove_order_id": result.lalamove_order_id,
-            "share_link": result.share_link or "",
-            "driver_name": None,
-            "driver_phone": None,
-            "driver_plate": None,
-            "rebook_count": rebook_count + 1,
-        })
+        try:
+            dao_deliveries.update_delivery(delivery["id"], {
+                "status": result.status,
+                "lalamove_order_id": result.lalamove_order_id,
+                "share_link": result.share_link or "",
+                "driver_name": None,
+                "driver_phone": None,
+                "driver_plate": None,
+                "rebook_count": rebook_count + 1,
+            })
+        except Exception as db_err:
+            # DB write failed but Lalamove already booked — roll back to avoid orphan order.
+            logger.error(f"[Delivery] DB update failed after rebook (lalamove={result.lalamove_order_id}); cancelling Lalamove order")
+            try:
+                service.cancel_order(result.lalamove_order_id)
+            except Exception as cancel_err:
+                logger.error(f"[Delivery] Rollback cancel also failed for {result.lalamove_order_id}: {cancel_err}")
+            raise HTTPException(status_code=500, detail=f"Rebook DB update failed: {db_err}")
 
         if order["status"] == "delivery_failed":
             dao_orders.update_order_status(order_id, "ready")
@@ -359,10 +373,22 @@ def cancel_delivery(order_id: str, user=Depends(verify_token)):
         if not delivery:
             raise HTTPException(status_code=404, detail="No delivery found for this order")
 
+        # Already cancelled — idempotent no-op
+        if delivery.get("status") in ("CANCELLED", "CANCELED", "REJECTED", "EXPIRED"):
+            return {"success": True}
+
+        # Don't allow cancel after pickup — driver is already en route with the food
+        if delivery.get("status") == "PICKED_UP":
+            raise HTTPException(status_code=409, detail="Driver has already picked up the order")
+
         service = get_lalamove_service()
         lalamove_order_id = delivery.get("lalamove_order_id")
         if lalamove_order_id:
-            service.cancel_order(lalamove_order_id)
+            ok = service.cancel_order(lalamove_order_id)
+            if not ok:
+                # Lalamove rejected the cancel (e.g. already in flight) — DO NOT mark CANCELLED in DB,
+                # otherwise UI lies about a delivery that's still happening.
+                raise HTTPException(status_code=409, detail="Lalamove refused to cancel — delivery may already be in progress")
 
         dao_deliveries.update_delivery(delivery["id"], {"status": "CANCELLED"})
 

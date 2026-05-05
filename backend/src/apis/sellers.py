@@ -1,5 +1,4 @@
 import logging
-import re
 
 from dao.dao_seller_profiles import DAOSellerProfiles
 from dao.dao_food_items import DAOFoodItems
@@ -8,6 +7,7 @@ from dao.dao_menu_categories import DAOMenuCategories
 from fastapi import APIRouter, HTTPException, Depends, status
 
 from core.auth import verify_token
+from core.phone import to_e164_vn
 from dao.dao_orders import DAOOrders
 from schemas.request_schemas import (
     RequestUpdateOrderStatus,
@@ -17,22 +17,6 @@ from schemas.request_schemas import (
 
 router = APIRouter(prefix="/sellers")
 logger = logging.getLogger(__name__)
-
-def _to_e164(phone: str) -> str:
-    """Convert Vietnamese phone number to E.164 format (+84...).
-
-    Raises ValueError if the input cannot be normalized to a valid VN mobile.
-    """
-    if not phone:
-        raise ValueError("Phone is required")
-    digits = re.sub(r"\D", "", phone)
-    if digits.startswith("84"):
-        digits = digits[2:]
-    elif digits.startswith("0"):
-        digits = digits[1:]
-    if not re.fullmatch(r"\d{9,10}", digits):
-        raise ValueError(f"Invalid VN phone: {phone!r}")
-    return "+84" + digits
 
 
 VALID_STATUS_TRANSITIONS = {
@@ -175,15 +159,15 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
             )
 
             try:
-                sender_phone = _to_e164(seller.get("phone") or "")
+                sender_phone = to_e164_vn(seller.get("phone") or "")
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=f"Seller phone invalid: {e}. Update store phone in settings.")
             try:
-                recipient_phone = _to_e164(buyer.get("phone") or "")
+                recipient_phone = to_e164_vn(buyer.get("phone") or "")
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=f"Buyer phone invalid: {e}. Buyer must update phone before delivery.")
 
-            logger.info(f"[Delivery] order={order_id} sender_phone={sender_phone} recipient_phone={recipient_phone}")
+            logger.warning(f"[Delivery] order={order_id} sender_phone={sender_phone} recipient_phone={recipient_phone}")
 
             booking_result = None
             last_booking_error = None
@@ -223,16 +207,25 @@ def update_seller_order_status(order_id: str, body: RequestUpdateOrderStatus, us
                 raise HTTPException(status_code=503, detail="Unable to book a delivery driver. Your order has been cancelled.")
 
             dao_deliveries = DAODeliveries()
-            dao_deliveries.create_delivery(
-                order_id=order_id,
-                provider="lalamove",
-                status=booking_result.status,
-                user_id=full_order.get("user_id"),
-                seller_user_id=full_order.get("seller_user_id"),
-                lalamove_order_id=booking_result.lalamove_order_id,
-                share_link=booking_result.share_link,
-            )
-            logger.info(f"[Delivery] Auto-booked order={order_id} lalamove={booking_result.lalamove_order_id}")
+            try:
+                dao_deliveries.create_delivery(
+                    order_id=order_id,
+                    provider="lalamove",
+                    status=booking_result.status,
+                    user_id=full_order.get("user_id"),
+                    seller_user_id=full_order.get("seller_user_id"),
+                    lalamove_order_id=booking_result.lalamove_order_id,
+                    share_link=booking_result.share_link,
+                )
+            except Exception as db_err:
+                # DB insert failed but Lalamove already booked a driver — roll back to avoid orphan.
+                logger.error(f"[Delivery] create_delivery failed (lalamove={booking_result.lalamove_order_id}); cancelling Lalamove order")
+                try:
+                    service.cancel_order(booking_result.lalamove_order_id)
+                except Exception as cancel_err:
+                    logger.error(f"[Delivery] Rollback cancel failed for {booking_result.lalamove_order_id}: {cancel_err} — MANUAL INTERVENTION NEEDED")
+                raise HTTPException(status_code=500, detail=f"Failed to record delivery: {db_err}")
+            logger.warning(f"[Delivery] Auto-booked order={order_id} lalamove={booking_result.lalamove_order_id}")
 
         # Only update status after delivery booking succeeds (or if not a delivery order)
         updated = dao_orders.update_order_status(order_id, body.status, cancellation_reason)
