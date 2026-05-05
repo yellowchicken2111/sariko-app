@@ -3,6 +3,7 @@ import hmac
 import hashlib
 import urllib.parse
 import logging
+from decimal import Decimal
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, Depends, Request, status
@@ -78,8 +79,8 @@ def create_vnpay_payment(order_id: str, request: Request, user=Depends(verify_to
     order_id_nodash = order["id"].replace("-", "")
     txn_ref = f"{order_id_nodash}_{now.strftime('%H%M%S')}"
 
-    # Amount × 100 (VNPay requirement)
-    amount = int(float(order["total_amount"])) * 100
+    # Amount × 100 (VNPay requirement). Use Decimal to avoid float precision drift.
+    amount = int(Decimal(str(order["total_amount"])) * 100)
 
     params = {
         "vnp_Version": "2.1.0",
@@ -95,7 +96,6 @@ def create_vnpay_payment(order_id: str, request: Request, user=Depends(verify_to
         "vnp_CreateDate": create_date,
         "vnp_ExpireDate": expire_date,
         "vnp_CurrCode": "VND",
-        "vnp_BankCode": "NCB",
     }
 
     if VNPAY_IPN_URL:
@@ -126,8 +126,8 @@ def vnpay_ipn(request: Request):
     )
     computed_hash = _hmac_sha512(VNPAY_HASH_SECRET, hash_data)
 
-    # Verify hash
-    if computed_hash != vnp_secure_hash:
+    # Verify hash (constant-time compare to prevent timing attacks)
+    if not hmac.compare_digest(computed_hash, vnp_secure_hash):
         logger.warning(f"VNPay IPN hash mismatch")
         return JSONResponse(content={"RspCode": "97", "Message": "Invalid Checksum"})
 
@@ -154,10 +154,10 @@ def vnpay_ipn(request: Request):
 
     # Validate amount: vnp_Amount is in VND × 100, order total_amount is in VND
     vnp_amount = int(params.get("vnp_Amount", "0"))
-    expected_amount = int(float(order["total_amount"])) * 100
+    expected_amount = int(Decimal(str(order["total_amount"])) * 100)
     if vnp_amount != expected_amount:
         logger.warning(f"VNPay IPN: Amount mismatch for order {order_id}. vnp_Amount={vnp_amount}, expected={expected_amount}")
-        return JSONResponse(content={"RspCode": "04", "Message": "Invalid Amount"})
+        return JSONResponse(content={"RspCode": "04", "Message": "Invalid amount"})
 
     # Idempotency: skip if already paid
     if order.get("payment_status") == "paid":
@@ -184,6 +184,25 @@ def vnpay_ipn(request: Request):
             logger.warning(f"VNPay IPN: Failed to update order: {e}")
             return JSONResponse(content={"RspCode": "99", "Message": "Unknown error"})
     else:
+        # VNPay reports failure (insufficient funds, wrong OTP, customer cancelled, ...).
+        # Per VNPay SIT test "Giao dịch không thành công" we ack with RspCode "00"
+        # so VNPay stops retrying. We log the failed transaction in the payments table
+        # (audit trail) but DO NOT change order.payment_status — it stays "pending"
+        # so the user can retry payment from the order detail page.
+        try:
+            DAOPayments().create_payment(
+                order_id=order_id,
+                method="vnpay",
+                amount=float(order["total_amount"]),
+                status="failed",
+                transaction_ref=txn_ref,
+                type="charge",
+                vnp_transaction_no=params.get("vnp_TransactionNo"),
+            )
+            dao_orders.update_ipn_data(order_id=order_id, ipn_data=params)
+        except Exception as e:
+            logger.warning(f"VNPay IPN: Failed to record failed transaction: {e}")
+            return JSONResponse(content={"RspCode": "99", "Message": "Unknown error"})
         logger.warning(f"VNPay IPN: Payment failed. ResponseCode={response_code}, TxnRef={txn_ref}")
         return JSONResponse(content={"RspCode": "00", "Message": "Confirm Success"})
 
@@ -205,7 +224,7 @@ def vnpay_return(request: Request):
     )
     computed_hash = _hmac_sha512(VNPAY_HASH_SECRET, hash_data)
 
-    is_valid = computed_hash == vnp_secure_hash
+    is_valid = hmac.compare_digest(computed_hash, vnp_secure_hash)
     response_code = params.get("vnp_ResponseCode", "")
     txn_ref = params.get("vnp_TxnRef", "")
 
@@ -223,10 +242,10 @@ def vnpay_return(request: Request):
 
 
 @router.get("/payment-status/{order_id}")
-def get_payment_status(order_id: str):
-    """Poll payment status from DB. Public endpoint (no auth) — used by payment return page."""
+def get_payment_status(order_id: str, user=Depends(verify_token)):
+    """Poll payment status from DB. Used by payment return page after VNPay redirect."""
     dao_orders = DAOOrders()
-    order = dao_orders.read_order_by_id_raw(order_id=order_id)
+    order = dao_orders.read_order_by_id(order_id=order_id, user_id=user["id"])
 
     if not order:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")

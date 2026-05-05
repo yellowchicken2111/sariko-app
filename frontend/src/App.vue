@@ -21,7 +21,7 @@ export default {
     },
     computed: {
         isSellerRoute() {
-            return this.$route.path.startsWith('/seller')
+            return !!this.$route.meta.requiresSeller
         },
         showNavigation() {
             const hiddenRoutes = ['food-detail', 'forgot-password', 'reset-password', 'signin', 'signup']

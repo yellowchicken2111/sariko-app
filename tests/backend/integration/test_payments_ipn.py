@@ -139,7 +139,7 @@ def test_ipn_amount_mismatch_rejected(fastapi_client, vnp_secret, monkeypatch):
 
     assert res.status_code == 200
     assert res.json()["RspCode"] == "04"
-    assert res.json()["Message"] == "Invalid Amount"
+    assert res.json()["Message"] == "Invalid amount"
     assert fake_orders.update_payment_status_called is False
 
 
@@ -175,3 +175,30 @@ def test_ipn_order_not_found(fastapi_client, vnp_secret, monkeypatch):
 
     assert res.status_code == 200
     assert res.json()["RspCode"] == "01"
+
+
+def test_ipn_failed_payment_logs_attempt_keeps_order_pending(fastapi_client, vnp_secret, monkeypatch):
+    """VNPay reports failure (response_code != 00) → ack with RspCode 00 (so VNPay
+    stops retrying) AND log a 'failed' payment row for audit. Order.payment_status
+    MUST stay 'pending' so the user can retry payment from the order detail page."""
+    order_id = "abc12345-678a-4bcd-9012-345678901234"
+    fake_orders = _FakeOrderDAO({
+        "id": order_id,
+        "total_amount": 100000,
+        "payment_status": "pending",
+    })
+    fake_payments = _FakePaymentsDAO()
+    monkeypatch.setattr("apis.payments.DAOOrders", lambda: fake_orders)
+    monkeypatch.setattr("apis.payments.DAOPayments", lambda: fake_payments)
+
+    # response_code "24" = customer cancelled at VNPay
+    params = _make_ipn_params(vnp_secret, order_id, amount_vnd=100000, response_code="24")
+    res = fastapi_client.get("/payments/vnpay/ipn", params=params)
+
+    assert res.status_code == 200
+    assert res.json()["RspCode"] == "00"
+    assert fake_orders.update_payment_status_called is False, \
+        "Must NOT change order.payment_status — user needs to retry"
+    assert fake_orders._order["payment_status"] == "pending"
+    assert fake_payments.create_called is True, \
+        "Must record the failed attempt for audit trail"
