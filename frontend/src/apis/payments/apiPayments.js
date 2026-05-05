@@ -25,7 +25,7 @@ export const apiPayments = {
 
     pollPaymentStatus: async(orderId) => {
         try {
-            const response = await axios.get(`${baseURL}/v1/payments/payment-status/${orderId}`)
+            const response = await apiClient.get(`/v1/payments/payment-status/${orderId}`)
             return response
         } catch (error) {
             throw new Error(error.response?.data?.detail || 'Failed to poll payment status')

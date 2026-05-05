@@ -24,6 +24,7 @@
 - [ ] **A9** Console: thấy `[poll:buyer-order-xxx] start 10000ms`
 - [ ] **A10** Click "Pay Now" → redirect VNPay sandbox → chọn NCB → thanh toán test card
 - [ ] **A11** Quay về `/payment/return` → thấy spinner "Confirming payment..."
+- [ ] **A11.5** DevTools Network: requests `/payments/payment-status/<id>` có header `Authorization: Bearer ...` + status 200 (KHÔNG được 401/403)
 - [ ] **A12** Sau ~3-10s → thấy "Payment successful" + button "View Orders"
 - [ ] **A13** Vào `/orders` → console thấy `[poll:buyer-orders] start 15000ms`
 - [ ] **A14** Order vừa pay hiện trong tab "Active", payment_status = paid
@@ -68,4 +69,5 @@ Nếu D fail → log issue, có thể deploy nếu là minor regression non-bloc
 | Date | Tester | Result | Notes |
 |---|---|---|---|
 | 2026-04-29 | Jack | FAILED | Realtime miss order — fixed bằng polling |
+| 2026-04-30 | Jack | FAILED | `/payments/payment-status` 401 — frontend dùng axios thuần thay vì apiClient |
 | | | | |
