@@ -10,6 +10,35 @@ import { i18n } from "@/plugins/i18n";
 
 const LANG_MAP = { 'Tiếng Việt': 'vi', 'English': 'en_ph', 'Fillipino': 'en_ph' };
 
+const ROLE_KEY = 'sariko.role';
+const ROLE_USER_KEY = 'sariko.roleUserId';
+
+function getStoredRole(userId) {
+    try {
+        if (!userId) return null;
+        if (localStorage.getItem(ROLE_USER_KEY) !== userId) return null;
+        const role = localStorage.getItem(ROLE_KEY);
+        if (role === 'seller') return true;
+        if (role === 'buyer') return false;
+        return null;
+    } catch { return null; }
+}
+
+function setStoredRole(userId, isSeller) {
+    try {
+        if (!userId) return;
+        localStorage.setItem(ROLE_KEY, isSeller ? 'seller' : 'buyer');
+        localStorage.setItem(ROLE_USER_KEY, userId);
+    } catch {}
+}
+
+function clearStoredRole() {
+    try {
+        localStorage.removeItem(ROLE_KEY);
+        localStorage.removeItem(ROLE_USER_KEY);
+    } catch {}
+}
+
 function applyLocale(preferredLanguage) {
     if (!preferredLanguage) return;
     const locale = LANG_MAP[preferredLanguage] || 'en_ph';
@@ -51,7 +80,6 @@ export const useAuthStore = defineStore("authStore", {
             session: null,
             user: null,
             isLoading: false,
-            viewMode: 'buyer', // 'buyer' | 'seller',
             sellerId: null,
 
             // auth subscription
@@ -66,18 +94,20 @@ export const useAuthStore = defineStore("authStore", {
             this.session = session;
             if (session?.user) {
                 const meta = session.user.user_metadata || {};
+                const cachedRole = getStoredRole(session.user.id);
                 this.user = {
                     id: session.user.id,
                     fullName: meta.fullname || this.user?.fullName || '',
                     email: session.user.email,
                     phone: this.user?.phone || null,
-                    isSeller: false,
+                    isSeller: cachedRole ?? this.user?.isSeller ?? false,
                     avatarUrl: this.user?.avatarUrl || null,
                     sellerId: this.user?.sellerId || null
                 };
             } else {
                 this.session = null;
                 this.user = null;
+                clearStoredRole();
             }
         },
 
@@ -95,9 +125,9 @@ export const useAuthStore = defineStore("authStore", {
                             if (profile.user.name) this.user.fullName = profile.user.name
                             if (profile.user.phone) this.user.phone = profile.user.phone
                             if (profile.user.seller_id) this.sellerId = profile.user.seller_id
-                            if (profile.user.is_seller !== undefined) this.user.isSeller = profile.user.is_seller
-                            if (this.viewMode === 'buyer' && profile.user.is_seller) {
-                                this.viewMode = 'seller'
+                            if (profile.user.is_seller !== undefined && getStoredRole(this.user.id) === null) {
+                                this.user.isSeller = profile.user.is_seller
+                                setStoredRole(this.user.id, profile.user.is_seller)
                             }
                             applyLocale(profile.user.preferred_language)
                         }
@@ -154,7 +184,10 @@ export const useAuthStore = defineStore("authStore", {
                     if (profile.user.name) this.user.fullName = profile.user.name
                     if (profile.user.phone) this.user.phone = profile.user.phone
                     if (profile.user.seller_id) this.sellerId = profile.user.seller_id
-                    if (profile.user.is_seller !== undefined) this.user.isSeller = profile.user.is_seller
+                    if (profile.user.is_seller !== undefined && getStoredRole(this.user.id) === null) {
+                        this.user.isSeller = profile.user.is_seller
+                        setStoredRole(this.user.id, profile.user.is_seller)
+                    }
                 }
             } catch (e) {
                 console.error(`authStore - refreshProfile - ${e}`)
@@ -242,9 +275,9 @@ export const useAuthStore = defineStore("authStore", {
                         if (profile.user.name) this.user.fullName = profile.user.name
                         if (profile.user.phone) this.user.phone = profile.user.phone
                         if (profile.user.seller_id) this.sellerId = profile.user.seller_id
-                        if (profile.user.is_seller !== undefined) this.user.isSeller = profile.user.is_seller
-                        if (this.viewMode === 'buyer' && profile.user.is_seller) {
-                            this.viewMode = 'seller'
+                        if (profile.user.is_seller !== undefined) {
+                            this.user.isSeller = profile.user.is_seller
+                            setStoredRole(this.user.id, profile.user.is_seller)
                         }
                         applyLocale(profile.user.preferred_language)
                     }
@@ -320,6 +353,10 @@ export const useAuthStore = defineStore("authStore", {
                 );
                 if (res?.session && res?.user) {
                     this._setFromSession(res.session);
+                    if (this.user) {
+                        this.user.isSeller = this.isSelectedSignUpRoleSeller;
+                        setStoredRole(this.user.id, this.isSelectedSignUpRoleSeller);
+                    }
                     Notify.create({
                         classes: 'quasar-notify-positive',
                         message: "Welcome to Sariko! Let's set up your profile.",
@@ -352,6 +389,7 @@ export const useAuthStore = defineStore("authStore", {
                 await apiAuth.authSignout();
                 this.session = null;
                 this.user = null;
+                clearStoredRole();
                 useCartStore().$reset();
                 Notify.create({
                     classes: 'quasar-notify-positive',
@@ -366,15 +404,12 @@ export const useAuthStore = defineStore("authStore", {
             }
         },
 
-        switchViewMode() {
-            this.viewMode = this.viewMode === 'buyer' ? 'seller' : 'buyer'
-        },
-
         async signOutRedirectSignIn() {
             try {
                 await apiAuth.authSignout();
                 this.session = null;
                 this.user = null;
+                clearStoredRole();
                 useCartStore().$reset();
                 Notify.create({
                     classes: 'quasar-notify-negative',

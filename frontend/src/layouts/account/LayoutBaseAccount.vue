@@ -5,10 +5,6 @@
             <slot name="ProfileHeader" />
         </div>
 
-        <div class="switch-mode-section">
-            <slot name="SwitchMode" />
-        </div>
-
         <div class="settings-section">
             <slot name="Settings" />
         </div>
@@ -35,10 +31,6 @@
 }
 
 .profile-section {
-    margin-bottom: 20px;
-}
-
-.switch-mode-section {
     margin-bottom: 20px;
 }
 

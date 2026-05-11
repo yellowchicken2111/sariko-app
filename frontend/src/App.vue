@@ -3,6 +3,7 @@ import BottomNavigation from '@/components/nav/BottomNavigation.vue'
 import SellerBottomNav from '@/components/nav/SellerBottomNav.vue'
 import HackerPanel from '@/components/dev/HackerPanel.vue'
 import { setUpAxiosPolicy } from "@/lib/axiosPolicy.js";
+import { useAuthStore } from '@/stores/auth/authStore'
 
 export default {
     name: 'App',
@@ -20,8 +21,8 @@ export default {
         return {}
     },
     computed: {
-        isSellerRoute() {
-            return !!this.$route.meta.requiresSeller
+        isSeller() {
+            return !!useAuthStore().user?.isSeller
         },
         showNavigation() {
             const hiddenRoutes = ['food-detail', 'forgot-password', 'reset-password', 'signin', 'signup']
@@ -42,7 +43,7 @@ export default {
                 </transition> -->
             <!-- </router-view> -->
         </div>
-        <SellerBottomNav v-if="showNavigation && isSellerRoute" />
+        <SellerBottomNav v-if="showNavigation && isSeller" />
         <BottomNavigation v-else-if="showNavigation" />
         <HackerPanel />
     </div>    
