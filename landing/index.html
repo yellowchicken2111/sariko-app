@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sariko — The world's first diaspora commerce network</title>
+  <meta name="description" content="Sariko connects Filipino home cooks and buyers in Ho Chi Minh City. Order homemade food, become a founding seller, or join the Founder's Circle." />
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <meta property="og:title" content="Sariko — Filipino homemade food marketplace" />
+  <meta property="og:description" content="The world's first diaspora commerce network." />
+  <meta property="og:image" content="assets/logo.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sariko.store" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3HFT74FXMB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3HFT74FXMB');
+  </script>
+</head>
+<body>
+  <div class="top">
+    <header class="site-header">
+      <a href="/" class="brand" aria-label="Pangea home">
+        <img src="assets/pangea-logo.jpg" alt="Pangea" class="brand-logo" />
+      </a>
+
+      <div class="lang-switcher" role="group" aria-label="Language">
+        <button type="button" class="lang-btn is-active" data-lang="en">EN</button>
+        <button type="button" class="lang-btn" data-lang="vi">VI</button>
+        <button type="button" class="lang-btn" data-lang="tl">TL</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <img src="assets/logo.png" alt="Sariko" class="hero-logo" />
+      <p class="eyebrow" data-i18n="eyebrow">Diaspora commerce, made simple</p>
+      <h1 class="hero-title" data-i18n="heroTitle">The world's first<br/><em>diaspora commerce</em> network.</h1>
+      <p class="hero-sub" data-i18n="heroSub">
+        Sariko connects Filipino home cooks with hungry neighbors in Ho Chi Minh City —
+        and is building the platform for the 280 million people living away from home.
+      </p>
+    </section>
+  </div>
+
+  <main>
+    <section class="cards" aria-label="Choose your path">
+      <a class="card" href="https://app.sariko.store" target="_blank" rel="noopener">
+        <div class="card-emoji" aria-hidden="true">🛍️</div>
+        <h2 class="card-title" data-i18n="buyerTitle">Order homemade food</h2>
+        <p class="card-desc" data-i18n="buyerDesc">
+          Discover Filipino home cooks near you in HCMC. Browse menus, order, and get it delivered.
+        </p>
+        <span class="card-cta" data-i18n="buyerCta">Open the app →</span>
+      </a>
+
+      <a class="card" href="https://joinna.sariko.store/" target="_blank" rel="noopener">
+        <div class="card-emoji" aria-hidden="true">👨‍🍳</div>
+        <h2 class="card-title" data-i18n="sellerTitle">Become a founding seller</h2>
+        <p class="card-desc" data-i18n="sellerDesc">
+          Join the first 50 Filipino sellers on Sariko. 3 months free, VIP badge, weekly payouts — no Vietnamese business registration required.
+        </p>
+        <span class="card-cta" data-i18n="sellerCta">Apply to sell →</span>
+      </a>
+
+      <a class="card" href="https://founders.sariko.store/" target="_blank" rel="noopener">
+        <div class="card-emoji" aria-hidden="true">💼</div>
+        <h2 class="card-title" data-i18n="investorTitle">Join the Founder's Circle</h2>
+        <p class="card-desc" data-i18n="investorDesc">
+          Invitation-only early investment. 15 backers, three tiers, 20% discount before VC. Own a piece of the diaspora network.
+        </p>
+        <span class="card-cta" data-i18n="investorCta">See the offer →</span>
+      </a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">Sariko</p>
+      <p class="footer-tagline" data-i18n="footerTagline">Diaspora Commerce · Node 1: Ho Chi Minh City</p>
+
+      <p class="footer-entities">
+        BridgeTech Labs, Inc. (Delaware) · Zen Tech Asia Co., Ltd. (Vietnam) · Zen Tech Asia LLC (Holding)
+      </p>
+
+      <nav class="footer-nav" aria-label="Sariko network">
+        <a href="https://app.sariko.store" target="_blank" rel="noopener" data-i18n="footerNavBuyer">Order Food ↗</a>
+        <a href="https://joinna.sariko.store/" target="_blank" rel="noopener" data-i18n="footerNavSeller">Sell on Sariko ↗</a>
+        <a href="https://founders.sariko.store/" target="_blank" rel="noopener" data-i18n="footerNavInvestor">Invest ↗</a>
+      </nav>
+
+      <p class="footer-contact">
+        <a href="mailto:support@sariko.store">support@sariko.store</a>
+      </p>
+
+      <p class="footer-operated" data-i18n="footerOperated">
+        SariKo is operated by Zen Tech Asia Co., Ltd. under BridgeTech Labs, Inc.
+      </p>
+
+      <p class="footer-copy">© <span id="year"></span> BridgeTech Labs, Inc. · Delaware, USA · <span data-i18n="footerRights">All rights reserved.</span></p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
