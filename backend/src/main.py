@@ -16,7 +16,7 @@ from fastapi.exceptions import RequestValidationError
 
 
 from apis import (
-    users, sellers, cart, orders, payments, deliveries, address, admin_refunds
+    users, sellers, cart, orders, payments, deliveries, address, admin_refunds, moit
 )
 
 log_level = logging.WARNING
@@ -81,6 +81,7 @@ if os.environ.get("ENV", "local") in ("local", "dev"):
     from apis import dev
     app.include_router(dev.router, prefix="/rest/v1", tags=["dev"])
 app.include_router(admin_refunds.router, prefix="/rest/v1", tags=["admin"])
+app.include_router(moit.router, prefix="/rest/v1", tags=["moit"])
 
 app.add_middleware(
     CORSMiddleware,
