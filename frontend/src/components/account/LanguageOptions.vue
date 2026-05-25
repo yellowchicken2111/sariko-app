@@ -1,56 +1,32 @@
 <script>
 import { Check } from 'lucide-vue-next';
-import apiUsers from '@/apis/users/apiUsers';
+import { setLanguage, getCurrentLocale, LANGUAGE_OPTIONS } from '@/composables/setLanguage';
 
 export default {
     components: { Check },
 
     data() {
         return {
-            currentLocale: 'en_ph',
+            currentLocale: getCurrentLocale(),
         }
     },
 
     computed: {
         options() {
-            return [
-                {
-                    locale: 'en_ph',
-                    label: this.$t('language_page.option_en'),
-                    flag: '🇵🇭',
-                    backendValue: 'English',
-                },
-                {
-                    locale: 'vi',
-                    label: this.$t('language_page.option_vi'),
-                    flag: '🇻🇳',
-                    backendValue: 'Tiếng Việt',
-                },
-            ]
+            return LANGUAGE_OPTIONS.map(o => ({
+                ...o,
+                label: o.locale === 'en_ph'
+                    ? this.$t('language_page.option_en')
+                    : this.$t('language_page.option_vi'),
+            }))
         }
-    },
-
-    mounted() {
-        this.currentLocale = localStorage.getItem('lang') || this.$i18n.locale || 'en_ph'
     },
 
     methods: {
         async onSelect(option) {
             if (this.currentLocale === option.locale) return
-
-            // Optimistic UI: apply locally first
             this.currentLocale = option.locale
-            this.$i18n.locale = option.locale
-            localStorage.setItem('lang', option.locale)
-
-            // Fire-and-forget backend persist
-            try {
-                await apiUsers.updateProfile({
-                    preferred_language: option.backendValue,
-                })
-            } catch (e) {
-                console.warn('LanguageOptions - persist failed, keeping local change:', e)
-            }
+            await setLanguage(option.locale)
         }
     }
 }

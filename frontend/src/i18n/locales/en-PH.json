@@ -97,6 +97,13 @@
             "banner_text_line_1": "BECOME A FOUNDING SELLER",
             "banner_text_line_2": "3 months FREE Negosyo Tier",
             "banner_text_line_3": "50 founding slots · Unlimited listings · 17% commission"
+        },
+        "section_zen_promo": {
+            "title": "Massage at your doorstep",
+            "subtitle": "Certified therapists, delivered to home, office or hotel",
+            "pill_title": "Massage at home",
+            "pill_cta": "Book now →",
+            "dismiss_aria": "Dismiss Zen promotion"
         }
     },
     "seller_page": {

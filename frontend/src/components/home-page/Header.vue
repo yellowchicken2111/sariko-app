@@ -2,10 +2,11 @@
 import { User } from 'lucide-vue-next';
 import { mapState } from 'pinia';
 import { useAuthStore } from '@/stores/auth/authStore';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher.vue';
 
 export default {
 
-    components: { User },
+    components: { User, LanguageSwitcher },
 
     computed: {
         ...mapState(useAuthStore, ["user"]),
@@ -38,18 +39,21 @@ export default {
             </div>
         </div>
 
-        <div class="user-profile" @click="onClickAvatar">
-            <q-avatar v-if="user?.avatarUrl" size="64px">
-                <img :src="user.avatarUrl" :alt="user.fullName">
-            </q-avatar>
-            <div v-else-if="user" class="initials-avatar">
-                {{ initials }}
+        <div class="user-column">
+            <div class="user-profile" @click="onClickAvatar">
+                <q-avatar v-if="user?.avatarUrl" size="64px">
+                    <img :src="user.avatarUrl" :alt="user.fullName">
+                </q-avatar>
+                <div v-else-if="user" class="initials-avatar">
+                    {{ initials }}
+                </div>
+                <div v-else class="guest-icon">
+                    <User :size="28" />
+                </div>
             </div>
-            <div v-else class="guest-icon">
-                <User :size="28" />
-            </div>
+            <LanguageSwitcher />
         </div>
-        
+
     </header>
 </template>
 
@@ -58,8 +62,17 @@ export default {
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-start;
     margin-bottom: 20px;
+    gap: 12px;
+}
+
+.user-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .greeting-text-line-1 {

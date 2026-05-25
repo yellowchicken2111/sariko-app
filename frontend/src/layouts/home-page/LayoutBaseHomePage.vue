@@ -3,7 +3,7 @@
 export default {
     mounted() {
         const heightHeaderContent = this.$refs.headerContent?.offsetHeight || 0
-        const heightSearchBarContent = this.$refs.searchBarContent?.offsetHeight || 0
+        // const heightSearchBarContent = this.$refs.searchBarContent?.offsetHeight || 0
         const heightCategoriesContent = this.$refs.categoriesContent?.offsetHeight || 0
         const heightBannerContent = this.$refs.bannerContent?.offsetHeight || 0
         const foundingSellerContent = this.$refs.foundingSellerContent?.offsetHeight || 0
@@ -20,9 +20,13 @@ export default {
                 <slot name="Header" />
             </div>
 
-            <div ref="searchBarContent" class="search-bar-section">
-                <slot name="SearchBar" />
+            <div class="zen-promo-section">
+                <slot name="ZenPromo" />
             </div>
+
+            <!-- <div ref="searchBarContent" class="search-bar-section">
+                <slot name="SearchBar" />
+            </div> -->
 
             <div ref="categoriesContent" class="categories-chips-section">
                 <slot name="Categories" />
@@ -59,6 +63,10 @@ export default {
     padding-top: calc(16px + env(safe-area-inset-top, 0));
     padding-bottom: var(--bottom-nav-height);
 }
+.zen-promo-section {
+    margin-bottom: 16px;
+}
+
 .search-bar-section {
     width: 100%;
     margin-bottom: 24px;
