@@ -25,7 +25,7 @@ export default {
             return !!useAuthStore().user?.isSeller
         },
         showNavigation() {
-            const hiddenRoutes = ['food-detail', 'forgot-password', 'reset-password', 'signin', 'signup']
+            const hiddenRoutes = ['food-detail', 'forgot-password', 'reset-password', 'signin', 'signup', 'all-sellers']
             return !hiddenRoutes.includes(this.$route.name)
         }
     },

@@ -49,6 +49,7 @@ export default {
                     :seller-slug-name="seller.slug"
                     :seller-avatar-image-u-r-l="seller.avatar_url"
                     :seller-featured-category="'Exclusive Dishes'"
+                    :seller-status="seller.status"
                 />
             </div>
 

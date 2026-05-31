@@ -7,6 +7,7 @@ import Banner from '@/components/seller/seller-page/Banner.vue';
 import BannerFeatured from '@/components/seller/seller-page/BannerFeatured.vue'
 import Categories from '@/components/seller/seller-page/Categories.vue';
 import Menu from '@/components/seller/seller-page/Menu.vue';
+import SellerComingSoon from '@/components/seller/seller-page/SellerComingSoon.vue';
 import SellerPageSkeleton from '@/components/seller/seller-page/SellerPageSkeleton.vue';
 
 export default {
@@ -17,11 +18,15 @@ export default {
         BannerFeatured,
         Categories,
         Menu,
+        SellerComingSoon,
         SellerPageSkeleton
     },
 
     computed: {
-        ...mapState(useSellerStore, ['seller'])
+        ...mapState(useSellerStore, ['seller']),
+        isComingSoon() {
+            return this.seller?.status === 'coming_soon'
+        }
     },
 
     mounted() {
@@ -47,19 +52,20 @@ export default {
         </template>
 
         <template #BannerHeader>
-            <Banner />
+            <Banner v-if="!isComingSoon" />
         </template>
 
         <template #BannerFeatured>
-            <BannerFeatured />
+            <BannerFeatured v-if="!isComingSoon" />
         </template>
 
         <template #Categories>
-            <Categories />
+            <Categories v-if="!isComingSoon" />
         </template>
 
         <template #Menu>
-            <Menu />
+            <Menu v-if="!isComingSoon" />
+            <SellerComingSoon v-else />
         </template>
 
     </LayoutBaseSellerPage>

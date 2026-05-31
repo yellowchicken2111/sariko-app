@@ -18,10 +18,10 @@ export default {
     computed: {
         ...mapState(useSellerStore, ["foundingSellers"]),
         previewSellers() {
-            return this.foundingSellers.slice(0, 4)
+            return this.foundingSellers.slice(0, 5)
         },
         hasMore() {
-            return this.foundingSellers.length > 4
+            return this.foundingSellers.length > 5
         }
     },
 
@@ -59,7 +59,7 @@ export default {
         </div>
         <!-- Skeleton -->
         <div v-if="foundingSellers.length === 0" class="sellers-grid">
-            <div v-for="i in 4" :key="i" class="skeleton-card">
+            <div v-for="i in 6" :key="i" class="skeleton-card">
                 <q-skeleton type="circle" size="48px" animation="pulse" />
                 <div class="skeleton-text">
                     <q-skeleton type="text" width="80px" height="10px" animation="pulse" />
@@ -78,10 +78,11 @@ export default {
                 :seller-slug-name="seller.slug"
                 :seller-avatar-image-u-r-l="seller.avatar_url"
                 :seller-featured-category="'Exclusive Dishes'"
+                :seller-status="seller.status"
             />
             <!-- See All tile -->
             <div v-if="hasMore" class="see-all-tile" @click="$router.push('/sellers')">
-                <span class="see-all-count">+{{ foundingSellers.length - 4 }}</span>
+                <span class="see-all-count">+{{ foundingSellers.length - 5 }}</span>
                 <span class="see-all-label">{{ $t('home_page.section_founding_sellers.button_label_see_all') }}</span>
             </div>
         </div>

@@ -79,6 +79,9 @@
         }
     },
     "home_page": {
+        "section_search_bar": {
+            "placeholder": "Search food, categories..."
+        },
         "section_header": {
             "greeting_text_line_1": "Magandang umaga, Ate! ☀️",
             "greeting_text_line_2": "Discover",
@@ -122,7 +125,15 @@
             "label_item_available": "Available",
             "lable_item_pre_order": "Pre-order",
             "lable_item_pre_order_unit_day": "days"
+        },
+        "section_coming_soon": {
+            "title": "Coming soon",
+            "subtitle": "This kitchen is still preparing its menu. Check back soon!",
+            "button_explore": "Explore other sellers"
         }
+    },
+    "seller_card": {
+        "coming_soon": "Coming soon"
     },
     "food_detail_page": {
         "label_price": "Price",

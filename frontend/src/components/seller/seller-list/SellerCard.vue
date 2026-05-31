@@ -20,11 +20,21 @@ export default {
         sellerFeaturedCategory: {
             type: String,
             required: true
+        },
+        sellerStatus: {
+            type: String,
+            default: 'active'
         }
     },
 
     components: {
         User
+    },
+
+    computed: {
+        isComingSoon() {
+            return this.sellerStatus === 'coming_soon'
+        }
     },
 
     methods: {
@@ -58,7 +68,13 @@ export default {
             </div>
 
             <div class="seller-index">
-                <q-badge 
+                <q-badge
+                v-if="isComingSoon"
+                rounded
+                class="badge badge-coming-soon"
+                :label="$t('seller_card.coming_soon')"/>
+                <q-badge
+                v-else
                 rounded
                 class="badge"
                 :label="'# ' + sellerIndex"/>
@@ -123,10 +139,15 @@ export default {
 }
 
 .badge {
-    padding: 5px 10px; 
+    padding: 5px 10px;
     font-size: 9px;
-    color: #facc15; 
+    color: #facc15;
     background-color: #4a391f;
+}
+
+.badge-coming-soon {
+    color: #7a8cae;
+    background-color: rgba(122, 140, 174, 0.18);
 }
 
 

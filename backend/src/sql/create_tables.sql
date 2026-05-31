@@ -65,6 +65,7 @@ create table public.seller_profiles (
   bank_name text null,
   bank_account_holder text null,
   tax_category text not null default 'services'::text,
+  status text not null default 'coming_soon'::text,
   constraint seller_profiles_pkey primary key (id),
   constraint seller_profiles_slug_key unique (slug),
   constraint seller_profiles_tier_fkey foreign KEY (tier) references admin_tier_config (tier),
@@ -72,6 +73,11 @@ create table public.seller_profiles (
   constraint seller_profiles_tax_category_check check (
     (
       tax_category = any (array['goods'::text, 'services'::text])
+    )
+  ),
+  constraint seller_profiles_status_check check (
+    (
+      status = any (array['coming_soon'::text, 'active'::text])
     )
   )
 ) TABLESPACE pg_default;
@@ -193,7 +199,8 @@ create table public.orders (
           'confirmed'::text,
           'ready'::text,
           'done'::text,
-          'cancelled'::text
+          'cancelled'::text,
+          'delivery_failed'::text
         ]
       )
     )

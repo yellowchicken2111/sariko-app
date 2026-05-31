@@ -17,9 +17,10 @@ class DAOSellerProfiles(DAOBase):
     def read_founding_sellers(self):
         try:
             query = self._supabase_client.table(self._table_name)
-            query = query.select("id, user_id, store_name, slug, avatar_url").order("display_order")
-            
-            query = query
+            query = query.select("id, user_id, store_name, slug, avatar_url, status")
+            # 'active' < 'coming_soon' alphabetically, so ascending status keeps active sellers first
+            query = query.order("status").order("display_order")
+
             result = query.execute()
             
             if result and result.data:
@@ -37,7 +38,7 @@ class DAOSellerProfiles(DAOBase):
     def read_seller_by_slug_name(self, slug: str):
         try:
             query = self._supabase_client.table(self._table_name)
-            query = query.select("id, store_name, slug, address, avatar_url").eq("slug", slug)         
+            query = query.select("id, store_name, slug, address, avatar_url, status").eq("slug", slug)
             
             query = query.maybe_single()
             result = query.execute()
