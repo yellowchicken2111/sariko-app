@@ -13,7 +13,8 @@ jobs:
 
       - name: Build and push docker image
         run: |
-          ./backend/docker_build_and_push.sh
+          cd backend
+          ./docker_build_and_push.sh
 
       - name: 
         run: |
