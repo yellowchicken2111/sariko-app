@@ -11,12 +11,11 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Build and push docker image
         run: |
-          source /home/ubuntu/venv-app-sariko/bin/activate
-          pip install -r backend/requirements.txt
+          ./backend/docker_build_and_push.sh
 
-      - name: Run pytest
+      - name: 
         run: |
           source /home/ubuntu/venv-app-sariko/bin/activate
           pytest tests/backend -v
