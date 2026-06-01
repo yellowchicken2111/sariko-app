@@ -24,9 +24,9 @@ export default {
                 <slot name="ZenPromo" />
             </div>
 
-            <!-- <div ref="searchBarContent" class="search-bar-section">
+            <div ref="searchBarContent" class="search-bar-section">
                 <slot name="SearchBar" />
-            </div> -->
+            </div>
 
             <div ref="categoriesContent" class="categories-chips-section">
                 <slot name="Categories" />

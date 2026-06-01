@@ -1,7 +1,7 @@
 <script>
 import LayoutBaseHomePage from '@/layouts/home-page/LayoutBaseHomePage.vue'
 import Header from '@/components/home-page/Header.vue'
-// import SearchBar from '@/components/home-page/SearchBar.vue'
+import SearchBar from '@/components/home-page/SearchBar.vue'
 import Categories from '@/components/home-page/Categories.vue'
 import FoundingSellers from '@/components/home-page/FoundingSellers.vue';
 import FeaturedDishes from '@/components/home-page/FeaturedDishes.vue';
@@ -17,7 +17,7 @@ export default {
         LayoutBaseHomePage,
         Header,
         Categories,
-        // SearchBar,
+        SearchBar,
         FoundingSellers,
         FeaturedDishes,
         Banner,
@@ -48,9 +48,9 @@ export default {
             <ZenPromoBanner />
         </template>
 
-        <!-- <template #SearchBar>
+        <template #SearchBar>
             <SearchBar />
-        </template> -->
+        </template>
 
         <template #Categories>
             <Categories />

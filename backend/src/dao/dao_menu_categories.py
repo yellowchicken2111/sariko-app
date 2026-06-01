@@ -10,6 +10,18 @@ class DAOMenuCategories(DAOBase):
         super().__init__()
         self._table_name = "menu_categories"
 
+    def search_by_name(self, escaped_q: str, limit: int = 20):
+        pattern = f"%{escaped_q}%"
+        result = (
+            self._supabase_client.table(self._table_name)
+            .select("id, name, seller_profiles(slug, store_name, avatar_url)")
+            .ilike("name", pattern)
+            .eq("is_active", True)
+            .limit(limit)
+            .execute()
+        )
+        return result.data or []
+
     def read_by_seller_id(self, seller_id: str):
         result = (
             self._supabase_client.table(self._table_name)

@@ -53,6 +53,11 @@ const routes = [
         component: () => import('@/pages/AllSellersPage.vue'),
     },
     {
+        path: '/search',
+        name: 'search',
+        component: () => import('@/pages/SearchPage.vue')
+    },
+    {
         path: '/seller/:slugName',
         name: 'seller',
         component: () => import('@/pages/SellerPage.vue'),
