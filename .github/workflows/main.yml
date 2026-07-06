@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    name: build-test-deploy
+    runs-on:
+      labels: ec2-sariko-app
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Test
+        run: |
+          source /home/ubuntu/venv-app-sariko/bin/activate
+          pytest tests/backend -v
+
+      - name: Build and push docker image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          cd backend
+          ./docker_build_and_push.sh
+
+      - name: Deploy app
+        run: |
+          cd ~/deploy
+          docker compose pull
+          docker compose up -d
