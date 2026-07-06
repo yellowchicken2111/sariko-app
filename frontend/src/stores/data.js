@@ -390,6 +390,21 @@ export const dashboardData = {
     ]
 }
 
+// Dev-only: paste one of these into searchStore.query to simulate user input
+// Remove when real search input is fully wired.
+// Default: 'Pork' — demos cross-seller (~7 items across 4 sellers in current dataset).
+export const searchKeywords = [
+    'Pork',
+    'Adobo',
+    'Sinigang',
+    'Lechon',
+    'Kare-kare',
+    'Lumpia',
+    'Pancit',
+    'Halo-halo',
+    'Bulalo'
+]
+
 export const menus = {
     'Lutong Bahay': [
         {

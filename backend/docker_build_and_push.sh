@@ -1,21 +1,24 @@
 #!/bin/bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
 GIT_SHA=$(git rev-parse --short HEAD)
-VERSION="v1.0.0"
 
-# docker login
-cat /app/Jack/sariko-app/backend/src/envs/.docker-creds | docker login --username sariko --password-stdin
+# docker login: dùng env secret nếu có, không thì fallback về file cũ
+if [ -n "${DOCKERHUB_TOKEN:-}" ]; then
+    echo "$DOCKERHUB_TOKEN" | docker login --username "${DOCKERHUB_USERNAME:-sariko}" --password-stdin
+else
+    cat src/envs/.docker-creds | docker login --username sariko --password-stdin
+fi
 
-docker build -t sariko-backend:$VERSION .
+docker build --platform linux/amd64 -t sariko-backend:$GIT_SHA .
 
-docker tag sariko-backend:$VERSION sariko/sariko-backend:latest
-docker tag sariko-backend:$VERSION sariko/sariko-backend:$VERSION
-docker tag sariko-backend:$VERSION sariko/sariko-backend:$GIT_SHA
+docker tag sariko-backend:$GIT_SHA sariko/sariko-backend:latest
+docker tag sariko-backend:$GIT_SHA sariko/sariko-backend:$GIT_SHA
 
 # docker push 
-docker push sariko/sariko-backend:latest 2>&1
-docker push sariko/sariko-backend:$VERSION 2>&1
-docker push sariko/sariko-backend:$GIT_SHA 2>&1
+docker push sariko/sariko-backend:latest
+docker push sariko/sariko-backend:$GIT_SHA
 
-#
-# docker stop bridgeai-backend && docker rm bridgeai-backend
-# docker compose up -d
+docker logout
