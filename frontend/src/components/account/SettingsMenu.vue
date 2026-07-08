@@ -1,8 +1,15 @@
 <script>
-import { User, MapPin, Globe, Lock, ChevronRight } from 'lucide-vue-next';
+import { User, MapPin, Globe, Lock, ChevronRight, Inbox } from 'lucide-vue-next';
+import { useChatStore } from '@/stores/chat/chatStore';
 
 export default {
-    components: { User, MapPin, Globe, Lock, ChevronRight }
+    components: { User, MapPin, Globe, Lock, ChevronRight, Inbox },
+
+    computed: {
+        inboxBadge() {
+            return useChatStore().totalUnread
+        }
+    }
 }
 </script>
 
@@ -10,6 +17,13 @@ export default {
     <div>
         <div class="section-title">{{ $t('account_page.section_title_settings') }}</div>
         <div class="menu-group">
+
+            <router-link to="/chat" class="menu-item">
+                <div class="menu-icon"><Inbox size="18" /></div>
+                <span class="menu-label">{{ $t('account_page.menu_label_inbox') }}</span>
+                <span v-if="inboxBadge > 0" class="menu-badge">{{ inboxBadge }}</span>
+                <ChevronRight size="16" class="menu-arrow" />
+            </router-link>
 
             <router-link to="/account/address" class="menu-item">
                 <div class="menu-icon"><MapPin size="18" /></div>
@@ -89,5 +103,19 @@ export default {
 
 .menu-arrow {
     color: var(--text-muted);
+}
+
+.menu-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: #facc15;
+    color: #121b2f;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>

@@ -1,11 +1,12 @@
 <script>
-import { House, ClipboardList, UtensilsCrossed, CircleUserRound } from 'lucide-vue-next';
+import { House, ClipboardList, UtensilsCrossed, CircleUserRound, Inbox } from 'lucide-vue-next';
 import { useDashboardStore } from '@/stores/seller/dashboardStore';
+import { useChatStore } from '@/stores/chat/chatStore';
 
 export default {
     name: 'SellerBottomNav',
 
-    components: { House, ClipboardList, UtensilsCrossed, CircleUserRound },
+    components: { House, ClipboardList, UtensilsCrossed, CircleUserRound, Inbox },
 
     computed: {
         isShow() {
@@ -13,6 +14,9 @@ export default {
         },
         actionBadge() {
             return useDashboardStore().actionDisplayCount
+        },
+        chatBadge() {
+            return useChatStore().totalUnread
         },
     },
 
@@ -47,6 +51,14 @@ export default {
         <router-link to="/seller/menu" class="nav-item" :class="{ active: isActive('/seller/menu') }">
             <UtensilsCrossed size="18px" />
             <div class="nav-label">Menu</div>
+        </router-link>
+
+        <router-link to="/chat" class="nav-item" :class="{ active: isActive('/chat') }">
+            <div class="icon-wrapper">
+                <Inbox size="18px" />
+                <span v-if="chatBadge > 0" class="action-badge">{{ chatBadge }}</span>
+            </div>
+            <div class="nav-label">My inbox</div>
         </router-link>
 
         <router-link to="/seller/me" class="nav-item" :class="{ active: isActive('/seller/me') }">
