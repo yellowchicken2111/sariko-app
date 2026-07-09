@@ -161,10 +161,8 @@ def test_webhook_invalid_signature_rejected(
         headers={"Content-Type": "application/json"},
     )
 
-    assert res.status_code == 200
-    data = res.json()
-    assert data["success"] is False
-    assert data["detail"] == "Invalid signature"
+    assert res.status_code == 401
+    assert res.json()["detail"] == "Invalid signature"
     assert fake_del.last_update is None, "Must NOT update on invalid signature"
     assert fake_ord.last_status is None
 
