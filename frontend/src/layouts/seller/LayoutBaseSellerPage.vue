@@ -11,10 +11,6 @@
                 <slot name="SellerInfo" />
             </div>
 
-            <div class="banner-header-section">
-                <slot name="BannerHeader" />
-            </div>
-
             <div class="banner-featured">
                 <slot name="BannerFeatured" />
             </div>
@@ -31,7 +27,7 @@
                 <slot name="Menu" />
             </div>
 
-            <div class="safe-area" style="height: 85px;" />
+            <div class="safe-area" style="height: calc(16px + env(safe-area-inset-bottom, 0px));" />
 
         </div>
 
@@ -47,12 +43,7 @@
 }
 
 .seller-info-section {
-    margin-bottom: 5px;
-    padding: 0px 10px;
-}
-
-.banner-header-section {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     padding: 0px 10px;
 }
 

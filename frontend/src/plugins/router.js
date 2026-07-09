@@ -176,6 +176,19 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/chat',
+        name: 'chat',
+        component: () => import('@/pages/ChatListPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/chat/:conversationId',
+        name: 'conversation',
+        component: () => import('@/pages/ConversationPage.vue'),
+        props: true,
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
         component: () => import('@/pages/NotFoundPage.vue'),

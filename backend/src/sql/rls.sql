@@ -9,6 +9,8 @@ alter table order_items enable row level security;
 alter table reviews enable row level security;
 alter table payments enable row level security;
 alter table deliveries enable row level security;
+alter table public.chat_conversations enable row level security;
+alter table public.chat_messages enable row level security;
 
 -- USERS
 create policy "users can read own profile"
@@ -156,7 +158,7 @@ WITH CHECK (
     AND (storage.foldername(name))[1] = auth.uid()::text
 );
 
--- UPDATE (cần cả USING + WITH CHECK)
+
 CREATE POLICY "Users can update own avatar"
 ON storage.objects FOR UPDATE
 TO authenticated
@@ -169,7 +171,7 @@ WITH CHECK (
     AND (storage.foldername(name))[1] = auth.uid()::text
 );
 
--- DELETE (upsert cần xóa file cũ)
+
 CREATE POLICY "Users can delete own avatar"
 ON storage.objects FOR DELETE
 TO authenticated
@@ -178,7 +180,120 @@ USING (
     AND (storage.foldername(name))[1] = auth.uid()::text
 );
 
--- SELECT (public đọc avatar)
 CREATE POLICY "Anyone can read avatars"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'avatars');
+
+
+alter table public.conversations enable row level security;
+alter table public.messages enable row level security;
+
+create policy "participant read conversation"
+on public.conversations for select
+using (
+  buyer_id = auth.uid()
+  or seller_id in (
+    select id from public.seller_profiles where user_id = auth.uid()
+  )
+);
+
+create policy "participant update conversation"
+on public.conversations for update
+using (
+  buyer_id = auth.uid()
+  or seller_id in (
+    select id from public.seller_profiles where user_id = auth.uid()
+  )
+);
+
+create policy "participant read messages"
+on public.messages for select
+using (
+  conversation_id in (
+    select id from public.conversations
+    where buyer_id = auth.uid()
+       or seller_id in (
+         select id from public.seller_profiles where user_id = auth.uid()
+       )
+  )
+);
+
+create policy "participant send message"
+on public.messages for insert
+with check (
+  sender_id = auth.uid()
+  and conversation_id in (
+    select id from public.conversations
+    where buyer_id = auth.uid()
+       or seller_id in (
+         select id from public.seller_profiles where user_id = auth.uid()
+       )
+  )
+);
+
+create policy "recipient mark read"
+on public.messages for update
+using (
+  conversation_id in (
+    select id from public.conversations
+    where buyer_id = auth.uid()
+       or seller_id in (
+         select id from public.seller_profiles where user_id = auth.uid()
+       )
+  )
+);
+
+create policy "participant read conversation"
+on public.chat_conversations for select
+using (
+  buyer_id = auth.uid()
+  or seller_id in (
+    select id from public.seller_profiles where user_id = auth.uid()
+  )
+);
+
+create policy "participant update conversation"
+on public.chat_conversations for update
+using (
+  buyer_id = auth.uid()
+  or seller_id in (
+    select id from public.seller_profiles where user_id = auth.uid()
+  )
+);
+
+create policy "participant read messages"
+on public.chat_messages for select
+using (
+  conversation_id in (
+    select id from public.chat_conversations
+    where buyer_id = auth.uid()
+       or seller_id in (
+         select id from public.seller_profiles where user_id = auth.uid()
+       )
+  )
+);
+
+create policy "participant send message"
+on public.chat_messages for insert
+with check (
+  sender_id = auth.uid()
+  and conversation_id in (
+    select id from public.chat_conversations
+    where buyer_id = auth.uid()
+       or seller_id in (
+         select id from public.seller_profiles where user_id = auth.uid()
+       )
+  )
+);
+
+create policy "recipient mark read"
+on public.chat_messages for update
+using (
+  conversation_id in (
+    select id from public.chat_conversations
+    where buyer_id = auth.uid()
+       or seller_id in (
+         select id from public.seller_profiles where user_id = auth.uid()
+       )
+  )
+);

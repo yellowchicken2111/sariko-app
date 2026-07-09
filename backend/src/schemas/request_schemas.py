@@ -22,6 +22,10 @@ class RequestUpdateCartItem(BaseModel):
     food_item_id: str
     quantity: int = Field(gt=0)
 
+# Chat API
+class RequestCreateConversation(BaseModel):
+    seller_slug: str
+
 # User Profile API
 class RequestUpdateProfile(BaseModel):
     name: Optional[str] = None
