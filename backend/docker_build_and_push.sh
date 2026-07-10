@@ -5,7 +5,6 @@ cd "$(dirname "$0")"
 
 GIT_SHA=$(git rev-parse --short HEAD)
 
-# docker login: dùng env secret nếu có, không thì fallback về file cũ
 if [ -n "${DOCKERHUB_TOKEN:-}" ]; then
     echo "$DOCKERHUB_TOKEN" | docker login --username "${DOCKERHUB_USERNAME:-sariko}" --password-stdin
 else
