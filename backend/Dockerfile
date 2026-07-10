@@ -18,7 +18,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY src/ .
 
-RUN useradd -m app && chown -R app /www
+RUN useradd -m -u 1000 app && chown -R app /www
 USER app
 
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:5000", "main:app"]
