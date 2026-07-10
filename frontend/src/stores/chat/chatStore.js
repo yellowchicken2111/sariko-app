@@ -170,6 +170,46 @@ export const useChatStore = defineStore("chatStore", {
             }
         },
 
+        async pinConversation(conversationId, pinned) {
+            const conv = this.conversations.find(c => c.id === conversationId)
+            if (!conv) return
+            const prev = conv.pinned
+            conv.pinned = pinned          // optimistic
+            this._sortConversations()
+            try {
+                await apiChat.setPinned(conversationId, pinned)
+            } catch (e) {
+                conv.pinned = prev         // rollback
+                this._sortConversations()
+                console.error(`chatStore - pinConversation - ${e}`)
+                throw e
+            }
+        },
+
+        async deleteConversation(conversationId) {
+            const idx = this.conversations.findIndex(c => c.id === conversationId)
+            if (idx === -1) return
+            const [removed] = this.conversations.splice(idx, 1)   // optimistic
+            this.totalUnread = Math.max(0, this.totalUnread - (removed.unread_count || 0))
+            if (this.currentConversationId === conversationId) this.closeConversation()
+            try {
+                await apiChat.deleteConversation(conversationId)
+            } catch (e) {
+                this.conversations.splice(idx, 0, removed)         // rollback
+                this.totalUnread += removed.unread_count || 0
+                console.error(`chatStore - deleteConversation - ${e}`)
+                throw e
+            }
+        },
+
+        // Mirror the backend ordering: pinned first, then most recent activity.
+        _sortConversations() {
+            this.conversations.sort((a, b) => {
+                if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1
+                return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0)
+            })
+        },
+
         async markRead(conversationId) {
             const conv = this.conversations.find(c => c.id === conversationId)
             const wasUnread = conv?.unread_count || 0

@@ -28,6 +28,24 @@ export const apiChat = {
             throw new Error(error.response?.data?.detail || 'Failed to mark conversation read')
         }
     },
+
+    setPinned: async (conversationId, pinned) => {
+        try {
+            const response = await apiClient.patch(`/v1/chat/conversations/${conversationId}/pin`, { pinned })
+            return response
+        } catch (error) {
+            throw new Error(error.response?.data?.detail || 'Failed to pin conversation')
+        }
+    },
+
+    deleteConversation: async (conversationId) => {
+        try {
+            const response = await apiClient.delete(`/v1/chat/conversations/${conversationId}`)
+            return response
+        } catch (error) {
+            throw new Error(error.response?.data?.detail || 'Failed to delete conversation')
+        }
+    },
 }
 
 export default apiChat

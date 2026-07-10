@@ -20,6 +20,10 @@ create table public.chat_conversations (
   seller_id uuid not null,
   last_message_at timestamp with time zone null,
   last_message_text text null,
+  buyer_pinned_at timestamp with time zone null,
+  seller_pinned_at timestamp with time zone null,
+  buyer_deleted_at timestamp with time zone null,
+  seller_deleted_at timestamp with time zone null,
   created_at timestamp with time zone not null default now(),
   constraint chat_conversations_pkey primary key (id),
   constraint chat_conversations_buyer_seller_key unique (buyer_id, seller_id),
@@ -60,7 +64,9 @@ as $$
 begin
   update public.chat_conversations
      set last_message_at = new.created_at,
-         last_message_text = new.body
+         last_message_text = new.body,
+         buyer_deleted_at = null,
+         seller_deleted_at = null
    where id = new.conversation_id;
   return new;
 end;

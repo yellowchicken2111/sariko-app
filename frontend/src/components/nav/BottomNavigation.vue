@@ -2,6 +2,7 @@
 import { House, ShoppingCart, Clipboard, Bell, CircleUserRound } from 'lucide-vue-next';
 import { useCartStore } from '@/stores/cart/cartStore';
 import { useOrderStore } from '@/stores/order/orderStore';
+import { useChatStore } from '@/stores/chat/chatStore';
 
 export default {
     name: 'BottomNavigation',
@@ -14,6 +15,9 @@ export default {
         },
         unpaidBadge() {
             return useOrderStore().unpaidCount
+        },
+        inboxBadge() {
+            return useChatStore().totalUnread
         },
         isShow() {
             const path = this.$route.path
@@ -74,7 +78,10 @@ export default {
         </div>
 
         <router-link to="/account" class="nav-item">
-            <CircleUserRound size="18px" />
+            <div class="icon-wrapper">
+                <CircleUserRound size="18px" />
+                <span v-if="inboxBadge > 0" class="order-badge">{{ inboxBadge }}</span>
+            </div>
             <div class="nav-label">{{ $t('bottom_nav.button_label_account') }}</div>
         </router-link>
     </nav>
