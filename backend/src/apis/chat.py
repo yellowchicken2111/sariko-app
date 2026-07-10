@@ -6,10 +6,22 @@ from core.auth import verify_token
 from dao.dao_chat_conversations import DAOChatConversations
 from dao.dao_chat_messages import DAOChatMessages
 from dao.dao_seller_profiles import DAOSellerProfiles
-from schemas.request_schemas import RequestCreateConversation
+from schemas.request_schemas import RequestCreateConversation, RequestSetPinned
 
 router = APIRouter(prefix="/chat")
 logger = logging.getLogger(__name__)
+
+
+def _resolve_side(conversation: dict, user: dict) -> str:
+    """Return 'buyer' or 'seller' for the caller, or 403 if not a participant.
+    Backend uses the service_role key (bypasses RLS), so participation is
+    enforced here."""
+    if conversation["buyer_id"] == user["id"]:
+        return "buyer"
+    profile = DAOSellerProfiles().read_seller_profile_by_user_id(user["id"])
+    if profile and profile["id"] == conversation["seller_id"]:
+        return "seller"
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
 
 @router.post("/conversations")
@@ -55,8 +67,10 @@ def list_conversations(as_seller: bool = Query(False), user=Depends(verify_token
             cid = row["conversation_id"]
             unread_map[cid] = unread_map.get(cid, 0) + 1
 
+    pin_col = "seller_pinned_at" if as_seller else "buyer_pinned_at"
     for c in conversations:
         c["unread_count"] = unread_map.get(c["id"], 0)
+        c["pinned"] = bool(c.get(pin_col))
 
     return {"success": True, "conversations": conversations}
 
@@ -70,12 +84,34 @@ def mark_conversation_read(conversation_id: str, user=Depends(verify_token)):
     if not conversation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
 
-    is_participant = conversation["buyer_id"] == user["id"]
-    if not is_participant:
-        profile = DAOSellerProfiles().read_seller_profile_by_user_id(user["id"])
-        is_participant = bool(profile and profile["id"] == conversation["seller_id"])
-    if not is_participant:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    _resolve_side(conversation, user)  # 403 if not a participant
 
     DAOChatMessages().mark_read(conversation_id=conversation_id, reader_id=user["id"])
+    return {"success": True}
+
+
+@router.patch("/conversations/{conversation_id}/pin")
+def set_conversation_pinned(conversation_id: str, request: RequestSetPinned, user=Depends(verify_token)):
+    """Pin/unpin a conversation to the top of the caller's own inbox."""
+    dao_conv = DAOChatConversations()
+    conversation = dao_conv.read_by_id(conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
+
+    side = _resolve_side(conversation, user)
+    dao_conv.set_pinned(conversation_id, side, request.pinned)
+    return {"success": True, "pinned": request.pinned}
+
+
+@router.delete("/conversations/{conversation_id}")
+def delete_conversation(conversation_id: str, user=Depends(verify_token)):
+    """Soft-delete a conversation from the caller's own inbox. A later message
+    resurfaces it (bump trigger clears the flag)."""
+    dao_conv = DAOChatConversations()
+    conversation = dao_conv.read_by_id(conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
+
+    side = _resolve_side(conversation, user)
+    dao_conv.soft_delete(conversation_id, side)
     return {"success": True}

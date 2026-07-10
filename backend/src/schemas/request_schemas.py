@@ -26,6 +26,9 @@ class RequestUpdateCartItem(BaseModel):
 class RequestCreateConversation(BaseModel):
     seller_slug: str
 
+class RequestSetPinned(BaseModel):
+    pinned: bool
+
 # User Profile API
 class RequestUpdateProfile(BaseModel):
     name: Optional[str] = None
