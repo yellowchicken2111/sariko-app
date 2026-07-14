@@ -22,6 +22,20 @@ create policy "users can update own profile"
 on users for update
 using (id = auth.uid());
 
+-- seller_profiles: public can browse storefronts; a seller edits only their own row.
+-- NOTE: RLS is row-level, so "public read" exposes every column (incl. user_id,
+-- phone) to anon. Keep sensitive/column-shaped reads going through the backend.
+drop policy if exists "public read seller profiles" on seller_profiles;
+create policy "public read seller profiles"
+on seller_profiles for select
+using (true);
+
+drop policy if exists "seller update own profile" on seller_profiles;
+create policy "seller update own profile"
+on seller_profiles for update
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
+
 -- MENU CATEGORIES
 create policy "public read categories"
 on menu_categories for select

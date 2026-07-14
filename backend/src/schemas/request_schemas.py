@@ -8,6 +8,11 @@ from typing import (
 from pydantic import BaseModel, Field, model_validator
 
 
+class RequestUploadImage(BaseModel):
+    image_base64: str
+    content_type: Optional[str] = None
+
+
 # Cart API
 class RequestReadCartItems(BaseModel):
     cart_id: Optional[str] = None

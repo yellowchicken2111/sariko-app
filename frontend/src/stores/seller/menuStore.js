@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { supabase } from '@/lib/supabase'
 import { useDashboardStore } from '@/stores/seller/dashboardStore'
 import apiSellerMenu from '@/apis/sellers/apiSellerMenu'
+import { fileToBase64 } from '@/utils/fileToBase64'
 
 export const useMenuStore = defineStore('menuStore', {
     state() {
@@ -103,18 +103,12 @@ export const useMenuStore = defineStore('menuStore', {
             return this.updateItem(itemId, { is_available: isAvailable })
         },
 
-        // ── Image upload (Supabase Storage) ─────────────────────────────────
+        // ── Image upload (via backend, service role) ─────────────────────────
 
         async uploadImage(itemId, file) {
-            const sellerId = this.sellerId
-            if (!sellerId) throw new Error('No seller ID')
-            const path = `${sellerId}/${itemId}`
-            const { error } = await supabase.storage
-                .from('food-items')
-                .upload(path, file, { upsert: true, contentType: file.type })
-            if (error) throw error
-            const { data } = supabase.storage.from('food-items').getPublicUrl(path)
-            return data.publicUrl
+            const imageBase64 = await fileToBase64(file)
+            const res = await apiSellerMenu.uploadItemImage(itemId, imageBase64, file.type)
+            return res.image_url
         },
     },
 })

@@ -2,7 +2,7 @@
 import { User, Phone, Camera } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth/authStore';
 import apiUsers from '@/apis/users/apiUsers';
-import { supabase } from '@/lib/supabase';
+import { fileToBase64 } from '@/utils/fileToBase64';
 
 export default {
     components: { User, Phone, Camera },
@@ -71,15 +71,9 @@ export default {
             this.uploadingAvatar = true
 
             try {
-                const { data: { user } } = await supabase.auth.getUser()
-                const ext = file.name.split('.').pop()
-                const path = `${user.id}/${Date.now()}.${ext}`
-
-                const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
-                if (error) throw error
-
-                const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-                this.avatarUrl = publicUrl
+                const imageBase64 = await fileToBase64(file)
+                const res = await apiUsers.uploadAvatar(imageBase64, file.type)
+                this.avatarUrl = res.avatar_url
             } catch (e) {
                 console.error('ProfileForm - avatar upload -', e)
                 this.avatarPreview = null
