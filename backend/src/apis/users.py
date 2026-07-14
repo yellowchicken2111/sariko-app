@@ -14,11 +14,14 @@ from fastapi import (
     Response
 )
 
+import time
+
 from core.auth import verify_token
 from dao.dao_users import DAOUsers
 from dao.dao_seller_profiles import DAOSellerProfiles
 from dao.dao_user_addresses import DAOUserAddresses
-from schemas.request_schemas import RequestUpdateProfile
+from schemas.request_schemas import RequestUpdateProfile, RequestUploadImage
+from utils.storage import upload_image_base64
 
 router = APIRouter(prefix="/users")
 logger = logging.getLogger(__name__)
@@ -98,6 +101,26 @@ def update_current_user_profile(body: RequestUpdateProfile, user=Depends(verify_
 
     except Exception as e:
         logger.exception(f"Exception in PATCH /users/me/profile: {repr(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"{repr(e)}",
+        )
+
+
+@router.post("/me/avatar")
+def upload_avatar(body: RequestUploadImage, user=Depends(verify_token)):
+    try:
+        user_id = user["id"]
+        seller_profile = DAOSellerProfiles().read_seller_profile_by_user_id(user_id)
+        if seller_profile:
+            path = f"avatar-sellers/{seller_profile['id']}/avatar.jpg"
+        else:
+            path = f"avatar-buyers/{user_id}/avatar.jpg"
+        url = upload_image_base64(path, body.image_base64, body.content_type or "image/jpeg")
+        # Fixed filename → cache-buster so the new avatar isn't served stale
+        return {"success": True, "avatar_url": f"{url}?v={int(time.time())}"}
+    except Exception as e:
+        logger.exception(f"Exception in POST /users/me/avatar: {repr(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"{repr(e)}",

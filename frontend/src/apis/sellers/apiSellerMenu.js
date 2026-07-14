@@ -39,6 +39,11 @@ export const apiSellerMenu = {
         return res.data
     },
 
+    uploadItemImage: async (itemId, imageBase64, contentType) => {
+        const res = await apiClient.post(`/v1/sellers/me/menu/items/${itemId}/image`, { image_base64: imageBase64, content_type: contentType })
+        return res.data
+    },
+
 }
 
 export default apiSellerMenu

@@ -13,7 +13,9 @@ from schemas.request_schemas import (
     RequestUpdateOrderStatus,
     RequestCreateCategory, RequestUpdateCategory,
     RequestCreateFoodItem, RequestUpdateFoodItem,
+    RequestUploadImage,
 )
+from utils.storage import upload_image_base64
 
 router = APIRouter(prefix="/sellers")
 logger = logging.getLogger(__name__)
@@ -334,6 +336,20 @@ def update_food_item(item_id: str, body: RequestUpdateFoodItem, user=Depends(ver
         raise
     except Exception as e:
         logger.exception(f"Exception in PATCH /sellers/me/menu/items/{item_id}: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/me/menu/items/{item_id}/image")
+def upload_food_item_image(item_id: str, body: RequestUploadImage, user=Depends(verify_token)):
+    try:
+        seller_id = _get_seller_id(user)
+        path = f"food-items/{seller_id}/{item_id}"
+        image_url = upload_image_base64(path, body.image_base64, body.content_type or "image/jpeg")
+        return {"success": True, "image_url": image_url}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in POST /sellers/me/menu/items/{item_id}/image: {repr(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -17,6 +17,11 @@ export const apiUsers = {
         return response.data
     },
 
+    uploadAvatar: async (imageBase64, contentType) => {
+        const response = await apiClient.post('/v1/users/me/avatar', { image_base64: imageBase64, content_type: contentType })
+        return response.data
+    },
+
 }
 
 export default apiUsers
