@@ -29,6 +29,8 @@
 
             <div class="safe-area" style="height: calc(16px + env(safe-area-inset-bottom, 0px));" />
 
+            <slot name="CartFab" />
+
         </div>
 
     </div>
@@ -64,6 +66,9 @@
 
 .menu-section {
     margin-top: 20px;
+    /* the menu now grows with the page (no nested scroll area), so the last row
+       needs clearance from the floating cart button */
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
 </style>

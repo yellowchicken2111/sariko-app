@@ -134,7 +134,8 @@
         },
         "item_count": "{count} món",
         "founding_seller": "Người bán tiên phong",
-        "btn_chat": "Nhắn tin"
+        "btn_chat": "Nhắn tin",
+        "btn_view_cart": "Xem giỏ hàng"
     },
     "seller_card": {
         "coming_soon": "Sắp mở bán"

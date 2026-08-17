@@ -12,10 +12,12 @@ export default {
         <q-skeleton type="rect" animation="pulse" class="block block--banner" />
         <!-- Category tabs -->
         <q-skeleton type="rect" animation="pulse" class="block block--tabs" />
-        <!-- Menu cards -->
+        <!-- Menu rows -->
         <div class="block--menu">
-            <q-skeleton type="rect" animation="pulse" class="menu-card" />
-            <q-skeleton type="rect" animation="pulse" class="menu-card" />
+            <q-skeleton type="rect" animation="pulse" class="menu-row" />
+            <q-skeleton type="rect" animation="pulse" class="menu-row" />
+            <q-skeleton type="rect" animation="pulse" class="menu-row" />
+            <q-skeleton type="rect" animation="pulse" class="menu-row" />
         </div>
     </div>
 </template>
@@ -42,12 +44,13 @@ export default {
 
 .block--menu {
     display: flex;
-    gap: 14px;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.menu-card {
-    flex: 1;
-    height: 150px;
+.menu-row {
+    width: 100%;
+    height: 96px;
     border-radius: $radius-base;
     background-color: #253352 !important;
 }
