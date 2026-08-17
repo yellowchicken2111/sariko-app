@@ -18,8 +18,8 @@ class DAOSellerProfiles(DAOBase):
         try:
             query = self._supabase_client.table(self._table_name)
             query = query.select("id, user_id, store_name, slug, avatar_url, status")
-            # 'active' < 'coming_soon' alphabetically, so ascending status keeps active sellers first
-            query = query.order("status").order("display_order")
+            query = query.eq("is_listed", True)
+            query = query.order("status").order("display_order").order("created_at")
 
             result = query.execute()
             
@@ -38,7 +38,7 @@ class DAOSellerProfiles(DAOBase):
     def read_seller_by_slug_name(self, slug: str):
         try:
             query = self._supabase_client.table(self._table_name)
-            query = query.select("id, store_name, slug, address, avatar_url, status, is_verified, phone, lat, lon, tier, description, is_open, opening_time, closing_time").eq("slug", slug)
+            query = query.select("id, store_name, slug, address, avatar_url, status, is_verified, phone, lat, lon, tier, description, is_open, opening_time, closing_time, rating_avg, rating_count").eq("slug", slug)
             
             query = query.maybe_single()
             result = query.execute()
@@ -60,7 +60,7 @@ class DAOSellerProfiles(DAOBase):
             result = (
                 self._supabase_client
                 .table(self._table_name)
-                .select("id, store_name, slug, avatar_url, address, phone, lat, lon")
+                .select("id, store_name, slug, avatar_url, address, phone, lat, lon, rating_avg, rating_count")
                 .eq("user_id", user_id)
                 .maybe_single()
                 .execute()

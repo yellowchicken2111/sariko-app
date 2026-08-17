@@ -131,6 +131,10 @@ create table public.seller_profiles (
   bank_account_holder text null,
   tax_category text not null default 'services'::text,
   status text not null default 'coming_soon'::text,
+  rating_avg numeric null,
+  rating_count integer not null default 0,
+  is_listed boolean not null default true,
+  display_order integer not null default 0,
   constraint seller_profiles_pkey primary key (id),
   constraint seller_profiles_slug_key unique (slug),
   constraint seller_profiles_tier_fkey foreign KEY (tier) references admin_tier_config (tier),
@@ -147,6 +151,18 @@ create index IF not exists idx_seller_location on public.seller_profiles using b
 
 comment on column public.seller_profiles.commission_rate_override is
   'Only set for bodega tier. NULL = use admin_tier_config.commission_rate.';
+comment on column public.seller_profiles.rating_avg is
+  'Denormalised from reviews (overall rows only, food_item_id is null). Maintained by
+   the on_review_change trigger — never write it by hand. NULL until the first review.';
+comment on column public.seller_profiles.is_listed is
+  'Admin curation: false = hidden from the public seller list and from featured dishes.
+   Distinct from status (lifecycle: coming_soon | active) and is_open (opening hours) —
+   a seller can be active + open and still be unlisted. The storefront stays reachable
+   by direct slug URL; this only controls discovery.';
+comment on column public.seller_profiles.display_order is
+  'Manual sort within the seller list, ascending (lower first). Applied after status,
+   so it orders sellers within the active block and within the coming_soon block.
+   Ties break by created_at.';
 
 
 -- >>>>>>>>>>>>>>>>>>>>  tables/03_menu.sql  <<<<<<<<<<<<<<<<<<<<
@@ -184,12 +200,18 @@ create table public.food_items (
   created_at timestamp without time zone null default now(),
   price_text text null,
   is_featured boolean not null default false,
+  rating_avg numeric null,
+  rating_count integer not null default 0,
   constraint food_items_pkey primary key (id),
   constraint food_items_category_id_fkey foreign KEY (category_id) references menu_categories (id) on delete set null,
   constraint food_items_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 create index IF not exists idx_food_items_seller on public.food_items using btree (seller_id) TABLESPACE pg_default;
+
+comment on column public.food_items.rating_avg is
+  'Denormalised from reviews (per-dish rows only). Maintained by the on_review_change
+   trigger — never write it by hand. NULL until the first review.';
 
 
 -- >>>>>>>>>>>>>>>>>>>>  tables/04_carts.sql  <<<<<<<<<<<<<<<<<<<<
@@ -336,11 +358,18 @@ create table public.order_items (
   constraint order_items_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
+-- Every order detail read embeds order_items, and that page polls every 10s.
+create index IF not exists idx_order_items_order on public.order_items using btree (order_id) TABLESPACE pg_default;
+
 
 -- >>>>>>>>>>>>>>>>>>>>  tables/07_reviews.sql  <<<<<<<<<<<<<<<<<<<<
 
 -- ============================================================
--- Reviews (buyer rates a completed order / seller)
+-- Reviews (buyer rates a completed order)
+-- One submit writes 1 + N rows, distinguished by food_item_id:
+--   food_item_id IS NULL     → the order's overall rating  → seller_profiles.rating_avg
+--   food_item_id IS NOT NULL → a per-dish rating           → food_items.rating_avg
+-- Overall rows carry no comment by design; per-dish comments are optional.
 -- ============================================================
 
 create table public.reviews (
@@ -348,6 +377,7 @@ create table public.reviews (
   order_id uuid null,
   seller_id uuid null,
   user_id uuid null,
+  food_item_id uuid null,
   rating integer null,
   comment text null,
   created_at timestamp without time zone null default now(),
@@ -355,8 +385,26 @@ create table public.reviews (
   constraint reviews_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE,
   constraint reviews_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
   constraint reviews_user_id_fkey foreign KEY (user_id) references users (id),
+  constraint reviews_food_item_id_fkey foreign KEY (food_item_id) references food_items (id) on delete CASCADE,
   constraint reviews_rating_check check (((rating >= 1) and (rating <= 5)))
 ) TABLESPACE pg_default;
+
+-- Uniqueness is split in two on purpose: Postgres treats every NULL as distinct, so a
+-- plain unique (order_id, food_item_id) would happily accept two overall rows per order.
+create unique index if not exists uniq_review_order_item
+  on public.reviews (order_id, food_item_id)
+  where food_item_id is not null;
+
+create unique index if not exists uniq_review_order_overall
+  on public.reviews (order_id)
+  where food_item_id is null;
+
+-- order_id is the hottest lookup (orders-list embed, order detail, review submit) and
+-- Postgres does not index FK columns automatically. The two partial unique indexes
+-- above cannot serve a bare order_id = ? lookup: each covers only half the rows.
+create index if not exists idx_reviews_order on public.reviews using btree (order_id) TABLESPACE pg_default;
+create index if not exists idx_reviews_food_item on public.reviews using btree (food_item_id) TABLESPACE pg_default;
+create index if not exists idx_reviews_seller on public.reviews using btree (seller_id) TABLESPACE pg_default;
 
 
 -- >>>>>>>>>>>>>>>>>>>>  tables/08_deliveries.sql  <<<<<<<<<<<<<<<<<<<<
@@ -597,6 +645,67 @@ create trigger on_new_chat_message
   after insert on public.chat_messages
   for each row
   execute function public.bump_chat_conversation ();
+
+
+-- Reviews: keep the denormalised rating columns in sync so every menu query can read
+-- rating_avg / rating_count inline instead of aggregating per request.
+-- A review row rolls up to exactly one place: per-dish rows (food_item_id not null) to
+-- food_items, overall rows to seller_profiles. The averages are recomputed from scratch
+-- rather than adjusted incrementally, so hand-deleting test rows self-heals.
+-- The API only ever inserts; update/delete are covered for manual cleanup in the SQL editor.
+create or replace function public.recalc_review_ratings () returns trigger
+  language plpgsql
+  security definer
+  set search_path = public
+as $$
+declare
+  v_food_item_id uuid;
+  v_seller_id    uuid;
+begin
+  -- NEW is unassigned on DELETE, so pick the source row explicitly.
+  if tg_op = 'DELETE' then
+    v_food_item_id := old.food_item_id;
+    v_seller_id    := old.seller_id;
+  else
+    v_food_item_id := new.food_item_id;
+    v_seller_id    := new.seller_id;
+  end if;
+
+  if v_food_item_id is not null then
+    update public.food_items f
+       set rating_avg   = sub.avg_rating,
+           rating_count = sub.cnt
+      from (
+        select round(avg(rating)::numeric, 1) as avg_rating,
+               count(*)                       as cnt
+          from public.reviews
+         where food_item_id = v_food_item_id
+      ) sub
+     where f.id = v_food_item_id;
+
+  elsif v_seller_id is not null then
+    update public.seller_profiles s
+       set rating_avg   = sub.avg_rating,
+           rating_count = sub.cnt
+      from (
+        select round(avg(rating)::numeric, 1) as avg_rating,
+               count(*)                       as cnt
+          from public.reviews
+         where seller_id = v_seller_id
+           and food_item_id is null
+      ) sub
+     where s.id = v_seller_id;
+  end if;
+
+  return null;
+end;
+$$;
+
+drop trigger if exists on_review_change on public.reviews;
+create trigger on_review_change
+  after insert or update or delete on public.reviews
+  for each row
+  execute function public.recalc_review_ratings ();
 
 
 -- >>>>>>>>>>>>>>>>>>>>  policies/rls.sql  <<<<<<<<<<<<<<<<<<<<

@@ -24,7 +24,7 @@ export default {
             return this.seller?.cover_url || DEFAULT_COVER;
         },
         hasRating() {
-            return this.seller?.rating != null;
+            return this.seller?.rating_count > 0 && this.seller?.rating_avg != null;
         },
         isVerified() {
             return !!this.seller?.is_verified;
@@ -162,18 +162,27 @@ export default {
                 <!-- Row 2: meta line (left) + chat button (right) -->
                 <div class="meta-row">
                     <div class="status-line">
-                        <span v-if="hasRating" class="rating">
-                            <Star :size="13" fill="#f5A623" color="#f5A623" /> {{ seller.rating }}
-                        </span>
-                        <span v-else class="founding">Founding Seller</span>
+                        <template v-if="!hasRating">
+                            <span class="founding">{{ $t('seller_page.founding_seller') }}</span>
+                            <span class="dot-sep"></span>
+                        </template>
 
-                        <span class="dot-sep"></span>
-
-                        <span>{{ totalItems }} {{ totalItems === 1 ? 'item' : 'items' }}</span>
+                        <span>{{ $t('seller_page.item_count', totalItems, { count: totalItems }) }}</span>
 
                         <template v-if="distanceLabel">
                             <span class="dot-sep"></span>
                             <span class="distance">{{ distanceLabel }}</span>
+                        </template>
+
+                        <template v-if="hasRating">
+                            <span class="dot-sep"></span>
+                            <span class="rating">
+                                <Star :size="13" fill="#f5A623" color="#f5A623" />
+                                {{ seller.rating_avg }}
+                                <span class="rating-count">
+                                    ({{ $t('common.rating_count', seller.rating_count, { count: seller.rating_count }) }})
+                                </span>
+                            </span>
                         </template>
                     </div>
 
@@ -181,7 +190,7 @@ export default {
                         <q-spinner-dots v-if="isOpeningChat" color="dark" size="1.4em" />
                         <template v-else>
                             <MessageCircle :size="17" />
-                            <span>Chat</span>
+                            <span>{{ $t('seller_page.btn_chat') }}</span>
                         </template>
                     </button>
                 </div>
@@ -398,6 +407,12 @@ export default {
     align-items: center;
     gap: 3px;
     color: #f5A623;
+}
+
+.rating-count {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .founding {

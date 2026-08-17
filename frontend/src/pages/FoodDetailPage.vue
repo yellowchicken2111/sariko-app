@@ -2,8 +2,10 @@
 import LayoutBaseFoodDetail from '@/layouts/food-detail/LayoutBaseFoodDetail.vue';
 import HeroImage from '@/components/food-detail/HeroImage.vue';
 import FoodInfo from '@/components/food-detail/FoodInfo.vue';
+import FoodReviews from '@/components/food-detail/FoodReviews.vue';
 import BottomActionBar from '@/components/food-detail/BottomActionBar.vue';
 import { useSellerStore } from '@/stores/seller/sellerStore';
+import { useReviewStore } from '@/stores/review/reviewStore';
 
 export default {
     name: 'FoodDetailPage',
@@ -12,6 +14,7 @@ export default {
         LayoutBaseFoodDetail,
         HeroImage,
         FoodInfo,
+        FoodReviews,
         BottomActionBar,
     },
 
@@ -23,6 +26,10 @@ export default {
     mounted() {
         const sellerStore = useSellerStore()
         sellerStore.loadFoodDetail(this.sellerSlug, this.foodId)
+
+        // Public endpoint keyed by foodId alone, so it does not wait on the menu fetch
+        // that loadFoodDetail needs to resolve the dish.
+        useReviewStore().getFoodReviews(this.foodId)
     }
 }
 </script>
@@ -36,6 +43,10 @@ export default {
 
         <template #FoodInfo>
             <FoodInfo />
+        </template>
+
+        <template #FoodReviews>
+            <FoodReviews />
         </template>
 
         <template #BottomActionBar>

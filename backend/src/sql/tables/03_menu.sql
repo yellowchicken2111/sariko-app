@@ -31,9 +31,15 @@ create table public.food_items (
   created_at timestamp without time zone null default now(),
   price_text text null,
   is_featured boolean not null default false,
+  rating_avg numeric null,
+  rating_count integer not null default 0,
   constraint food_items_pkey primary key (id),
   constraint food_items_category_id_fkey foreign KEY (category_id) references menu_categories (id) on delete set null,
   constraint food_items_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
 create index IF not exists idx_food_items_seller on public.food_items using btree (seller_id) TABLESPACE pg_default;
+
+comment on column public.food_items.rating_avg is
+  'Denormalised from reviews (per-dish rows only). Maintained by the on_review_change
+   trigger — never write it by hand. NULL until the first review.';

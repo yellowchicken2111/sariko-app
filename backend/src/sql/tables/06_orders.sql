@@ -72,3 +72,6 @@ create table public.order_items (
   constraint order_items_food_item_id_fkey foreign KEY (food_item_id) references food_items (id),
   constraint order_items_order_id_fkey foreign KEY (order_id) references orders (id) on delete CASCADE
 ) TABLESPACE pg_default;
+
+-- Every order detail read embeds order_items, and that page polls every 10s.
+create index IF not exists idx_order_items_order on public.order_items using btree (order_id) TABLESPACE pg_default;

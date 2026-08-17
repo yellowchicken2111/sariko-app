@@ -99,6 +99,13 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/orders/:orderId/review',
+        name: 'order-review',
+        component: () => import('@/pages/OrderReviewPage.vue'),
+        props: true,
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/dashboard',
         redirect: '/seller/home'
     },

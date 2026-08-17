@@ -29,7 +29,7 @@ export default {
             return useAuthStore().user?.id || null
         },
         showNavigation() {
-            const hiddenRoutes = ['food-detail', 'forgot-password', 'reset-password', 'signin', 'signup', 'all-sellers', 'conversation', 'seller']
+            const hiddenRoutes = ['food-detail', 'forgot-password', 'reset-password', 'signin', 'signup', 'all-sellers', 'conversation', 'seller', 'order-review']
             return !hiddenRoutes.includes(this.$route.name)
         }
     },

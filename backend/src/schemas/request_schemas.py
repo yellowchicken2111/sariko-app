@@ -65,6 +65,26 @@ class RequestCreateOrder(BaseModel):
                 raise ValueError("delivery_lat and delivery_lon are required for delivery orders")
         return self
 
+# Review API
+class RequestReviewItem(BaseModel):
+    food_item_id: str
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = Field(default=None, max_length=500)
+
+class RequestCreateReview(BaseModel):
+    order_id: str
+    overall_rating: int = Field(ge=1, le=5)
+    items: List[RequestReviewItem] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_items(self):
+        # The DB rejects this too (uniq_review_order_item), but a 422 naming the field
+        # beats a 409 for what is really a malformed payload.
+        food_item_ids = [item.food_item_id for item in self.items]
+        if len(food_item_ids) != len(set(food_item_ids)):
+            raise ValueError("items contains the same food_item_id twice")
+        return self
+
 # Seller Order API
 class RequestUpdateOrderStatus(BaseModel):
     status: Literal["confirmed", "ready", "done", "cancelled"]

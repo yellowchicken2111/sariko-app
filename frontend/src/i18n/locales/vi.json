@@ -17,7 +17,8 @@
         "button_label_save": "Lưu",
         "button_label_saving": "Đang lưu...",
         "toast_update_success": "Cập nhật thành công",
-        "toast_update_failed": "Cập nhật thất bại, vui lòng thử lại"
+        "toast_update_failed": "Cập nhật thất bại, vui lòng thử lại",
+        "rating_count": "{count} đánh giá"
     },
     "bottom_nav": {
         "button_label_home": "Trang chủ",
@@ -130,7 +131,10 @@
             "title": "Sắp mở bán",
             "subtitle": "Quán đang chuẩn bị thực đơn. Ghé lại sớm nhé!",
             "button_explore": "Khám phá người bán khác"
-        }
+        },
+        "item_count": "{count} món",
+        "founding_seller": "Người bán tiên phong",
+        "btn_chat": "Nhắn tin"
     },
     "seller_card": {
         "coming_soon": "Sắp mở bán"
@@ -145,7 +149,10 @@
         "button_unfavorite": "Bỏ khỏi yêu thích",
         "button_decrease": "Giảm số lượng",
         "button_increase": "Tăng số lượng",
-        "toast_added_to_cart": "Đã thêm {name} vào giỏ"
+        "toast_added_to_cart": "Đã thêm {name} vào giỏ",
+        "reviews_title": "Đánh giá",
+        "reviews_empty": "Chưa có đánh giá nào cho món này.",
+        "review_anonymous": "Khách hàng"
     },
     "cart_page": {
         "section_delivery_address": {
@@ -278,6 +285,7 @@
         "status_cancelled": "Đã huỷ",
         "status_delivery_failed": "Giao hàng thất bại",
         "refund_pending": "Chờ hoàn tiền",
+        "needs_review": "Cần đánh giá",
         "empty_title": "Chưa có đơn hàng",
         "empty_subtitle": "Đơn hàng của bạn sẽ hiện ở đây sau khi đặt."
     },
@@ -327,6 +335,28 @@
         "refund_processed": "Đã hoàn tiền",
         "refund_failed": "Hoàn tiền thất bại",
         "refund_failed_subtext": "Hoàn tiền không thành công. Vui lòng liên hệ hỗ trợ để được xử lý."
+    },
+    "order_review": {
+        "title": "Đánh giá đơn hàng",
+        "overall_title": "Đánh giá chung",
+        "overall_hint": "Bạn thấy đơn hàng này thế nào?",
+        "rating_label_1": "Rất tệ",
+        "rating_label_2": "Không hài lòng",
+        "rating_label_3": "Bình thường",
+        "rating_label_4": "Hài lòng",
+        "rating_label_5": "Tuyệt vời!",
+        "items_title": "Đánh giá từng món",
+        "comment_placeholder": "Đánh giá của bạn ...",
+        "btn_submit": "Gửi đánh giá",
+        "dialog_unrated_title": "Còn món chưa đánh giá",
+        "dialog_unrated_text": "Bạn chưa đánh giá {count} món. Gửi rồi sẽ không đánh giá lại được nữa.",
+        "dialog_back": "Quay lại",
+        "dialog_submit_anyway": "Gửi luôn",
+        "success": "Cảm ơn bạn đã đánh giá!",
+        "error_submit": "Không gửi được đánh giá. Vui lòng thử lại.",
+        "error_already_reviewed": "Bạn đã đánh giá đơn hàng này rồi.",
+        "btn_rate_order": "Đánh giá đơn hàng",
+        "already_reviewed": "Bạn đã đánh giá đơn hàng này"
     },
     "seller_dashboard": {
         "section_recent_orders": "Đơn hàng gần đây",
