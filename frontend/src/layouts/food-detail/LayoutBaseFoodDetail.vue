@@ -9,6 +9,10 @@
             <div class="food-info">
                 <slot name="FoodInfo"/>
             </div>
+
+            <div class="food-reviews">
+                <slot name="FoodReviews"/>
+            </div>
         </q-scroll-area>
 
         <div class="action-zone">
@@ -46,9 +50,14 @@
 }
 
 
+/* Was height:100% to fill the scroll area; the reviews block now follows it, so the
+   two share the scroll instead of the first one claiming all of it. */
 .food-info {
-    height: 100%;
-    padding: 28px 20px 24px;
+    padding: 28px 20px 8px;
+}
+
+.food-reviews {
+    padding: 8px 20px 28px;
 }
 
 .action-zone {

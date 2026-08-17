@@ -1,9 +1,9 @@
 <script>
-import { Store } from 'lucide-vue-next';
+import { Store, Star } from 'lucide-vue-next';
 import { useSellerStore } from '@/stores/seller/sellerStore';
 
 export default {
-    components: { Store },
+    components: { Store, Star },
 
     computed: {
         sellerStore() {
@@ -19,6 +19,9 @@ export default {
             if (!this.food) return ''
             const base = new Intl.NumberFormat('vi-VN').format(this.food.price) + ' ₫'
             return this.food.unit_label ? `${base} / ${this.food.unit_label}` : base
+        },
+        hasRating() {
+            return this.food?.rating_count > 0 && this.food?.rating_avg != null
         }
     },
 
@@ -36,6 +39,13 @@ export default {
     <div class="food-info">
         <template v-if="food">
             <div class="food-name">{{ food.name }}</div>
+            <div v-if="hasRating" class="food-rating">
+                <Star :size="15" fill="#f5A623" color="#f5A623" />
+                <span class="rating-value">{{ food.rating_avg }}</span>
+                <span class="rating-count">
+                    ({{ $t('common.rating_count', food.rating_count, { count: food.rating_count }) }})
+                </span>
+            </div>
             <div class="item-badge">
                 <q-badge class="preorder-badge" color="positive"> 
                     {{ $t('seller_page.section_food_cards.label_item_available') }}
@@ -75,6 +85,24 @@ export default {
     color: var(--text-primary);
     line-height: 1.3;
     margin-bottom: 10px;
+}
+
+.food-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.rating-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-active);
+}
+
+.rating-count {
+    font-size: 13px;
+    color: var(--text-secondary);
 }
 
 .item-badge {

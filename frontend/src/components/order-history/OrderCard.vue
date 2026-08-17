@@ -1,9 +1,9 @@
 <script>
-import { Store, Truck, ChevronRight } from 'lucide-vue-next';
+import { Store, Truck, ChevronRight, Star } from 'lucide-vue-next';
 
 export default {
     components: {
-        Store, Truck, ChevronRight
+        Store, Truck, ChevronRight, Star
     },
 
     props: {
@@ -48,6 +48,14 @@ export default {
         },
         showRefundChip() {
             return this.refundStatus === 'pending'
+        },
+        // reviews(id) is embedded by the orders query, so this costs no extra request.
+        // Non-empty means the order was reviewed — one submit always writes at least
+        // the overall row.
+        needsReview() {
+            return this.order.status === 'done'
+                && this.order.payment_status === 'paid'
+                && !this.order.reviews?.length
         }
     },
 
@@ -77,6 +85,11 @@ export default {
 
         <div v-if="showRefundChip" class="refund-chip refund-pending">
             {{ $t('orders_page.refund_pending') }}
+        </div>
+
+        <div v-if="needsReview" class="refund-chip needs-review">
+            <Star :size="11" fill="currentColor" />
+            {{ $t('orders_page.needs_review') }}
         </div>
 
         <div class="card-divider" />
@@ -204,6 +217,7 @@ export default {
 .refund-chip {
     display: inline-flex;
     align-items: center;
+    gap: 5px;
     padding: 3px 10px;
     border-radius: 100px;
     font-size: 11px;
@@ -214,6 +228,11 @@ export default {
 .refund-pending {
     background: rgba(245, 166, 35, 0.12);
     color: #f5a623;
+}
+
+.needs-review {
+    background: rgba(250, 204, 21, 0.12);
+    color: $accent;
 }
 
 .card-divider {

@@ -4,9 +4,11 @@ import OrderBreadcrumbs from '@/components/order-details/OrderBreadcrumbs.vue';
 import OrderStatusHeader from '@/components/order-details/OrderStatusHeader.vue';
 import OrderInfoCard from '@/components/order-details/OrderInfoCard.vue';
 import OrderActions from '@/components/order-details/OrderActions.vue';
+import OrderReviewSection from '@/components/order-details/OrderReviewSection.vue';
 import DeliveryTracker from '@/components/order-details/DeliveryTracker.vue';
 import { useOrderStore } from '@/stores/order/orderStore.js';
 import { useDeliveryStore } from '@/stores/delivery/deliveryStore.js';
+import { useReviewStore } from '@/stores/review/reviewStore.js';
 
 export default {
     components: {
@@ -15,6 +17,7 @@ export default {
         OrderStatusHeader,
         OrderInfoCard,
         OrderActions,
+        OrderReviewSection,
         DeliveryTracker,
     },
 
@@ -56,6 +59,10 @@ export default {
         await orderStore.getOrderDetail(this.orderId)
         orderStore.startWatchingOrderDetail(this.orderId)
 
+        // Independent of the order fetch above, so it runs regardless of status —
+        // an order can turn 'done' mid-visit via the 10s poll.
+        useReviewStore().checkOrderReview(this.orderId)
+
         if (this.shouldWatchDelivery) {
             useDeliveryStore().startWatching(this.orderId)
         }
@@ -85,6 +92,10 @@ export default {
 
         <template #OrderInfo>
             <OrderInfoCard />
+        </template>
+
+        <template #Review>
+            <OrderReviewSection />
         </template>
 
         <template #Actions>

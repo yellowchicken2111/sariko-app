@@ -17,6 +17,10 @@
             <slot name="OrderInfo" />
         </div>
 
+        <div class="review-section">
+            <slot name="Review" />
+        </div>
+
         <div class="actions-section">
             <slot name="Actions" />
         </div>
@@ -48,6 +52,12 @@
 
 .order-info-section {
     padding: 28px 16px;
+}
+
+/* Renders only on done+paid orders. No vertical padding, so it collapses to zero
+   height otherwise; the bottom gap comes from actions-section's padding either way. */
+.review-section {
+    padding: 0 16px;
 }
 
 .actions-section {

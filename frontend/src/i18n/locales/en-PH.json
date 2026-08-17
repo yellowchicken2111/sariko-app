@@ -17,7 +17,8 @@
         "button_label_save": "Save",
         "button_label_saving": "Saving...",
         "toast_update_success": "Updated successfully",
-        "toast_update_failed": "Update failed, please try again"
+        "toast_update_failed": "Update failed, please try again",
+        "rating_count": "{count} review | {count} reviews"
     },
     "bottom_nav": {
         "button_label_home": "Home",
@@ -130,7 +131,10 @@
             "title": "Coming soon",
             "subtitle": "This kitchen is still preparing its menu. Check back soon!",
             "button_explore": "Explore other sellers"
-        }
+        },
+        "item_count": "{count} item | {count} items",
+        "founding_seller": "Founding Seller",
+        "btn_chat": "Chat"
     },
     "seller_card": {
         "coming_soon": "Coming soon"
@@ -145,7 +149,10 @@
         "button_unfavorite": "Remove from favorites",
         "button_decrease": "Decrease quantity",
         "button_increase": "Increase quantity",
-        "toast_added_to_cart": "{name} added to cart"
+        "toast_added_to_cart": "{name} added to cart",
+        "reviews_title": "Reviews",
+        "reviews_empty": "No reviews for this dish yet.",
+        "review_anonymous": "Customer"
     },
     "cart_page": {
         "section_delivery_address": {
@@ -278,6 +285,7 @@
         "status_cancelled": "Cancelled",
         "status_delivery_failed": "Delivery Failed",
         "refund_pending": "Refund Pending",
+        "needs_review": "Needs review",
         "empty_title": "No orders yet",
         "empty_subtitle": "Your orders will appear here once you place one."
     },
@@ -327,6 +335,28 @@
         "refund_processed": "Refund Completed",
         "refund_failed": "Refund Failed",
         "refund_failed_subtext": "Your refund was unsuccessful. Please contact support."
+    },
+    "order_review": {
+        "title": "Rate Your Order",
+        "overall_title": "Overall",
+        "overall_hint": "How was this order?",
+        "rating_label_1": "Terrible",
+        "rating_label_2": "Not happy",
+        "rating_label_3": "Okay",
+        "rating_label_4": "Good",
+        "rating_label_5": "Excellent!",
+        "items_title": "Rate each dish",
+        "comment_placeholder": "Your review ...",
+        "btn_submit": "Submit Review",
+        "dialog_unrated_title": "Some dishes unrated",
+        "dialog_unrated_text": "You haven't rated {count} dish(es). You won't be able to rate them later.",
+        "dialog_back": "Go back",
+        "dialog_submit_anyway": "Submit anyway",
+        "success": "Thanks for your review!",
+        "error_submit": "Could not submit your review. Please try again.",
+        "error_already_reviewed": "You have already reviewed this order.",
+        "btn_rate_order": "Rate Your Order",
+        "already_reviewed": "You rated this order"
     },
     "seller_dashboard": {
         "section_recent_orders": "Recent Orders",

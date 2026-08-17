@@ -41,6 +41,8 @@ export default {
                         :imgSrc="food.image_url ? food.image_url : '/images/default-food-image.webp'"
                         :unit-label="food.unit_label || 'pcs'"
                         :preorder-day="food.preorder_day || 0"
+                        :rating-avg="food.rating_avg"
+                        :rating-count="food.rating_count || 0"
                         />
                     </div>
                 </div>

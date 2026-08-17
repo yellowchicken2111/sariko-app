@@ -30,6 +30,14 @@ export default {
         preorderDay: {
             type: Number,
             default: 0
+        },
+        ratingAvg: {
+            type: Number,
+            default: null
+        },
+        ratingCount: {
+            type: Number,
+            default: 0
         }
     },
 
@@ -44,7 +52,12 @@ export default {
     },
 
     computed: {
-        ...mapState(useSellerStore, ['seller'])
+        ...mapState(useSellerStore, ['seller']),
+        // Nothing is shown until a dish has been rated — an empty star row reads as
+        // "rated badly" rather than "not rated yet".
+        hasRating() {
+            return this.ratingCount > 0 && this.ratingAvg != null
+        }
     },
 
     methods: {
@@ -93,9 +106,10 @@ export default {
         <div class="food-info">
             <div class="food-name">
                 <div class="food-name__label">{{ name }}</div>
-                <div class="food-name__review">
-                    <Star size="12px" color="gold" style="margin-right: 5px;"/>
-                    <div class="text-yellow">4.9</div>
+                <div v-if="hasRating" class="food-name__review">
+                    <Star size="12px" fill="gold" color="gold" style="margin-right: 4px;"/>
+                    <div class="text-yellow">{{ ratingAvg }}</div>
+                    <div class="review-count">({{ ratingCount }})</div>
                 </div>
             </div>
             <q-badge class="preorder-badge" color="positive"> 
@@ -169,6 +183,14 @@ export default {
     flex-shrink: 0;
     display: flex;
     align-items: center;
+}
+
+/* Bare number, no word: the card is ~45% of a phone width and the dish name already
+   competes for this line. "4.9 (12)" is the compact form people read everywhere. */
+.review-count {
+    margin-left: 3px;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 .food-price {

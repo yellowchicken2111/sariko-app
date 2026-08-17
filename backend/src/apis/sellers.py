@@ -3,9 +3,11 @@ import logging
 from dao.dao_seller_profiles import DAOSellerProfiles
 from dao.dao_food_items import DAOFoodItems
 from dao.dao_menu_categories import DAOMenuCategories
+from dao.dao_reviews import DAOReviews
 
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, Query, status
 
+from apis.reviews import mask_reviewer
 from core.auth import verify_token
 from core.phone import to_e164_vn
 from dao.dao_orders import DAOOrders
@@ -363,6 +365,31 @@ def delete_food_item(item_id: str, user=Depends(verify_token)):
         raise
     except Exception as e:
         logger.exception(f"Exception in DELETE /sellers/me/menu/items/{item_id}: {repr(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/me/reviews")
+def get_seller_reviews(
+    user=Depends(verify_token),
+    limit: int = Query(default=20, ge=1, le=50),
+    offset: int = Query(default=0, ge=0),
+):
+    try:
+        seller_id = _get_seller_id(user)
+        reviews = DAOReviews().read_reviews_by_seller_id(
+            seller_id=seller_id, limit=limit, offset=offset
+        )
+        for review in reviews:
+            mask_reviewer(review)
+            food_item = review.pop("food_items", None) or {}
+            # None on overall rows — the frontend labels those as a whole-order rating.
+            review["food_item_name"] = food_item.get("name")
+
+        return {"success": True, "reviews": reviews}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Exception in GET /sellers/me/reviews: {repr(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
