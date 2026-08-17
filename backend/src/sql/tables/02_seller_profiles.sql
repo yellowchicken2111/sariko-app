@@ -27,6 +27,10 @@ create table public.seller_profiles (
   bank_account_holder text null,
   tax_category text not null default 'services'::text,
   status text not null default 'coming_soon'::text,
+  rating_avg numeric null,
+  rating_count integer not null default 0,
+  is_listed boolean not null default true,
+  display_order integer not null default 0,
   constraint seller_profiles_pkey primary key (id),
   constraint seller_profiles_slug_key unique (slug),
   constraint seller_profiles_tier_fkey foreign KEY (tier) references admin_tier_config (tier),
@@ -43,3 +47,15 @@ create index IF not exists idx_seller_location on public.seller_profiles using b
 
 comment on column public.seller_profiles.commission_rate_override is
   'Only set for bodega tier. NULL = use admin_tier_config.commission_rate.';
+comment on column public.seller_profiles.rating_avg is
+  'Denormalised from reviews (overall rows only, food_item_id is null). Maintained by
+   the on_review_change trigger — never write it by hand. NULL until the first review.';
+comment on column public.seller_profiles.is_listed is
+  'Admin curation: false = hidden from the public seller list and from featured dishes.
+   Distinct from status (lifecycle: coming_soon | active) and is_open (opening hours) —
+   a seller can be active + open and still be unlisted. The storefront stays reachable
+   by direct slug URL; this only controls discovery.';
+comment on column public.seller_profiles.display_order is
+  'Manual sort within the seller list, ascending (lower first). Applied after status,
+   so it orders sellers within the active block and within the coming_soon block.
+   Ties break by created_at.';
