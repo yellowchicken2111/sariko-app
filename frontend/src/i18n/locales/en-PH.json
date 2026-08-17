@@ -134,7 +134,8 @@
         },
         "item_count": "{count} item | {count} items",
         "founding_seller": "Founding Seller",
-        "btn_chat": "Chat"
+        "btn_chat": "Chat",
+        "btn_view_cart": "View cart"
     },
     "seller_card": {
         "coming_soon": "Coming soon"

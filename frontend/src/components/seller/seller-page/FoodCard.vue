@@ -94,14 +94,14 @@ export default {
 </script>
 
 <template>
-    <div class="card" @click="goToDetail">
+    <div class="food-row" @click="goToDetail">
 
-        <div class="food-image">
-            <q-img
-            :src="imgSrc"
-            :ratio="16/9"
-            />
-        </div>
+        <img
+        :src="imgSrc"
+        :alt="name"
+        class="food-thumb"
+        @error="$event.target.src = '/images/default-food-image.webp'"
+        />
 
         <div class="food-info">
             <div class="food-name">
@@ -112,21 +112,25 @@ export default {
                     <div class="review-count">({{ ratingCount }})</div>
                 </div>
             </div>
-            <q-badge class="preorder-badge" color="positive"> 
-                {{ $t('seller_page.section_food_cards.label_item_available') }}
-            </q-badge>
-            <q-badge v-if="preorderDay > 0" class="preorder-badge" color="amber-8">
-                {{ $t('seller_page.section_food_cards.lable_item_pre_order') }}: {{ preorderDay }} {{ $t('seller_page.section_food_cards.lable_item_pre_order_unit_day') }}
-            </q-badge>
+
+            <div class="badge-row">
+                <q-badge class="preorder-badge" color="positive">
+                    {{ $t('seller_page.section_food_cards.label_item_available') }}
+                </q-badge>
+                <q-badge v-if="preorderDay > 0" class="preorder-badge" color="amber-8">
+                    {{ $t('seller_page.section_food_cards.lable_item_pre_order') }}: {{ preorderDay }} {{ $t('seller_page.section_food_cards.lable_item_pre_order_unit_day') }}
+                </q-badge>
+            </div>
+
             <div class="price-row">
                 <div class="price-row__text">
                     <div class="food-price">₫{{ price }}</div>
-                    <div v-if="unitLabel" class="unit-label"> / {{ unitLabel }}</div>
+                    <div v-if="unitLabel" class="unit-label">/ {{ unitLabel }}</div>
                 </div>
                 <q-btn flat dense no-caps :loading="loading" @click="handleAddToCart">
-                    <q-icon name="fa-solid fa-circle-plus" style="color: #f5A623" />
+                    <q-icon name="fa-solid fa-circle-plus" size="26px" style="color: #f5A623" />
                     <template #loading>
-                        <q-spinner-dots color="orange" size="16px" />
+                        <q-spinner-dots color="orange" size="20px" />
                     </template>
                 </q-btn>
             </div>
@@ -136,18 +140,81 @@ export default {
 
 <style lang="scss" scoped>
 
-.card {
-    background-color:#121827;
-    height: 100%;
-    padding: 0;
+.food-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     font-family: $sariko-font-family-secondary;
-    overflow-x: hidden;
-    border-radius: 0.75rem;
+    cursor: pointer;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:active {
+        background: rgba(255, 255, 255, 0.03);
+    }
 }
 
+.food-thumb {
+    /* matches the 3-line text column height, so the photo fills the row instead of
+       leaving dead vertical space beside it */
+    width: 96px;
+    height: 96px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.05);
+}
 
 .food-info {
-    padding: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.food-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.food-name__label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.food-name__review {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+/* Bare number, no word: "4.9 (12)" is the compact form people read everywhere. */
+.review-count {
+    margin-left: 3px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.preorder-badge {
+    font-size: 10px;
+    color: black;
 }
 
 .price-row {
@@ -159,38 +226,8 @@ export default {
 
 .price-row__text {
     display: flex;
-    flex-direction: column;
-}
-
-.food-name {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.food-name__label {
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-right: 6px;
-}
-
-.food-name__review {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-}
-
-/* Bare number, no word: the card is ~45% of a phone width and the dish name already
-   competes for this line. "4.9 (12)" is the compact form people read everywhere. */
-.review-count {
-    margin-left: 3px;
-    font-weight: 500;
-    color: var(--text-secondary);
+    align-items: baseline;
+    gap: 4px;
 }
 
 .food-price {
@@ -202,12 +239,6 @@ export default {
     font-size: 11px;
     font-weight: 400;
     color: var(--text-secondary);
-}
-
-.preorder-badge {
-    font-size: 10px;
-    color: black; 
-    margin-right: 5px;
 }
 
 </style>

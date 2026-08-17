@@ -31,22 +31,20 @@ export default {
     <div class="background">
 
         <div class="container">
-            <q-scroll-area v-if="menu.length > 0" style="height: 550px; white-space: nowrap;">
-                <div class="row q-gutter-md" style="justify-content: center;">
-                    <div v-for="food in menu" class="col-6" style="width: 45%;">
-                        <FoodCard
-                        :item-id="food.id"
-                        :name="food.name"
-                        :price="food.price_text"
-                        :imgSrc="food.image_url ? food.image_url : '/images/default-food-image.webp'"
-                        :unit-label="food.unit_label || 'pcs'"
-                        :preorder-day="food.preorder_day || 0"
-                        :rating-avg="food.rating_avg"
-                        :rating-count="food.rating_count || 0"
-                        />
-                    </div>
-                </div>
-            </q-scroll-area>
+            <div v-if="menu.length > 0" class="food-list">
+                <FoodCard
+                v-for="food in menu"
+                :key="food.id"
+                :item-id="food.id"
+                :name="food.name"
+                :price="food.price_text"
+                :imgSrc="food.image_url ? food.image_url : '/images/default-food-image.webp'"
+                :unit-label="food.unit_label || 'pcs'"
+                :preorder-day="food.preorder_day || 0"
+                :rating-avg="food.rating_avg"
+                :rating-count="food.rating_count || 0"
+                />
+            </div>
             <MenuEmptyState v-else />
         </div>
 
@@ -61,5 +59,10 @@ export default {
 <style lang="scss" scoped>
 .background {
     padding: 0px 10px;
+}
+
+.food-list {
+    display: flex;
+    flex-direction: column;
 }
 </style>

@@ -7,6 +7,7 @@ import BannerFeatured from '@/components/seller/seller-page/BannerFeatured.vue'
 import Categories from '@/components/seller/seller-page/Categories.vue';
 import Menu from '@/components/seller/seller-page/Menu.vue';
 import SellerComingSoon from '@/components/seller/seller-page/SellerComingSoon.vue';
+import CartFab from '@/components/seller/seller-page/CartFab.vue';
 import SellerPageSkeleton from '@/components/seller/seller-page/SellerPageSkeleton.vue';
 
 export default {
@@ -17,7 +18,8 @@ export default {
         Categories,
         Menu,
         SellerComingSoon,
-        SellerPageSkeleton
+        SellerPageSkeleton,
+        CartFab
     },
 
     computed: {
@@ -60,6 +62,10 @@ export default {
         <template #Menu>
             <Menu v-if="!isComingSoon" />
             <SellerComingSoon v-else />
+        </template>
+
+        <template #CartFab>
+            <CartFab v-if="!isComingSoon" />
         </template>
 
     </LayoutBaseSellerPage>
