@@ -20,11 +20,11 @@ class DAOCartItems(DAOBase):
             result = self._supabase_client.table("carts") \
                 .select("id, seller_id, seller_profiles(slug, store_name), cart_items(quantity, food_items(id, name, price_text, price, unit_label, preorder_day, image_url, menu_categories(name)))") \
                 .eq("user_id", user_id) \
-                .maybe_single() \
+                .limit(1) \
                 .execute()
 
             if result and result.data:
-                return result.data
+                return result.data[0]
 
             return None
 
@@ -43,11 +43,11 @@ class DAOCartItems(DAOBase):
                 .select("id, quantity") \
                 .eq("cart_id", cart_id) \
                 .eq("food_item_id", food_item_id) \
-                .maybe_single() \
+                .limit(1) \
                 .execute()
 
             if result and result.data:
-                return result.data
+                return result.data[0]
 
             return None
 
@@ -110,6 +110,9 @@ class DAOCartItems(DAOBase):
             return None
 
         except PostgrestExceptionAPIError as e:
+            # 23505 = unique(cart_id, food_item_id): a concurrent add already inserted it.
+            if e.code == "23505":
+                return None
             raise Exception(f"Supabase error - update_food_item_by_cart_id with cart_id {cart_id} and food_item_id {food_item_id}: {e}")
                 
         except Exception as e:

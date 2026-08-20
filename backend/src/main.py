@@ -87,6 +87,21 @@ if os.environ.get("ENV", "local") in ("local", "dev"):
 app.include_router(admin_refunds.router, prefix="/rest/v1", tags=["admin"])
 app.include_router(moit.router, prefix="/rest/v1", tags=["moit"])
 
+# Registered BEFORE CORSMiddleware so CORS stays the outermost middleware.
+# FastAPI's @app.exception_handler(Exception) runs in ServerErrorMiddleware, which
+# sits outside CORS — its 500 response carries no Access-Control-Allow-Origin, so
+# the browser blocks it and the frontend sees a misleading "Network Error".
+@app.middleware("http")
+async def catch_unhandled_exceptions(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as exc:
+        logger.exception(f"Unhandled error: {repr(exc)}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Internal server error"}
+        )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

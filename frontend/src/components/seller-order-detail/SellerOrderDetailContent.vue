@@ -114,9 +114,11 @@ export default {
                         { key: 'COMPLETED',        label: this.$t('seller_order_detail.delivery_step_completed') },
                     ]
                     deliveryStepDefs.forEach((step, i) => {
+                        const isLast = i === deliveryStepDefs.length - 1
                         steps.push({
                             key: step.key, label: step.label,
-                            done: deliveryIdx > i,
+                            // Last step (COMPLETED) has nothing after it, so mark it done once reached
+                            done: deliveryIdx > i || (isLast && deliveryIdx === i),
                             current: deliveryIdx === i,
                             error: false, errorMessage: null,
                         })

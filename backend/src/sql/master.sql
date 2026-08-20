@@ -227,7 +227,10 @@ create table public.carts (
   created_at timestamp without time zone null default now(),
   constraint carts_pkey primary key (id),
   constraint carts_seller_id_fkey foreign KEY (seller_id) references seller_profiles (id),
-  constraint carts_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE
+  constraint carts_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE,
+  -- One active cart per user. Without this, two concurrent /cart/add requests both
+  -- read "no cart" and both insert, and every later .eq(user_id) singular read breaks.
+  constraint carts_user_id_key unique (user_id)
 ) TABLESPACE pg_default;
 
 
@@ -239,7 +242,9 @@ create table public.cart_items (
   constraint cart_items_pkey primary key (id),
   constraint cart_items_cart_id_fkey foreign KEY (cart_id) references carts (id) on delete CASCADE,
   constraint cart_items_food_item_id_fkey foreign KEY (food_item_id) references food_items (id),
-  constraint cart_items_quantity_check check ((quantity > 0))
+  constraint cart_items_quantity_check check ((quantity > 0)),
+  -- Same race as carts: one row per (cart, dish); quantity carries the count.
+  constraint cart_items_cart_id_food_item_id_key unique (cart_id, food_item_id)
 ) TABLESPACE pg_default;
 
 
