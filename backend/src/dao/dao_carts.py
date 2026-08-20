@@ -20,11 +20,11 @@ class DAOCarts(DAOBase):
             query = self._supabase_client.table(self._table_name)
             query = query.select('id, seller_id, seller_profiles(store_name)').eq("user_id", user_id)
             
-            query = query.maybe_single()
+            query = query.limit(1)
             result = query.execute()
             
             if result and result.data:
-                return result.data
+                return result.data[0]
             
             return None
 
@@ -65,6 +65,9 @@ class DAOCarts(DAOBase):
             return None
     
         except PostgrestExceptionAPIError as e:
+            # 23505 = unique(user_id): a concurrent /cart/add already created the cart.
+            if e.code == "23505":
+                return self.read_cart_by_user_id_seller_id(user_id=user_id)
             raise Exception(f"Supabase error - create_cart with user_id {user_id} and seller id {seller_id}: {e}")
                 
         except Exception as e:

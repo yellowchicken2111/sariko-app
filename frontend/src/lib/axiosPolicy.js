@@ -223,11 +223,15 @@ export const setUpAxiosPolicy = () => {
                 }
 
                 case 500:
+                case 502:
+                case 503:
+                case 504: {
                     const msg =
                         // extractMessage(data) || 
-                        "An unexpected error occurred. Please try again or contact support if the problem persists.";
-                    if (!config._silent) toast(msg);
+                        "Encountered an error. Please contact admin if the problem persists.";
+                    if (!config._silent) toast(msg, "negative", 5000);
                     break;
+                }
 
                 default: {
                     const msg =
