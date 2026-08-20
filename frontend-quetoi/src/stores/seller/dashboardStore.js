@@ -168,17 +168,27 @@ export const useDashboardStore = defineStore("dashboardStore", {
             }
             if (this._orderDetailPoller) return
 
+            // Order already finished before the page opened — nothing left to watch
+            if (this.orderDetails?.id === orderId && ORDER_TERMINAL.includes(this.orderDetails.status)) return
+
             this._orderDetailWatchedId = orderId
             this._orderDetailPoller = createPoller({
                 name: `seller-order-detail-${orderId}`,
                 intervalMs: ORDER_DETAIL_POLL_MS,
                 fetch: async () => {
+                    const prevStatus = this.orderDetails?.status
                     await this.refreshOrderDetailSilent(orderId)
                     const status = this.orderDetails?.status
                     const isDelivery = this.orderDetails?.delivery_method === 'delivery'
-                    if (isDelivery && status && !ORDER_TERMINAL.includes(status)) {
+                    // The COMPLETED webhook sets deliveries.status and orders.status='done' together,
+                    // so we must still fetch the delivery on the tick the order turns terminal —
+                    // otherwise the final delivery step never leaves PICKED_UP.
+                    const justBecameTerminal = ORDER_TERMINAL.includes(status) && !ORDER_TERMINAL.includes(prevStatus)
+                    if (isDelivery && status && (!ORDER_TERMINAL.includes(status) || justBecameTerminal)) {
                         await this.refreshDeliverySilent(orderId)
                     }
+                    // Terminal order can't change again — stop polling
+                    if (ORDER_TERMINAL.includes(status)) this.stopWatchingOrderDetail()
                 },
             })
             this._orderDetailPoller.start()
